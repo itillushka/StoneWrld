@@ -1,0 +1,4454 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-18T17:56:08.516Z",
+  "entries": [
+    {
+      "id": "alchemy_lab",
+      "name": "Alchemy Lab",
+      "category": "Chemistry",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 80,
+            "iron": 60
+          },
+          "research_prereqs": [
+            "sulfuric_acid"
+          ],
+          "passive_per_hour": {
+            "knowledge": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Bubbling beakers visible through door; door flashes purple-green occasionally with a small smoke puff"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 200,
+            "iron": 150
+          },
+          "research_prereqs": [
+            "sulfuric_acid",
+            "glass_making"
+          ],
+          "passive_per_hour": {
+            "knowledge": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Bubbling beakers visible through door; door flashes purple-green occasionally with a small smoke puff"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 480,
+            "iron": 360
+          },
+          "research_prereqs": [
+            "sulfuric_acid",
+            "glass_making",
+            "polymers"
+          ],
+          "passive_per_hour": {
+            "knowledge": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Bubbling beakers visible through door; door flashes purple-green occasionally with a small smoke puff"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "fuel_refinery",
+      "name": "Fuel Refinery",
+      "category": "Chemistry",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 200000,
+            "innovation": 120000,
+            "discovery": 60000
+          },
+          "research_prereqs": [
+            "cryogenic_fuel"
+          ],
+          "passive_per_hour": {
+            "iron": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 12,
+          "idle_animation": "`TODO v1.x` — cryogenic frost on pipes, occasional vent of cold vapor"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 500000,
+            "innovation": 300000,
+            "discovery": 150000
+          },
+          "research_prereqs": [
+            "cryogenic_fuel",
+            "composites"
+          ],
+          "passive_per_hour": {
+            "iron": 50
+          },
+          "power_capacity": 0,
+          "power_demand": 25,
+          "idle_animation": "`TODO v1.x` — cryogenic frost on pipes, occasional vent of cold vapor"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1200000,
+            "innovation": 720000,
+            "discovery": 360000
+          },
+          "research_prereqs": [
+            "cryogenic_fuel",
+            "composites",
+            "nuclear_reactor"
+          ],
+          "passive_per_hour": {
+            "iron": 120
+          },
+          "power_capacity": 0,
+          "power_demand": 50,
+          "idle_animation": "`TODO v1.x` — cryogenic frost on pipes, occasional vent of cold vapor"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "glassworks",
+      "name": "Glassworks",
+      "category": "Chemistry",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 120,
+            "iron": 80
+          },
+          "research_prereqs": [
+            "glass_making"
+          ],
+          "passive_per_hour": {
+            "iron": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Glass-blower silhouette visible through opening; orange glow"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 300,
+            "iron": 200
+          },
+          "research_prereqs": [
+            "glass_making",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Glass-blower silhouette visible through opening; orange glow"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 720,
+            "iron": 480
+          },
+          "research_prereqs": [
+            "glass_making",
+            "steel_production",
+            "silicon_refining"
+          ],
+          "passive_per_hour": {
+            "iron": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Glass-blower silhouette visible through opening; orange glow"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "soap_workshop",
+      "name": "Soap Workshop",
+      "category": "Chemistry",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 50,
+            "iron": 40
+          },
+          "research_prereqs": [
+            "soap"
+          ],
+          "passive_per_hour": {
+            "completion": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Steam rising from bubbling pot; occasional soap-bar slide out chute"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 125,
+            "iron": 100
+          },
+          "research_prereqs": [
+            "soap",
+            "glass_making"
+          ],
+          "passive_per_hour": {
+            "completion": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Steam rising from bubbling pot; occasional soap-bar slide out chute"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 300,
+            "iron": 240
+          },
+          "research_prereqs": [
+            "soap",
+            "glass_making",
+            "antiseptic"
+          ],
+          "passive_per_hour": {
+            "completion": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Steam rising from bubbling pot; occasional soap-bar slide out chute"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "deep_space_radio",
+      "name": "Deep-space Radio",
+      "category": "Communication",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "innovation": 120000,
+            "knowledge": 80000,
+            "discovery": 40000
+          },
+          "research_prereqs": [
+            "long_wave_communication"
+          ],
+          "passive_per_hour": {
+            "discovery": 25
+          },
+          "power_capacity": 0,
+          "power_demand": 25,
+          "idle_animation": "`TODO v1.x` — massive dish slowly rotates; signal-wave-pulse outward"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "innovation": 300000,
+            "knowledge": 200000,
+            "discovery": 100000
+          },
+          "research_prereqs": [
+            "long_wave_communication",
+            "computer"
+          ],
+          "passive_per_hour": {
+            "discovery": 60
+          },
+          "power_capacity": 0,
+          "power_demand": 50,
+          "idle_animation": "`TODO v1.x` — massive dish slowly rotates; signal-wave-pulse outward"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "innovation": 720000,
+            "knowledge": 480000,
+            "discovery": 240000
+          },
+          "research_prereqs": [
+            "long_wave_communication",
+            "computer",
+            "nuclear_reactor"
+          ],
+          "passive_per_hour": {
+            "discovery": 150
+          },
+          "power_capacity": 0,
+          "power_demand": 100,
+          "idle_animation": "`TODO v1.x` — massive dish slowly rotates; signal-wave-pulse outward"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "radio_hut",
+      "name": "Radio Hut",
+      "category": "Communication",
+      "footprint": {
+        "w": 1,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "innovation": 1200,
+            "knowledge": 800
+          },
+          "research_prereqs": [
+            "radio_telephone"
+          ],
+          "passive_per_hour": {
+            "discovery": 3
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Roof antenna sways gently; small light on side panel blinks"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "innovation": 3000,
+            "knowledge": 2000
+          },
+          "research_prereqs": [
+            "radio_telephone",
+            "telephony"
+          ],
+          "passive_per_hour": {
+            "discovery": 7.5
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Roof antenna sways gently; small light on side panel blinks"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "innovation": 7200,
+            "knowledge": 4800
+          },
+          "research_prereqs": [
+            "radio_telephone",
+            "telephony",
+            "wireless"
+          ],
+          "passive_per_hour": {
+            "discovery": 18
+          },
+          "power_capacity": 0,
+          "power_demand": 5,
+          "idle_animation": "Roof antenna sways gently; small light on side panel blinks"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "telegraph_office",
+      "name": "Telegraph Office",
+      "category": "Communication",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "innovation": 600,
+            "knowledge": 400
+          },
+          "research_prereqs": [
+            "telegraph"
+          ],
+          "passive_per_hour": {
+            "discovery": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Tiny morse-code light blinks intermittently"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "innovation": 1500,
+            "knowledge": 1000
+          },
+          "research_prereqs": [
+            "telegraph",
+            "radio_telephone"
+          ],
+          "passive_per_hour": {
+            "discovery": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Tiny morse-code light blinks intermittently"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "innovation": 3600,
+            "knowledge": 2400
+          },
+          "research_prereqs": [
+            "telegraph",
+            "radio_telephone",
+            "telephony"
+          ],
+          "passive_per_hour": {
+            "discovery": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "Tiny morse-code light blinks intermittently"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "telephone_exchange",
+      "name": "Telephone Exchange",
+      "category": "Communication",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "innovation": 2500,
+            "knowledge": 1500
+          },
+          "research_prereqs": [
+            "telephony"
+          ],
+          "passive_per_hour": {
+            "discovery": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Operator-board lights blink in rolling sequence; signal-wave occasionally pulses outward from antenna"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "innovation": 6250,
+            "knowledge": 3750
+          },
+          "research_prereqs": [
+            "telephony",
+            "wireless"
+          ],
+          "passive_per_hour": {
+            "discovery": 12.5
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "Operator-board lights blink in rolling sequence; signal-wave occasionally pulses outward from antenna"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "innovation": 15000,
+            "knowledge": 9000
+          },
+          "research_prereqs": [
+            "telephony",
+            "wireless",
+            "long_wave_communication"
+          ],
+          "passive_per_hour": {
+            "discovery": 30
+          },
+          "power_capacity": 0,
+          "power_demand": 12,
+          "idle_animation": "Operator-board lights blink in rolling sequence; signal-wave occasionally pulses outward from antenna"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "wireless_tower",
+      "name": "Wireless Tower",
+      "category": "Communication",
+      "footprint": {
+        "w": 1,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "innovation": 80000,
+            "knowledge": 50000
+          },
+          "research_prereqs": [
+            "wireless"
+          ],
+          "passive_per_hour": {
+            "discovery": 15
+          },
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "innovation": 200000,
+            "knowledge": 125000
+          },
+          "research_prereqs": [
+            "wireless",
+            "computer"
+          ],
+          "passive_per_hour": {
+            "discovery": 37.5
+          },
+          "power_capacity": 0,
+          "power_demand": 20,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "innovation": 480000,
+            "knowledge": 300000
+          },
+          "research_prereqs": [
+            "wireless",
+            "computer",
+            "long_wave_communication"
+          ],
+          "passive_per_hour": {
+            "discovery": 90
+          },
+          "power_capacity": 0,
+          "power_demand": 40,
+          "idle_animation": "`TODO v1.x`"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "builder_s_hut",
+      "name": "Builder's Hut",
+      "category": "Construction",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 30,
+            "innovation": 20
+          },
+          "research_prereqs": [
+            "mud_brick"
+          ],
+          "passive_per_hour": {
+            "innovation": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Builder figure occasionally visible at door; wood-shavings scatter near entry"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 75,
+            "innovation": 50
+          },
+          "research_prereqs": [
+            "mud_brick",
+            "wood_frame_construction"
+          ],
+          "passive_per_hour": {
+            "innovation": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Builder figure occasionally visible at door; wood-shavings scatter near entry"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 180,
+            "innovation": 120
+          },
+          "research_prereqs": [
+            "mud_brick",
+            "wood_frame_construction",
+            "stone_masonry"
+          ],
+          "passive_per_hour": {
+            "innovation": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Builder figure occasionally visible at door; wood-shavings scatter near entry"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "concrete_workshop",
+      "name": "Concrete Workshop",
+      "category": "Construction",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 5000,
+            "innovation": 3000
+          },
+          "research_prereqs": [
+            "concrete"
+          ],
+          "passive_per_hour": {
+            "innovation": 3
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Concrete mixer drum rotating; wet-concrete-pour animation at base"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 12500,
+            "innovation": 7500
+          },
+          "research_prereqs": [
+            "concrete",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "innovation": 7.5
+          },
+          "power_capacity": 0,
+          "power_demand": 5,
+          "idle_animation": "Concrete mixer drum rotating; wet-concrete-pour animation at base"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 30000,
+            "innovation": 18000
+          },
+          "research_prereqs": [
+            "concrete",
+            "steel_refining",
+            "reinforced_concrete"
+          ],
+          "passive_per_hour": {
+            "innovation": 18
+          },
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "Concrete mixer drum rotating; wet-concrete-pour animation at base"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "stone_workshop",
+      "name": "Stone Workshop",
+      "category": "Construction",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 150,
+            "innovation": 80
+          },
+          "research_prereqs": [
+            "stone_masonry"
+          ],
+          "passive_per_hour": {
+            "innovation": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Mason chisels stone block; chips fly; dust haze"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 375,
+            "innovation": 200
+          },
+          "research_prereqs": [
+            "stone_masonry",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "innovation": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Mason chisels stone block; chips fly; dust haze"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 900,
+            "innovation": 480
+          },
+          "research_prereqs": [
+            "stone_masonry",
+            "steel_production",
+            "concrete"
+          ],
+          "passive_per_hour": {
+            "innovation": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Mason chisels stone block; chips fly; dust haze"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "workshop",
+      "name": "Workshop",
+      "category": "Construction",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 100,
+            "innovation": 80
+          },
+          "research_prereqs": [
+            "iron_smelting"
+          ],
+          "passive_per_hour": {
+            "innovation": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Hammer strikes anvil; sparks fly at corner; occasional pulley moves overhead"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 250,
+            "innovation": 200
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "gear",
+            "pulley_system"
+          ],
+          "passive_per_hour": {
+            "innovation": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Hammer strikes anvil; sparks fly at corner; occasional pulley moves overhead"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 600,
+            "innovation": 480
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "gear",
+            "pulley_system",
+            "steel_production",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "innovation": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 5,
+          "idle_animation": "Hammer strikes anvil; sparks fly at corner; occasional pulley moves overhead"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "apartment_block",
+      "name": "Apartment Block",
+      "category": "Dwellings",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 25000,
+            "innovation": 15000
+          },
+          "research_prereqs": [
+            "reinforced_concrete",
+            "steel_frame"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "`TODO v1.x` — multiple window-lights blinking"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 62500,
+            "innovation": 37500
+          },
+          "research_prereqs": [
+            "reinforced_concrete",
+            "steel_frame",
+            "computer"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 5,
+          "idle_animation": "`TODO v1.x` — multiple window-lights blinking"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 150000,
+            "innovation": 90000
+          },
+          "research_prereqs": [
+            "reinforced_concrete",
+            "steel_frame",
+            "computer",
+            "modern_industrial"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "`TODO v1.x` — multiple window-lights blinking"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "cottage",
+      "name": "Cottage",
+      "category": "Dwellings",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 200,
+            "innovation": 100
+          },
+          "research_prereqs": [
+            "wood_frame_construction",
+            "stone_masonry"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Curtains gently sway in window; smoke from chimney"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 500,
+            "innovation": 250
+          },
+          "research_prereqs": [
+            "wood_frame_construction",
+            "stone_masonry",
+            "glass_making"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Curtains gently sway in window; smoke from chimney"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1200,
+            "innovation": 600
+          },
+          "research_prereqs": [
+            "wood_frame_construction",
+            "stone_masonry",
+            "glass_making",
+            "concrete"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Curtains gently sway in window; smoke from chimney"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "modern_tower",
+      "name": "Modern Tower",
+      "category": "Dwellings",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 80000,
+            "innovation": 50000
+          },
+          "research_prereqs": [
+            "steel_frame",
+            "computer"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "`TODO v1.x` — skyscraper window lights, periodic elevator-lights moving up/down façade"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 200000,
+            "innovation": 125000
+          },
+          "research_prereqs": [
+            "steel_frame",
+            "computer",
+            "automation"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 12,
+          "idle_animation": "`TODO v1.x` — skyscraper window lights, periodic elevator-lights moving up/down façade"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 480000,
+            "innovation": 300000
+          },
+          "research_prereqs": [
+            "steel_frame",
+            "computer",
+            "automation",
+            "modern_industrial",
+            "solar_panel"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 15,
+          "idle_animation": "`TODO v1.x` — skyscraper window lights, periodic elevator-lights moving up/down façade"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "settler_hut",
+      "name": "Settler Hut",
+      "category": "Dwellings",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 30,
+            "innovation": 15
+          },
+          "research_prereqs": [
+            "mud_brick"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Faint smoke rising from chimney; window-light flicker at \"night\" (in-game day/night cycle TBD)"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 75,
+            "innovation": 38
+          },
+          "research_prereqs": [
+            "mud_brick",
+            "stone_masonry"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Faint smoke rising from chimney; window-light flicker at \"night\" (in-game day/night cycle TBD)"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 180,
+            "innovation": 90
+          },
+          "research_prereqs": [
+            "mud_brick",
+            "stone_masonry",
+            "steel_production"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Faint smoke rising from chimney; window-light flicker at \"night\" (in-game day/night cycle TBD)"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "battery_cell",
+      "name": "Battery Cell",
+      "category": "Electronics",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 400,
+            "iron": 200,
+            "innovation": 150
+          },
+          "research_prereqs": [
+            "battery"
+          ],
+          "passive_per_hour": {
+            "innovation": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Small blue spark arcs between terminals occasionally"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 1000,
+            "iron": 500,
+            "innovation": 375
+          },
+          "research_prereqs": [
+            "battery",
+            "copper_smelting"
+          ],
+          "passive_per_hour": {
+            "innovation": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Small blue spark arcs between terminals occasionally"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 2400,
+            "iron": 1200,
+            "innovation": 900
+          },
+          "research_prereqs": [
+            "battery",
+            "copper_smelting",
+            "transistor"
+          ],
+          "passive_per_hour": {
+            "innovation": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Small blue spark arcs between terminals occasionally"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "ic_factory",
+      "name": "IC Factory",
+      "category": "Electronics",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "innovation": 60000,
+            "knowledge": 40000
+          },
+          "research_prereqs": [
+            "integrated_circuit"
+          ],
+          "passive_per_hour": {
+            "innovation": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "innovation": 150000,
+            "knowledge": 100000
+          },
+          "research_prereqs": [
+            "integrated_circuit",
+            "cpu"
+          ],
+          "passive_per_hour": {
+            "innovation": 50
+          },
+          "power_capacity": 0,
+          "power_demand": 16,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "innovation": 360000,
+            "knowledge": 240000
+          },
+          "research_prereqs": [
+            "integrated_circuit",
+            "cpu",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "innovation": 120
+          },
+          "power_capacity": 0,
+          "power_demand": 32,
+          "idle_animation": "`TODO v1.x`"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "lamp_workshop",
+      "name": "Lamp Workshop",
+      "category": "Electronics",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "innovation": 500,
+            "knowledge": 300
+          },
+          "research_prereqs": [
+            "lightbulb"
+          ],
+          "passive_per_hour": {
+            "innovation": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Lightbulb glows on/off in window"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "innovation": 1250,
+            "knowledge": 750
+          },
+          "research_prereqs": [
+            "lightbulb",
+            "radial_lamp"
+          ],
+          "passive_per_hour": {
+            "innovation": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Lightbulb glows on/off in window"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "innovation": 3000,
+            "knowledge": 1800
+          },
+          "research_prereqs": [
+            "lightbulb",
+            "radial_lamp",
+            "transistor"
+          ],
+          "passive_per_hour": {
+            "innovation": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "Lightbulb glows on/off in window"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "radio_lab",
+      "name": "Radio Lab",
+      "category": "Electronics",
+      "footprint": {
+        "w": 2,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "innovation": 800,
+            "knowledge": 500
+          },
+          "research_prereqs": [
+            "radial_lamp"
+          ],
+          "passive_per_hour": {
+            "innovation": 3
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Vacuum tubes glow; small antenna-flicker at roof"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "innovation": 2000,
+            "knowledge": 1250
+          },
+          "research_prereqs": [
+            "radial_lamp",
+            "telephony"
+          ],
+          "passive_per_hour": {
+            "innovation": 7.5
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Vacuum tubes glow; small antenna-flicker at roof"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "innovation": 4800,
+            "knowledge": 3000
+          },
+          "research_prereqs": [
+            "radial_lamp",
+            "telephony",
+            "wireless"
+          ],
+          "passive_per_hour": {
+            "innovation": 18
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "Vacuum tubes glow; small antenna-flicker at roof"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "aluminum_refinery",
+      "name": "Aluminum Refinery",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 30000,
+            "knowledge": 15000
+          },
+          "research_prereqs": [],
+          "passive_per_hour": {
+            "iron": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 5,
+          "idle_animation": "TODO"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "bronze_foundry",
+      "name": "Bronze Foundry",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 250,
+            "knowledge": 150
+          },
+          "research_prereqs": [
+            "bronze_alloy"
+          ],
+          "passive_per_hour": {
+            "iron": 3
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Bronze ingots being cast; molten metal stream visible; sparks"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 625,
+            "knowledge": 375
+          },
+          "research_prereqs": [
+            "bronze_alloy",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 7.5
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Bronze ingots being cast; molten metal stream visible; sparks"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1500,
+            "knowledge": 900
+          },
+          "research_prereqs": [
+            "bronze_alloy",
+            "steel_production",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "iron": 18
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "Bronze ingots being cast; molten metal stream visible; sparks"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "charcoal_kiln",
+      "name": "Charcoal Kiln",
+      "category": "Materials",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 30,
+            "innovation": 15
+          },
+          "research_prereqs": [
+            "charcoal_making"
+          ],
+          "passive_per_hour": {
+            "iron": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Smoke rising from kiln top; orange glow from base"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 75,
+            "innovation": 38
+          },
+          "research_prereqs": [
+            "charcoal_making",
+            "iron_smelting"
+          ],
+          "passive_per_hour": {
+            "iron": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Smoke rising from kiln top; orange glow from base"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 180,
+            "innovation": 90
+          },
+          "research_prereqs": [
+            "charcoal_making",
+            "iron_smelting",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Smoke rising from kiln top; orange glow from base"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "coal_mine",
+      "name": "Coal Mine",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 1500,
+            "knowledge": 800
+          },
+          "research_prereqs": [
+            "coal_mining"
+          ],
+          "passive_per_hour": {
+            "iron": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Dark cart cycle, black coal pile, occasional dust-puff"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 3750,
+            "knowledge": 2000
+          },
+          "research_prereqs": [
+            "coal_mining",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "iron": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Dark cart cycle, black coal pile, occasional dust-puff"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 9000,
+            "knowledge": 4800
+          },
+          "research_prereqs": [
+            "coal_mining",
+            "steel_refining",
+            "steam_engine"
+          ],
+          "passive_per_hour": {
+            "iron": 30
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "Dark cart cycle, black coal pile, occasional dust-puff"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "cobalt_foundry",
+      "name": "Cobalt Foundry",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 800,
+            "knowledge": 500
+          },
+          "research_prereqs": [
+            "cobalt_smelting"
+          ],
+          "passive_per_hour": {
+            "iron": 3
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Bluish glow from cobalt smelter; magnetic-spark animation occasional"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 2000,
+            "knowledge": 1250
+          },
+          "research_prereqs": [
+            "cobalt_smelting",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "iron": 7.5
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "Bluish glow from cobalt smelter; magnetic-spark animation occasional"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 4800,
+            "knowledge": 3000
+          },
+          "research_prereqs": [
+            "cobalt_smelting",
+            "steel_refining",
+            "transistor"
+          ],
+          "passive_per_hour": {
+            "iron": 18
+          },
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "Bluish glow from cobalt smelter; magnetic-spark animation occasional"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "coke_oven",
+      "name": "Coke Oven",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 25000,
+            "knowledge": 15000
+          },
+          "research_prereqs": [],
+          "passive_per_hour": {
+            "iron": 10
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "TODO"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "composite_workshop",
+      "name": "Composite Workshop",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 100000,
+            "knowledge": 60000,
+            "discovery": 30000
+          },
+          "research_prereqs": [],
+          "passive_per_hour": {
+            "iron": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "TODO"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "copper_mine",
+      "name": "Copper Mine",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 150,
+            "innovation": 50
+          },
+          "research_prereqs": [
+            "copper_ore_mining"
+          ],
+          "passive_per_hour": {
+            "iron": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Mine cart cycle; greenish copper-ore tint visible at ore pile"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 375,
+            "innovation": 125
+          },
+          "research_prereqs": [
+            "copper_ore_mining",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Mine cart cycle; greenish copper-ore tint visible at ore pile"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 900,
+            "innovation": 300
+          },
+          "research_prereqs": [
+            "copper_ore_mining",
+            "steel_production",
+            "steam_engine"
+          ],
+          "passive_per_hour": {
+            "iron": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Mine cart cycle; greenish copper-ore tint visible at ore pile"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "copper_smelter",
+      "name": "Copper Smelter",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 200,
+            "innovation": 80
+          },
+          "research_prereqs": [
+            "copper_smelting"
+          ],
+          "passive_per_hour": {
+            "iron": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Like Iron Smelter but with reddish-orange furnace glow"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 500,
+            "innovation": 200
+          },
+          "research_prereqs": [
+            "copper_smelting",
+            "bronze_alloy"
+          ],
+          "passive_per_hour": {
+            "iron": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Like Iron Smelter but with reddish-orange furnace glow"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1200,
+            "innovation": 480
+          },
+          "research_prereqs": [
+            "copper_smelting",
+            "bronze_alloy",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "iron": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Like Iron Smelter but with reddish-orange furnace glow"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "iron_mine",
+      "name": "Iron Mine",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 100,
+            "innovation": 50
+          },
+          "research_prereqs": [
+            "iron_ore_extraction"
+          ],
+          "passive_per_hour": {
+            "iron": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Mine cart emerges periodically, dumps ore at side pile, returns"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 250,
+            "innovation": 125
+          },
+          "research_prereqs": [
+            "iron_ore_extraction",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Mine cart emerges periodically, dumps ore at side pile, returns"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 600,
+            "innovation": 300
+          },
+          "research_prereqs": [
+            "iron_ore_extraction",
+            "steel_production",
+            "steam_engine"
+          ],
+          "passive_per_hour": {
+            "iron": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Mine cart emerges periodically, dumps ore at side pile, returns"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "iron_smelter",
+      "name": "Iron Smelter",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 200,
+            "innovation": 80
+          },
+          "research_prereqs": [
+            "iron_smelting"
+          ],
+          "passive_per_hour": {
+            "iron": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Bellows pumping; orange glow pulses from furnace; hammer-strike sparks fly"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 500,
+            "innovation": 200
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "bronze_alloy"
+          ],
+          "passive_per_hour": {
+            "iron": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Bellows pumping; orange glow pulses from furnace; hammer-strike sparks fly"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1200,
+            "innovation": 480
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "bronze_alloy",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "iron": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Bellows pumping; orange glow pulses from furnace; hammer-strike sparks fly"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "lumber_camp",
+      "name": "Lumber Camp",
+      "category": "Materials",
+      "footprint": {
+        "w": 1,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 15,
+            "innovation": 10
+          },
+          "research_prereqs": [
+            "wood_cutting"
+          ],
+          "passive_per_hour": {
+            "iron": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Saw-cuts visible at the log pile; sawdust particle drift"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 38,
+            "innovation": 25
+          },
+          "research_prereqs": [
+            "wood_cutting",
+            "iron_smelting"
+          ],
+          "passive_per_hour": {
+            "iron": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Saw-cuts visible at the log pile; sawdust particle drift"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 90,
+            "innovation": 60
+          },
+          "research_prereqs": [
+            "wood_cutting",
+            "iron_smelting",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Saw-cuts visible at the log pile; sawdust particle drift"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "oil_refinery",
+      "name": "Oil Refinery",
+      "category": "Materials",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 25000,
+            "knowledge": 15000
+          },
+          "research_prereqs": [
+            "oil_refinery"
+          ],
+          "passive_per_hour": {
+            "iron": 15
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "`TODO v1.x` — sulfur-yellow flames at refinery tops, smoke plumes, pipes glow occasionally"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 62500,
+            "knowledge": 37500
+          },
+          "research_prereqs": [
+            "oil_refinery",
+            "polymers"
+          ],
+          "passive_per_hour": {
+            "iron": 37.5
+          },
+          "power_capacity": 0,
+          "power_demand": 12,
+          "idle_animation": "`TODO v1.x` — sulfur-yellow flames at refinery tops, smoke plumes, pipes glow occasionally"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 150000,
+            "knowledge": 90000
+          },
+          "research_prereqs": [
+            "oil_refinery",
+            "polymers",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "iron": 90
+          },
+          "power_capacity": 0,
+          "power_demand": 20,
+          "idle_animation": "`TODO v1.x` — sulfur-yellow flames at refinery tops, smoke plumes, pipes glow occasionally"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "oil_well",
+      "name": "Oil Well",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 15000,
+            "knowledge": 10000
+          },
+          "research_prereqs": [
+            "oil_extraction"
+          ],
+          "passive_per_hour": {
+            "iron": 10
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "`TODO v1.x` — pump-jack arm cycling up-and-down"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 37500,
+            "knowledge": 25000
+          },
+          "research_prereqs": [
+            "oil_extraction",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "iron": 25
+          },
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "`TODO v1.x` — pump-jack arm cycling up-and-down"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 90000,
+            "knowledge": 60000
+          },
+          "research_prereqs": [
+            "oil_extraction",
+            "steel_refining",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "iron": 60
+          },
+          "power_capacity": 0,
+          "power_demand": 15,
+          "idle_animation": "`TODO v1.x` — pump-jack arm cycling up-and-down"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "plastic_factory",
+      "name": "Plastic Factory",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 20000,
+            "knowledge": 15000
+          },
+          "research_prereqs": [
+            "plastic_production"
+          ],
+          "passive_per_hour": {
+            "iron": 10
+          },
+          "power_capacity": 0,
+          "power_demand": 5,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 50000,
+            "knowledge": 37500
+          },
+          "research_prereqs": [
+            "plastic_production",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "iron": 25
+          },
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 120000,
+            "knowledge": 90000
+          },
+          "research_prereqs": [
+            "plastic_production",
+            "automation",
+            "composites"
+          ],
+          "passive_per_hour": {
+            "iron": 60
+          },
+          "power_capacity": 0,
+          "power_demand": 18,
+          "idle_animation": "`TODO v1.x`"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "pottery_kiln",
+      "name": "Pottery Kiln",
+      "category": "Materials",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 25,
+            "innovation": 15
+          },
+          "research_prereqs": [
+            "pottery"
+          ],
+          "passive_per_hour": {
+            "iron": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Wheel spinning visible on side; subtle warm glow from kiln door"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 63,
+            "innovation": 38
+          },
+          "research_prereqs": [
+            "pottery",
+            "glass_making"
+          ],
+          "passive_per_hour": {
+            "iron": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Wheel spinning visible on side; subtle warm glow from kiln door"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 150,
+            "innovation": 90
+          },
+          "research_prereqs": [
+            "pottery",
+            "glass_making",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Wheel spinning visible on side; subtle warm glow from kiln door"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "silicon_foundry",
+      "name": "Silicon Foundry",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 30000,
+            "knowledge": 20000,
+            "discovery": 10000
+          },
+          "research_prereqs": [],
+          "passive_per_hour": {
+            "iron": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "TODO"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "steel_foundry",
+      "name": "Steel Foundry",
+      "category": "Materials",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 500,
+            "knowledge": 300
+          },
+          "research_prereqs": [
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 4
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Large bellows pumping; bright white-hot glow from main furnace; hammer-strike-sparks shower at the corner"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 1250,
+            "knowledge": 750
+          },
+          "research_prereqs": [
+            "steel_production",
+            "hydroelectric_dam"
+          ],
+          "passive_per_hour": {
+            "iron": 10
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Large bellows pumping; bright white-hot glow from main furnace; hammer-strike-sparks shower at the corner"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 3000,
+            "knowledge": 1800
+          },
+          "research_prereqs": [
+            "steel_production",
+            "hydroelectric_dam",
+            "steel_refining",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "iron": 24
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "Large bellows pumping; bright white-hot glow from main furnace; hammer-strike-sparks shower at the corner"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "steel_refinery",
+      "name": "Steel Refinery",
+      "category": "Materials",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 4000,
+            "knowledge": 2500
+          },
+          "research_prereqs": [
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "iron": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Tall converter vessel pours molten steel; bright orange sparks; smoke rises"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 10000,
+            "knowledge": 6250
+          },
+          "research_prereqs": [
+            "steel_refining",
+            "steam_plant"
+          ],
+          "passive_per_hour": {
+            "iron": 15
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "Tall converter vessel pours molten steel; bright orange sparks; smoke rises"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 24000,
+            "knowledge": 15000
+          },
+          "research_prereqs": [
+            "steel_refining",
+            "steam_plant",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "iron": 36
+          },
+          "power_capacity": 0,
+          "power_demand": 12,
+          "idle_animation": "Tall converter vessel pours molten steel; bright orange sparks; smoke rises"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "stone_mine",
+      "name": "Stone Mine",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 20,
+            "innovation": 10
+          },
+          "research_prereqs": [
+            "stone_tools"
+          ],
+          "passive_per_hour": {
+            "iron": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Pickaxe-strike sparks; rock-chip particles drift down"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 50,
+            "innovation": 25
+          },
+          "research_prereqs": [
+            "stone_tools",
+            "iron_smelting"
+          ],
+          "passive_per_hour": {
+            "iron": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Pickaxe-strike sparks; rock-chip particles drift down"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 120,
+            "innovation": 60
+          },
+          "research_prereqs": [
+            "stone_tools",
+            "iron_smelting",
+            "steam_engine"
+          ],
+          "passive_per_hour": {
+            "iron": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Pickaxe-strike sparks; rock-chip particles drift down"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "sulfur_mine",
+      "name": "Sulfur Mine",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 40,
+            "innovation": 20
+          },
+          "research_prereqs": [
+            "sulfur_extraction"
+          ],
+          "passive_per_hour": {
+            "iron": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Yellow sulfur particles drift up from mine entrance; carts moving in/out"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 100,
+            "innovation": 50
+          },
+          "research_prereqs": [
+            "sulfur_extraction",
+            "iron_smelting"
+          ],
+          "passive_per_hour": {
+            "iron": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Yellow sulfur particles drift up from mine entrance; carts moving in/out"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 240,
+            "innovation": 120
+          },
+          "research_prereqs": [
+            "sulfur_extraction",
+            "iron_smelting",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Yellow sulfur particles drift up from mine entrance; carts moving in/out"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "tin_mine",
+      "name": "Tin Mine",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 120,
+            "innovation": 50
+          },
+          "research_prereqs": [
+            "tin_mining"
+          ],
+          "passive_per_hour": {
+            "iron": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Mine cart cycle; whitish tin-ore tint at pile"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 300,
+            "innovation": 125
+          },
+          "research_prereqs": [
+            "tin_mining",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "iron": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Mine cart cycle; whitish tin-ore tint at pile"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 720,
+            "innovation": 300
+          },
+          "research_prereqs": [
+            "tin_mining",
+            "steel_production",
+            "steam_engine"
+          ],
+          "passive_per_hour": {
+            "iron": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Mine cart cycle; whitish tin-ore tint at pile"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "uranium_mine",
+      "name": "Uranium Mine",
+      "category": "Materials",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 120000,
+            "knowledge": 80000
+          },
+          "research_prereqs": [],
+          "passive_per_hour": {
+            "iron": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "TODO"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "combustion_engine_workshop",
+      "name": "Combustion Engine Workshop",
+      "category": "Mechanics",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 20000,
+            "innovation": 15000
+          },
+          "research_prereqs": [
+            "combustion_engine"
+          ],
+          "passive_per_hour": {
+            "innovation": 8
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 50000,
+            "innovation": 37500
+          },
+          "research_prereqs": [
+            "combustion_engine",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "innovation": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 120000,
+            "innovation": 90000
+          },
+          "research_prereqs": [
+            "combustion_engine",
+            "steel_refining",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "innovation": 48
+          },
+          "power_capacity": 0,
+          "power_demand": 16,
+          "idle_animation": "`TODO v1.x`"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "steam_engine_workshop",
+      "name": "Steam Engine Workshop",
+      "category": "Mechanics",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 1000,
+            "innovation": 600
+          },
+          "research_prereqs": [
+            "steam_engine"
+          ],
+          "passive_per_hour": {
+            "innovation": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Piston-shaft visible through window, moving up-down; steam puff at vent"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 2500,
+            "innovation": 1500
+          },
+          "research_prereqs": [
+            "steam_engine",
+            "steel_production"
+          ],
+          "passive_per_hour": {
+            "innovation": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Piston-shaft visible through window, moving up-down; steam puff at vent"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 6000,
+            "innovation": 3600
+          },
+          "research_prereqs": [
+            "steam_engine",
+            "steel_production",
+            "automation"
+          ],
+          "passive_per_hour": {
+            "innovation": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "Piston-shaft visible through window, moving up-down; steam puff at vent"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "cryogenic_lab",
+      "name": "Cryogenic Lab",
+      "category": "Medicine",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 150000,
+            "innovation": 100000,
+            "discovery": 50000
+          },
+          "research_prereqs": [
+            "cryogenics"
+          ],
+          "passive_per_hour": {
+            "completion": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 375000,
+            "innovation": 250000,
+            "discovery": 125000
+          },
+          "research_prereqs": [
+            "cryogenics",
+            "cryogenic_fuel"
+          ],
+          "passive_per_hour": {
+            "completion": 50
+          },
+          "power_capacity": 0,
+          "power_demand": 20,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 900000,
+            "innovation": 600000,
+            "discovery": 300000
+          },
+          "research_prereqs": [
+            "cryogenics",
+            "cryogenic_fuel",
+            "composites"
+          ],
+          "passive_per_hour": {
+            "completion": 120
+          },
+          "power_capacity": 0,
+          "power_demand": 40,
+          "idle_animation": "`TODO v1.x`"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "depetrification_lab",
+      "name": "Depetrification Lab",
+      "category": "Medicine",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 25000,
+            "discovery": 18000,
+            "iron": 12000,
+            "innovation": 8000
+          },
+          "research_prereqs": [
+            "nital_reagent"
+          ],
+          "passive_per_hour": {
+            "completion": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 5,
+          "idle_animation": "`TODO v1.x` — green liquid drips visible in central vessel; stone-figure occasionally cracks/reveals color"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 62500,
+            "discovery": 45000,
+            "iron": 30000,
+            "innovation": 20000
+          },
+          "research_prereqs": [
+            "nital_reagent",
+            "cryogenics"
+          ],
+          "passive_per_hour": {
+            "completion": 12.5
+          },
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "`TODO v1.x` — green liquid drips visible in central vessel; stone-figure occasionally cracks/reveals color"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 150000,
+            "discovery": 108000,
+            "iron": 72000,
+            "innovation": 48000
+          },
+          "research_prereqs": [
+            "nital_reagent",
+            "cryogenics",
+            "cryogenic_fuel"
+          ],
+          "passive_per_hour": {
+            "completion": 30
+          },
+          "power_capacity": 0,
+          "power_demand": 20,
+          "idle_animation": "`TODO v1.x` — green liquid drips visible in central vessel; stone-figure occasionally cracks/reveals color"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "field_clinic",
+      "name": "Field Clinic",
+      "category": "Medicine",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 500,
+            "iron": 300
+          },
+          "research_prereqs": [
+            "antiseptic"
+          ],
+          "passive_per_hour": {
+            "completion": 2
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Lantern-light at window; occasional patient-bed visible through opening"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 1250,
+            "iron": 750
+          },
+          "research_prereqs": [
+            "antiseptic",
+            "sulfa_drug"
+          ],
+          "passive_per_hour": {
+            "completion": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Lantern-light at window; occasional patient-bed visible through opening"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 3000,
+            "iron": 1800
+          },
+          "research_prereqs": [
+            "antiseptic",
+            "sulfa_drug",
+            "antibiotics"
+          ],
+          "passive_per_hour": {
+            "completion": 12
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "Lantern-light at window; occasional patient-bed visible through opening"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "herbalist_hut",
+      "name": "Herbalist Hut",
+      "category": "Medicine",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 30
+          },
+          "research_prereqs": [
+            "herbal_remedies"
+          ],
+          "passive_per_hour": {
+            "completion": 1
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Hanging herbs sway at door; mortar-and-pestle visible inside"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 75
+          },
+          "research_prereqs": [
+            "herbal_remedies",
+            "soap"
+          ],
+          "passive_per_hour": {
+            "completion": 2.5
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Hanging herbs sway at door; mortar-and-pestle visible inside"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 180
+          },
+          "research_prereqs": [
+            "herbal_remedies",
+            "soap",
+            "antiseptic"
+          ],
+          "passive_per_hour": {
+            "completion": 6
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Hanging herbs sway at door; mortar-and-pestle visible inside"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "pharmacy",
+      "name": "Pharmacy",
+      "category": "Medicine",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 12000,
+            "iron": 8000,
+            "discovery": 5000
+          },
+          "research_prereqs": [
+            "antibiotics"
+          ],
+          "passive_per_hour": {
+            "completion": 8
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 30000,
+            "iron": 20000,
+            "discovery": 12500
+          },
+          "research_prereqs": [
+            "antibiotics",
+            "nital_reagent"
+          ],
+          "passive_per_hour": {
+            "completion": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 6,
+          "idle_animation": "`TODO v1.x`"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 72000,
+            "iron": 48000,
+            "discovery": 30000
+          },
+          "research_prereqs": [
+            "antibiotics",
+            "nital_reagent",
+            "cryogenics"
+          ],
+          "passive_per_hour": {
+            "completion": 48
+          },
+          "power_capacity": 0,
+          "power_demand": 12,
+          "idle_animation": "`TODO v1.x`"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "sulfa_factory",
+      "name": "Sulfa Factory",
+      "category": "Medicine",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "knowledge": 2000,
+            "iron": 1500,
+            "discovery": 800
+          },
+          "research_prereqs": [
+            "sulfa_drug"
+          ],
+          "passive_per_hour": {
+            "completion": 3
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Sulfur (yellow particles) flows through visible pipes; vapor rises from top vent; occasional pill-drop sound-cue"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "knowledge": 5000,
+            "iron": 3750,
+            "discovery": 2000
+          },
+          "research_prereqs": [
+            "sulfa_drug",
+            "antibiotics"
+          ],
+          "passive_per_hour": {
+            "completion": 7.5
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "Sulfur (yellow particles) flows through visible pipes; vapor rises from top vent; occasional pill-drop sound-cue"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "knowledge": 12000,
+            "iron": 9000,
+            "discovery": 4800
+          },
+          "research_prereqs": [
+            "sulfa_drug",
+            "antibiotics",
+            "polymers"
+          ],
+          "passive_per_hour": {
+            "completion": 18
+          },
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "Sulfur (yellow particles) flows through visible pipes; vapor rises from top vent; occasional pill-drop sound-cue"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "perseus_dock",
+      "name": "Perseus Dock",
+      "category": "Naval",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 10000,
+            "innovation": 6000,
+            "knowledge": 3000
+          },
+          "research_prereqs": [
+            "perseus_hull"
+          ],
+          "passive_per_hour": {
+            "discovery": 8
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "The Perseus ship docked; flag flutters; sail furled; occasional crew-figure walks on deck; ocean waves lap at hull"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 25000,
+            "innovation": 15000,
+            "knowledge": 7500
+          },
+          "research_prereqs": [
+            "perseus_hull",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "discovery": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "The Perseus ship docked; flag flutters; sail furled; occasional crew-figure walks on deck; ocean waves lap at hull"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 60000,
+            "innovation": 36000,
+            "knowledge": 18000
+          },
+          "research_prereqs": [
+            "perseus_hull",
+            "steel_refining",
+            "combustion_engine",
+            "long_wave_communication"
+          ],
+          "passive_per_hour": {
+            "discovery": 48
+          },
+          "power_capacity": 0,
+          "power_demand": 16,
+          "idle_animation": "The Perseus ship docked; flag flutters; sail furled; occasional crew-figure walks on deck; ocean waves lap at hull"
+        }
+      ],
+      "sprite_source": "ai_gen",
+      "terrain_gate": "naval_needs_water"
+    },
+    {
+      "id": "sailboat_dock",
+      "name": "Sailboat Dock",
+      "category": "Naval",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 3000,
+            "innovation": 1500
+          },
+          "research_prereqs": [
+            "sailboat"
+          ],
+          "passive_per_hour": {
+            "discovery": 3
+          },
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Sailboat gently rocks on water; sail flutters in occasional breeze"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 7500,
+            "innovation": 3750
+          },
+          "research_prereqs": [
+            "sailboat",
+            "steamship"
+          ],
+          "passive_per_hour": {
+            "discovery": 7.5
+          },
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Sailboat gently rocks on water; sail flutters in occasional breeze"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 18000,
+            "innovation": 9000
+          },
+          "research_prereqs": [
+            "sailboat",
+            "steamship",
+            "perseus_hull"
+          ],
+          "passive_per_hour": {
+            "discovery": 18
+          },
+          "power_capacity": 0,
+          "power_demand": 3,
+          "idle_animation": "Sailboat gently rocks on water; sail flutters in occasional breeze"
+        }
+      ],
+      "sprite_source": "cc0_placeholder",
+      "terrain_gate": "naval_needs_water"
+    },
+    {
+      "id": "shipyard",
+      "name": "Shipyard",
+      "category": "Naval",
+      "footprint": {
+        "w": 3,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 6000,
+            "innovation": 4000
+          },
+          "research_prereqs": [
+            "naval_engineering"
+          ],
+          "passive_per_hour": {
+            "discovery": 5
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Wooden hull-skeleton visible on slip; workers occasionally hammer; sparks fly from welding station"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 15000,
+            "innovation": 10000
+          },
+          "research_prereqs": [
+            "naval_engineering",
+            "steamship"
+          ],
+          "passive_per_hour": {
+            "discovery": 12.5
+          },
+          "power_capacity": 0,
+          "power_demand": 5,
+          "idle_animation": "Wooden hull-skeleton visible on slip; workers occasionally hammer; sparks fly from welding station"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 36000,
+            "innovation": 24000
+          },
+          "research_prereqs": [
+            "naval_engineering",
+            "steamship",
+            "perseus_hull"
+          ],
+          "passive_per_hour": {
+            "discovery": 30
+          },
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "Wooden hull-skeleton visible on slip; workers occasionally hammer; sparks fly from welding station"
+        }
+      ],
+      "sprite_source": "ai_gen",
+      "terrain_gate": "naval_needs_water"
+    },
+    {
+      "id": "steamship_dock",
+      "name": "Steamship Dock",
+      "category": "Naval",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 5000,
+            "innovation": 3500
+          },
+          "research_prereqs": [
+            "steamship"
+          ],
+          "passive_per_hour": {
+            "discovery": 4
+          },
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Steam from funnel; ship rocks; paddle-wheel visible"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 12500,
+            "innovation": 8750
+          },
+          "research_prereqs": [
+            "steamship",
+            "steel_refining"
+          ],
+          "passive_per_hour": {
+            "discovery": 10
+          },
+          "power_capacity": 0,
+          "power_demand": 4,
+          "idle_animation": "Steam from funnel; ship rocks; paddle-wheel visible"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 30000,
+            "innovation": 21000
+          },
+          "research_prereqs": [
+            "steamship",
+            "steel_refining",
+            "combustion_engine"
+          ],
+          "passive_per_hour": {
+            "discovery": 24
+          },
+          "power_capacity": 0,
+          "power_demand": 8,
+          "idle_animation": "Steam from funnel; ship rocks; paddle-wheel visible"
+        }
+      ],
+      "sprite_source": "ai_gen",
+      "terrain_gate": "naval_needs_water"
+    },
+    {
+      "id": "coal_plant",
+      "name": "Coal Plant",
+      "category": "Power",
+      "footprint": {
+        "w": 3,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 35000,
+            "innovation": 20000
+          },
+          "research_prereqs": [
+            "coal_plant"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 120,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — heavy black smoke rising from twin chimneys; conveyor belt visible"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 87500,
+            "innovation": 50000
+          },
+          "research_prereqs": [
+            "coal_plant",
+            "steel_refining"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 300,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — heavy black smoke rising from twin chimneys; conveyor belt visible"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 210000,
+            "innovation": 120000
+          },
+          "research_prereqs": [
+            "coal_plant",
+            "steel_refining",
+            "automation"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 720,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — heavy black smoke rising from twin chimneys; conveyor belt visible"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "hearth",
+      "name": "Hearth",
+      "category": "Power",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 5
+          },
+          "research_prereqs": [
+            "fire"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Flames flicker, occasional spark drifts upward"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 12
+          },
+          "research_prereqs": [
+            "fire",
+            "charcoal_making"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Flames flicker, occasional spark drifts upward"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 30
+          },
+          "research_prereqs": [
+            "fire",
+            "charcoal_making",
+            "iron_smelting"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Flames flicker, occasional spark drifts upward"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "hydroelectric_dam",
+      "name": "Hydroelectric Dam",
+      "category": "Power",
+      "footprint": {
+        "w": 3,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 800,
+            "innovation": 500
+          },
+          "research_prereqs": [
+            "hydroelectric_dam"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 15,
+          "power_demand": 0,
+          "idle_animation": "Water flowing over spillway; subtle generator-glow at base"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 2000,
+            "innovation": 1250
+          },
+          "research_prereqs": [
+            "hydroelectric_dam",
+            "steel_production"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 38,
+          "power_demand": 0,
+          "idle_animation": "Water flowing over spillway; subtle generator-glow at base"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 4800,
+            "innovation": 3000
+          },
+          "research_prereqs": [
+            "hydroelectric_dam",
+            "steel_production",
+            "steel_refining"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 90,
+          "power_demand": 0,
+          "idle_animation": "Water flowing over spillway; subtle generator-glow at base"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "iron_pole",
+      "name": "Iron Pole",
+      "category": "Power",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 38,
+            "innovation": 13
+          },
+          "research_prereqs": [
+            "iron_pole"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "coverage_radius": 6,
+          "idle_animation": "Subtle hum — faint cyan electric arc shimmer between insulators"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "nuclear_reactor",
+      "name": "Nuclear Reactor",
+      "category": "Power",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 200000,
+            "innovation": 120000,
+            "knowledge": 60000
+          },
+          "research_prereqs": [
+            "nuclear_reactor"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 500,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — cooling tower steam plumes; subtle blue Cherenkov-glow at core; warning lights pulse"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 500000,
+            "innovation": 300000,
+            "knowledge": 150000
+          },
+          "research_prereqs": [
+            "nuclear_reactor",
+            "composites"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 1250,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — cooling tower steam plumes; subtle blue Cherenkov-glow at core; warning lights pulse"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1200000,
+            "innovation": 720000,
+            "knowledge": 360000
+          },
+          "research_prereqs": [
+            "nuclear_reactor",
+            "composites",
+            "automation"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 3000,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — cooling tower steam plumes; subtle blue Cherenkov-glow at core; warning lights pulse"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "petrol_generator",
+      "name": "Petrol Generator",
+      "category": "Power",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 25000,
+            "innovation": 15000
+          },
+          "research_prereqs": [
+            "petrol_generator"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 50,
+          "power_demand": 0,
+          "idle_animation": "Engine vibrating slightly; exhaust puffs rising from outlet"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 62500,
+            "innovation": 37500
+          },
+          "research_prereqs": [
+            "petrol_generator",
+            "steel_refining"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 125,
+          "power_demand": 0,
+          "idle_animation": "Engine vibrating slightly; exhaust puffs rising from outlet"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 150000,
+            "innovation": 90000
+          },
+          "research_prereqs": [
+            "petrol_generator",
+            "steel_refining",
+            "combustion_engine"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 300,
+          "power_demand": 0,
+          "idle_animation": "Engine vibrating slightly; exhaust puffs rising from outlet"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "solar_panel_array",
+      "name": "Solar Panel Array",
+      "category": "Power",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 80000,
+            "innovation": 50000
+          },
+          "research_prereqs": [
+            "solar_panel"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 80,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — subtle panel-shimmer (sun-glint sweep across panels)"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 200000,
+            "innovation": 125000
+          },
+          "research_prereqs": [
+            "solar_panel",
+            "integrated_circuit"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 200,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — subtle panel-shimmer (sun-glint sweep across panels)"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 480000,
+            "innovation": 300000
+          },
+          "research_prereqs": [
+            "solar_panel",
+            "integrated_circuit",
+            "composites"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 480,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — subtle panel-shimmer (sun-glint sweep across panels)"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "steam_plant",
+      "name": "Steam Plant",
+      "category": "Power",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 1500,
+            "innovation": 800
+          },
+          "research_prereqs": [
+            "steam_plant"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 20,
+          "power_demand": 0,
+          "idle_animation": "Steam rising from chimney stacks; firebox glow at base; piston-shadow occasionally visible"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 3750,
+            "innovation": 2000
+          },
+          "research_prereqs": [
+            "steam_plant",
+            "coal_mining"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 50,
+          "power_demand": 0,
+          "idle_animation": "Steam rising from chimney stacks; firebox glow at base; piston-shadow occasionally visible"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 9000,
+            "innovation": 4800
+          },
+          "research_prereqs": [
+            "steam_plant",
+            "coal_mining",
+            "steel_refining"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 120,
+          "power_demand": 0,
+          "idle_animation": "Steam rising from chimney stacks; firebox glow at base; piston-shadow occasionally visible"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "steel_pole",
+      "name": "Steel Pole",
+      "category": "Power",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 90,
+            "innovation": 30
+          },
+          "research_prereqs": [
+            "steel_pole"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "coverage_radius": 8,
+          "idle_animation": "Tower beacon at top blinks slowly; chain-line spark animation more vivid on connected segments"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "watermill",
+      "name": "Watermill",
+      "category": "Power",
+      "footprint": {
+        "w": 2,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 300,
+            "innovation": 200
+          },
+          "research_prereqs": [
+            "watermill"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 5,
+          "power_demand": 0,
+          "idle_animation": "Water wheel rotating; water droplets falling at bottom"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 750,
+            "innovation": 500
+          },
+          "research_prereqs": [
+            "watermill",
+            "gear"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 12,
+          "power_demand": 0,
+          "idle_animation": "Water wheel rotating; water droplets falling at bottom"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1800,
+            "innovation": 1200
+          },
+          "research_prereqs": [
+            "watermill",
+            "gear",
+            "steel_production"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 30,
+          "power_demand": 0,
+          "idle_animation": "Water wheel rotating; water droplets falling at bottom"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "wind_turbine",
+      "name": "Wind Turbine",
+      "category": "Power",
+      "footprint": {
+        "w": 1,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 80000,
+            "innovation": 50000
+          },
+          "research_prereqs": [
+            "wind_turbine"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 60,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — modern turbine blades rotating, slow steady cycle"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 200000,
+            "innovation": 125000
+          },
+          "research_prereqs": [
+            "wind_turbine",
+            "steel_refining"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 150,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — modern turbine blades rotating, slow steady cycle"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 480000,
+            "innovation": 300000
+          },
+          "research_prereqs": [
+            "wind_turbine",
+            "steel_refining",
+            "composites"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 360,
+          "power_demand": 0,
+          "idle_animation": "`TODO v1.x` — modern turbine blades rotating, slow steady cycle"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "windmill",
+      "name": "Windmill",
+      "category": "Power",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 300,
+            "innovation": 200
+          },
+          "research_prereqs": [
+            "windmill"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 3,
+          "power_demand": 0,
+          "idle_animation": "Blades rotating clockwise; speed varies subtly to feel \"alive\""
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 750,
+            "innovation": 500
+          },
+          "research_prereqs": [
+            "windmill",
+            "iron_smelting"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 8,
+          "power_demand": 0,
+          "idle_animation": "Blades rotating clockwise; speed varies subtly to feel \"alive\""
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1800,
+            "innovation": 1200
+          },
+          "research_prereqs": [
+            "windmill",
+            "iron_smelting",
+            "steel_production"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 18,
+          "power_demand": 0,
+          "idle_animation": "Blades rotating clockwise; speed varies subtly to feel \"alive\""
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "wooden_pole",
+      "name": "Wooden Pole",
+      "category": "Power",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 15,
+            "innovation": 5
+          },
+          "research_prereqs": [
+            "wooden_pole"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "coverage_radius": 4,
+          "idle_animation": "Subtle creak — slight 1px sway in wind, occasional spark crawling along the top crossbar"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "rocket_launch_pad",
+      "name": "Rocket Launch Pad",
+      "category": "Space",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 300000,
+            "innovation": 200000,
+            "knowledge": 100000
+          },
+          "research_prereqs": [
+            "launch_pad"
+          ],
+          "passive_per_hour": {
+            "completion": 20
+          },
+          "power_capacity": 0,
+          "power_demand": 30,
+          "idle_animation": "`TODO v1.x` — rocket stands on pad; vapor vents from base; gantry-lights blink; countdown-light cycle. On Cryogenic Rocketry research complete: LAUNCH animation (rocket lifts off, exits frame, Mecha Senku narrates moon-arrival)"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 750000,
+            "innovation": 500000,
+            "knowledge": 250000
+          },
+          "research_prereqs": [
+            "launch_pad",
+            "cryogenic_fuel"
+          ],
+          "passive_per_hour": {
+            "completion": 50
+          },
+          "power_capacity": 0,
+          "power_demand": 60,
+          "idle_animation": "`TODO v1.x` — rocket stands on pad; vapor vents from base; gantry-lights blink; countdown-light cycle. On Cryogenic Rocketry research complete: LAUNCH animation (rocket lifts off, exits frame, Mecha Senku narrates moon-arrival)"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1800000,
+            "innovation": 1200000,
+            "knowledge": 600000
+          },
+          "research_prereqs": [
+            "launch_pad",
+            "cryogenic_fuel",
+            "nuclear_reactor"
+          ],
+          "passive_per_hour": {
+            "completion": 120
+          },
+          "power_capacity": 0,
+          "power_demand": 120,
+          "idle_animation": "`TODO v1.x` — rocket stands on pad; vapor vents from base; gantry-lights blink; countdown-light cycle. On Cryogenic Rocketry research complete: LAUNCH animation (rocket lifts off, exits frame, Mecha Senku narrates moon-arrival)"
+        }
+      ],
+      "sprite_source": "ai_gen",
+      "terrain_gate": "rocket_needs_concrete"
+    },
+    {
+      "id": "rocket_workshop",
+      "name": "Rocket Workshop",
+      "category": "Space",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 150000,
+            "innovation": 100000,
+            "knowledge": 50000
+          },
+          "research_prereqs": [
+            "rocketry"
+          ],
+          "passive_per_hour": {
+            "completion": 15
+          },
+          "power_capacity": 0,
+          "power_demand": 10,
+          "idle_animation": "`TODO v1.x` — rocket-nose visible through high opening, slowly rotates on assembly cradle"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 375000,
+            "innovation": 250000,
+            "knowledge": 125000
+          },
+          "research_prereqs": [
+            "rocketry",
+            "orbital_mechanics"
+          ],
+          "passive_per_hour": {
+            "completion": 37.5
+          },
+          "power_capacity": 0,
+          "power_demand": 20,
+          "idle_animation": "`TODO v1.x` — rocket-nose visible through high opening, slowly rotates on assembly cradle"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 900000,
+            "innovation": 600000,
+            "knowledge": 300000
+          },
+          "research_prereqs": [
+            "rocketry",
+            "orbital_mechanics",
+            "cryogenic_fuel"
+          ],
+          "passive_per_hour": {
+            "completion": 90
+          },
+          "power_capacity": 0,
+          "power_demand": 40,
+          "idle_animation": "`TODO v1.x` — rocket-nose visible through high opening, slowly rotates on assembly cradle"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "foundry_stockpile",
+      "name": "Foundry Stockpile",
+      "category": "Storage",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 300,
+            "innovation": 150
+          },
+          "research_prereqs": [
+            "iron_smelting"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Cargo carts roll up to door, dump load, roll back"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 750,
+            "innovation": 375
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "steel_production"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Cargo carts roll up to door, dump load, roll back"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1800,
+            "innovation": 900
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "steel_production",
+            "steel_refining"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Cargo carts roll up to door, dump load, roll back"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "library",
+      "name": "Library",
+      "category": "Storage",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 200,
+            "innovation": 150
+          },
+          "research_prereqs": [
+            "mud_brick",
+            "stone_masonry"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Candle-flicker through window; occasional page-flip silhouette"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 500,
+            "innovation": 375
+          },
+          "research_prereqs": [
+            "mud_brick",
+            "stone_masonry",
+            "glass_making"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Candle-flicker through window; occasional page-flip silhouette"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1200,
+            "innovation": 900
+          },
+          "research_prereqs": [
+            "mud_brick",
+            "stone_masonry",
+            "glass_making",
+            "concrete"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Candle-flicker through window; occasional page-flip silhouette"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "map_archive",
+      "name": "Map Archive",
+      "category": "Storage",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 2000,
+            "innovation": 1500
+          },
+          "research_prereqs": [
+            "compass",
+            "telephony"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Compass needle visible through window, spins occasionally; map-scrolls hang at side"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 5000,
+            "innovation": 3750
+          },
+          "research_prereqs": [
+            "compass",
+            "telephony",
+            "perseus_hull"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Compass needle visible through window, spins occasionally; map-scrolls hang at side"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 12000,
+            "innovation": 9000
+          },
+          "research_prereqs": [
+            "compass",
+            "telephony",
+            "perseus_hull",
+            "world_map_cartography"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Compass needle visible through window, spins occasionally; map-scrolls hang at side"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    },
+    {
+      "id": "trophy_hall",
+      "name": "Trophy Hall",
+      "category": "Storage",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 1500,
+            "innovation": 1000,
+            "completion": 500
+          },
+          "research_prereqs": [
+            "stone_masonry",
+            "naval_engineering"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Trophies / framed-flags hang on outside wall; subtle \"polishing\" sparkle at the center one"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 3750,
+            "innovation": 2500,
+            "completion": 1250
+          },
+          "research_prereqs": [
+            "stone_masonry",
+            "naval_engineering",
+            "perseus_hull"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Trophies / framed-flags hang on outside wall; subtle \"polishing\" sparkle at the center one"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 9000,
+            "innovation": 6000,
+            "completion": 3000
+          },
+          "research_prereqs": [
+            "stone_masonry",
+            "naval_engineering",
+            "perseus_hull",
+            "nital_reagent"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Trophies / framed-flags hang on outside wall; subtle \"polishing\" sparkle at the center one"
+        }
+      ],
+      "sprite_source": "ai_gen"
+    },
+    {
+      "id": "workshop_storage",
+      "name": "Workshop Storage",
+      "category": "Storage",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "tiers": [
+        {
+          "tier": 1,
+          "cost": {
+            "iron": 200,
+            "innovation": 200
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "mud_brick"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 0,
+          "idle_animation": "Tools visible hanging on outside wall; window-glow at night"
+        },
+        {
+          "tier": 2,
+          "cost": {
+            "iron": 500,
+            "innovation": 500
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "mud_brick",
+            "stone_masonry"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 1,
+          "idle_animation": "Tools visible hanging on outside wall; window-glow at night"
+        },
+        {
+          "tier": 3,
+          "cost": {
+            "iron": 1200,
+            "innovation": 1200
+          },
+          "research_prereqs": [
+            "iron_smelting",
+            "mud_brick",
+            "stone_masonry",
+            "steel_production"
+          ],
+          "passive_per_hour": {},
+          "power_capacity": 0,
+          "power_demand": 2,
+          "idle_animation": "Tools visible hanging on outside wall; window-glow at night"
+        }
+      ],
+      "sprite_source": "cc0_placeholder"
+    }
+  ]
+}

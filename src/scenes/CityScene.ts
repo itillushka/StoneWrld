@@ -31,6 +31,8 @@ import { getBuilding, getTier } from '../catalog/buildings';
 import {
   renderAllBuildings,
   animateConstructionDrop,
+  animateUpgradePulse,
+  replaceBuildingRender,
   resetBuildingRenderCache,
 } from '../city/render-buildings';
 import type { BuildingInstance, LogEntry, ResourceKey, StoneWorldState } from '../state/schema';
@@ -111,6 +113,8 @@ export class CityScene extends Phaser.Scene {
 
     // Cross-scene wiring.
     this.game.events.on('placement:start', this.onPlacementStart, this);
+    this.game.events.on('building:inspect', this.onBuildingInspect, this);
+    this.game.events.on('building:upgrade', this.onBuildingUpgrade, this);
     this.input.on('pointermove', this.onPointerMove, this);
     this.input.on('pointerdown', this.onPointerDown, this);
 
@@ -423,9 +427,93 @@ export class CityScene extends Phaser.Scene {
       .setOrigin(0.5);
   }
 
+  // ---------- Inspect + Upgrade flow ----------
+
+  /**
+   * A placed building was clicked → open the inspect modal.
+   * Suppressed while in placement mode (the placement click takes priority).
+   */
+  private onBuildingInspect(payload: { building: BuildingInstance }): void {
+    if (this.placingId) return; // placement-mode click takes priority
+    this.scene.launch('ModalScene', { mode: 'inspect', building: payload.building });
+  }
+
+  /**
+   * The user clicked the [Upgrade] button in the inspect modal.
+   * Deduct cost, bump tier, save, re-render the sprite, animate.
+   */
+  private async onBuildingUpgrade(payload: { building: BuildingInstance }): Promise<void> {
+    const { building } = payload;
+    const nextTier = (building.tier + 1) as 1 | 2 | 3;
+    const tierData = getTier(building.id, nextTier);
+    if (!tierData) return; // already max
+    const entry = getBuilding(building.id);
+    if (!entry) return;
+
+    const state = AppState.getState();
+    if (!state) return;
+
+    // Affordability re-check (modal could be stale).
+    for (const [k, need] of Object.entries(tierData.cost) as Array<[ResourceKey, number]>) {
+      if ((state.resources[k] ?? 0) < need) return;
+    }
+
+    // Find the index of this instance in state.buildings (match by id+x+y).
+    const idx = state.buildings.findIndex(
+      (b) => b.id === building.id && b.x === building.x && b.y === building.y,
+    );
+    if (idx < 0) return;
+
+    const old = state.buildings[idx]!;
+    const upgraded: BuildingInstance = {
+      ...old,
+      tier: nextTier,
+      // Accumulate the new cost into spent (drives the demolish-refund math in Phase 11).
+      spent: this.mergeSpent(old.spent, tierData.cost),
+    };
+
+    const updatedBuildings = [...state.buildings];
+    updatedBuildings[idx] = upgraded;
+
+    const updated: StoneWorldState = {
+      ...state,
+      resources: this.subtractCost(state.resources, tierData.cost),
+      buildings: updatedBuildings,
+      captain_log: this.appendLog(state.captain_log, {
+        ts: new Date().toISOString(),
+        operational: `${entry.name} T${nextTier} redrawn — production scales.`,
+        trigger: `upgrade:${building.id}:${nextTier}`,
+      }),
+    };
+
+    // Optimistic UI: re-render sprite at the new tier + animate.
+    const newContainer = replaceBuildingRender(this, upgraded);
+    if (newContainer) animateUpgradePulse(this, newContainer);
+
+    AppState.setState(updated);
+    try {
+      await saveState(updated);
+    } catch (err) {
+      console.error('[CityScene] upgrade save failed:', err);
+    }
+  }
+
+  private mergeSpent(
+    existing: Partial<Record<ResourceKey, number>>,
+    add: Partial<Record<ResourceKey, number>>,
+  ): Partial<Record<ResourceKey, number>> {
+    const next: Partial<Record<ResourceKey, number>> = { ...existing };
+    for (const [k, v] of Object.entries(add) as Array<[ResourceKey, number]>) {
+      next[k] = (next[k] ?? 0) + v;
+    }
+    return next;
+  }
+
   private teardown(): void {
     this.cameraTeardown?.();
     this.cameraTeardown = undefined;
     this.game.events.off('placement:start', this.onPlacementStart, this);
+    this.game.events.off('building:inspect', this.onBuildingInspect, this);
+    this.game.events.off('building:upgrade', this.onBuildingUpgrade, this);
   }
 }

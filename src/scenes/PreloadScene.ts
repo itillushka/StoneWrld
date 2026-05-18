@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { AppState } from '../state/app-state';
 import { fetchTerrainMap } from '../city/terrain';
+import { loadCatalog } from '../catalog/buildings';
 
 /**
  * PreloadScene — heavy lifting before the game world appears.
@@ -74,6 +75,12 @@ export class PreloadScene extends Phaser.Scene {
           // Validate the map fetches + parses cleanly before CityScene tries
           // to use it. Errors here are caught + surfaced on the bar.
           await fetchTerrainMap();
+        },
+      ],
+      [
+        'building catalog',
+        async () => {
+          await loadCatalog();
         },
       ],
     ];

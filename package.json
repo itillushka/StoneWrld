@@ -18,8 +18,10 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run compile && tsc --noEmit && vite build",
     "preview": "vite preview --port 5101",
+    "compile": "tsx scripts/compile-catalog.ts",
+    "compile:map": "tsx scripts/generate-map.ts",
     "test": "vitest run",
     "test:ui": "vitest --ui --port 5102",
     "test:watch": "vitest",

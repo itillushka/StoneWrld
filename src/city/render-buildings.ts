@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { BuildingInstance } from '../state/schema';
 import { getBuilding } from '../catalog/buildings';
+import { categoryColorInt } from '../hud/category-colors';
 import { TILE_SIZE } from './grid';
 
 /**
@@ -35,6 +36,11 @@ function buildingUid(b: BuildingInstance): string {
 /**
  * Render a single building. Returns the container so the caller can
  * animate it (e.g. construction drop on freshly-placed instances).
+ *
+ * The container is INTERACTIVE — clicking the building fires the
+ * 'building:inspect' event on the scene's game.events bus with the
+ * building reference as payload. CityScene listens and opens the
+ * inspect modal.
  */
 export function renderBuilding(
   scene: Phaser.Scene,
@@ -49,8 +55,6 @@ export function renderBuilding(
   const h = entry.footprint.h * TILE_SIZE;
 
   const container = scene.add.container(px, py);
-  // Buildings render between terrain (depth 0) and frontier (depth 1).
-  // Setting depth 2 keeps them readable when the player zooms in.
   container.setDepth(2);
 
   // Shadow — a thin dark slab at the base of the footprint.
@@ -65,17 +69,27 @@ export function renderBuilding(
     .setOrigin(0, 0);
   container.add(outline);
 
-  // Fill (inset by outline width).
+  // Fill — Phase 6 tier-visual differentiation:
+  //   T1: captain gold (#FFC940)
+  //   T2: gold shimmer (#FFE680) — slightly brighter
+  //   T3: gold shimmer + small purple badge bar overlay (added below)
+  const fillColor = building.tier === 1 ? PLACEHOLDER_FILL : 0xffe680;
   const fill = scene.add
     .rectangle(
       OUTLINE_WIDTH,
       OUTLINE_WIDTH,
       w - OUTLINE_WIDTH * 2,
       h - OUTLINE_WIDTH * 2,
-      PLACEHOLDER_FILL,
+      fillColor,
     )
     .setOrigin(0, 0);
   container.add(fill);
+
+  // Category color stripe along the top edge (4 px thin).
+  const stripe = scene.add
+    .rectangle(OUTLINE_WIDTH, OUTLINE_WIDTH, w - OUTLINE_WIDTH * 2, 4, categoryColorInt(entry.category))
+    .setOrigin(0, 0);
+  container.add(stripe);
 
   // Label — name + tier, centered.
   const label = scene.add
@@ -95,6 +109,25 @@ export function renderBuilding(
     })
     .setOrigin(0.5);
   container.add(tierBadge);
+
+  // T3 endgame accent — a small endgame-violet bar across the bottom edge.
+  if (building.tier === 3) {
+    const t3Bar = scene.add
+      .rectangle(OUTLINE_WIDTH, h - OUTLINE_WIDTH - 4, w - OUTLINE_WIDTH * 2, 4, 0xa47ce0)
+      .setOrigin(0, 0);
+    container.add(t3Bar);
+  }
+
+  // Make the building's inner fill interactive — clicking it fires
+  // building:inspect (CityScene listens). The fill is the inner
+  // rectangle inset by the outline; it covers the building's body
+  // without bleeding outside the footprint.
+  fill.setInteractive({ useHandCursor: true });
+  fill.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+    // Stop propagation so the click doesn't double-fire on the world.
+    pointer.event.stopPropagation();
+    scene.game.events.emit('building:inspect', { building });
+  });
 
   renderedBuildings.set(buildingUid(building), container);
   return container;
@@ -120,6 +153,66 @@ export function renderAllBuildings(
 /** Test / scene-reset helper — clear the cache. */
 export function resetBuildingRenderCache(): void {
   renderedBuildings.clear();
+}
+
+/**
+ * Re-render a building in place — used after a tier upgrade so the new
+ * tier's visual treatment (fill color, badges) replaces the old one. The
+ * old container is destroyed and a fresh one is rendered + animated.
+ *
+ * Returns the new container so the caller can chain the upgrade-pulse animation.
+ */
+export function replaceBuildingRender(
+  scene: Phaser.Scene,
+  building: BuildingInstance,
+): Phaser.GameObjects.Container | null {
+  // Look up by id+x+y — the SAME key for any tier of the same instance.
+  const oldContainer = renderedBuildings.get(buildingUid(building));
+  oldContainer?.destroy();
+  renderedBuildings.delete(buildingUid(building));
+  return renderBuilding(scene, building);
+}
+
+/**
+ * Upgrade-pulse animation per design/06-style §Universal events:
+ *   "scale-pulse 1 → 1.3 → 1 + brief flash + sprite swap to next-tier | 300ms"
+ *
+ * Called AFTER replaceBuildingRender so the new tier's visual is what scales.
+ */
+export function animateUpgradePulse(
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+): void {
+  // Scale-pulse from the center — Phaser containers scale from origin (top-left)
+  // by default, so we set the container as its own scale anchor and translate
+  // by half-extent on each frame. Simpler: scale via tween with no origin shift;
+  // the visual offset is minor for our scale jump.
+  scene.tweens.add({
+    targets: container,
+    scaleX: { from: 1, to: 1.3 },
+    scaleY: { from: 1, to: 1.3 },
+    duration: 150,
+    yoyo: true,
+    ease: 'Cubic.easeOut',
+    onComplete: () => {
+      container.setScale(1);
+    },
+  });
+
+  // Brief gold-shimmer flash overlay.
+  const w = (container.list[2] as Phaser.GameObjects.Rectangle).width;
+  const h = (container.list[2] as Phaser.GameObjects.Rectangle).height;
+  const flash = scene.add
+    .rectangle(container.x, container.y, w, h, 0xffe680, 0.7)
+    .setOrigin(0, 0)
+    .setDepth(2.5);
+  scene.tweens.add({
+    targets: flash,
+    alpha: 0,
+    duration: 300,
+    ease: 'Cubic.easeOut',
+    onComplete: () => flash.destroy(),
+  });
 }
 
 /**

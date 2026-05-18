@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import {
   validatePlacement,
   explainRejection,
@@ -12,6 +12,35 @@ import { BUILDABLE_AREA } from '../../src/city/grid';
 import { defaultState } from '../../src/state/schema';
 import type { StoneWorldState, BuildingInstance } from '../../src/state/schema';
 import type { TerrainMap } from '../../src/city/terrain';
+import { setCatalogForTesting } from '../../src/catalog/buildings';
+
+/**
+ * Inject a minimal fake catalog for placement tests. Phase 5's hardcoded
+ * entry was replaced by Phase 6's runtime-loaded catalog, so unit tests
+ * need to populate it explicitly.
+ */
+beforeAll(() => {
+  setCatalogForTesting([
+    {
+      id: 'settler_hut',
+      name: 'Settler Hut',
+      category: 'Dwellings',
+      footprint: { w: 1, h: 1 },
+      sprite_source: 'cc0_placeholder',
+      tiers: [
+        {
+          tier: 1,
+          cost: { iron: 30, innovation: 15 },
+          research_prereqs: ['mud_brick'],
+          passive_per_hour: {},
+          power_capacity: 0,
+          power_demand: 0,
+          idle_animation: 'chimney_smoke',
+        },
+      ],
+    },
+  ]);
+});
 
 /**
  * Placement + occupancy tests — pure functions, full coverage of the
