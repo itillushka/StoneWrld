@@ -1,0 +1,35 @@
+# --- Node / runtime artifacts (when src/ lands) ---
+node_modules/
+dist/
+build/
+.cache/
+*.log
+npm-debug.log*
+
+# --- Game state (the live world is yours; don't commit it) ---
+# (paths will be confirmed in design/07-architecture.md)
+state.json
+city/*.png
+city/layout.json
+*.tmp
+
+# --- Editor / OS noise ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*~
+.*.swp
+.*.swo
+
+# --- Env / secrets ---
+.env
+.env.local
+.env.*.local
+
+# --- Test artifacts ---
+coverage/
+.nyc_output/
+
+# --- Generated docs ---
+docs/_build/
