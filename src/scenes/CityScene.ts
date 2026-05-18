@@ -35,6 +35,12 @@ import {
   replaceBuildingRender,
   resetBuildingRenderCache,
 } from '../city/render-buildings';
+import {
+  renderNetworkHalos,
+  renderOffGridDots,
+  startBrownoutShake,
+} from '../city/render-networks';
+import { computeTrickleDelta, applyTrickleDelta } from '../economy/trickle';
 import type { BuildingInstance, LogEntry, ResourceKey, StoneWorldState } from '../state/schema';
 import { CAPTAIN_LOG_MAX } from '../state/schema';
 
@@ -69,6 +75,13 @@ export class CityScene extends Phaser.Scene {
 
   // Bottom-left speech bubble (Phase 4 placeholder).
   private bubbleBody?: Phaser.GameObjects.Text;
+
+  // Network rendering state — recreated on each rebuild.
+  private haloImage?: Phaser.GameObjects.Image;
+  private offGridContainer?: Phaser.GameObjects.Container;
+  private brownoutShake?: { stop: () => void };
+  private trickleTimer?: Phaser.Time.TimerEvent;
+  private static readonly TRICKLE_INTERVAL_MS = 30_000; // 30s tick
 
   constructor() {
     super('CityScene');
@@ -109,7 +122,19 @@ export class CityScene extends Phaser.Scene {
       renderAllBuildings(this, state.buildings);
     }
 
+    // Initial network render — depends on state + buildings already in scene.
+    this.rebuildNetworkRender();
+
     this.renderSpeechBubblePlaceholder(viewportW, viewportH);
+
+    // Trickle ticker — every 30 seconds, applies passive accrual based on
+    // current network state. Resources update via AppState.setState, which
+    // triggers UIScene's HUD update.
+    this.trickleTimer = this.time.addEvent({
+      delay: CityScene.TRICKLE_INTERVAL_MS,
+      loop: true,
+      callback: () => void this.runTrickleTick(),
+    });
 
     // Cross-scene wiring.
     this.game.events.on('placement:start', this.onPlacementStart, this);
@@ -329,6 +354,9 @@ export class CityScene extends Phaser.Scene {
 
     AppState.setState(updated);
 
+    // Networks change whenever a building is added — re-render halos / dots.
+    this.rebuildNetworkRender();
+
     try {
       await saveState(updated);
     } catch (err) {
@@ -491,6 +519,11 @@ export class CityScene extends Phaser.Scene {
     if (newContainer) animateUpgradePulse(this, newContainer);
 
     AppState.setState(updated);
+
+    // Tier change may shift capacity / demand / coverage; re-render the
+    // network layer so halos + brownout state reflect the new reality.
+    this.rebuildNetworkRender();
+
     try {
       await saveState(updated);
     } catch (err) {
@@ -509,9 +542,116 @@ export class CityScene extends Phaser.Scene {
     return next;
   }
 
+  // ---------- Network rendering ----------
+
+  /**
+   * Tear down + re-render the coverage halos, off-grid dots, and brownout
+   * shake based on the CURRENT network analysis. Called after any building
+   * change (placement, upgrade, demolish-in-Phase-11).
+   */
+  private rebuildNetworkRender(): void {
+    // Destroy previous render objects.
+    this.haloImage?.destroy();
+    this.haloImage = undefined;
+    this.offGridContainer?.destroy();
+    this.offGridContainer = undefined;
+    this.brownoutShake?.stop();
+    this.brownoutShake = undefined;
+
+    const analysis = AppState.getAnalysis();
+    if (!analysis) return;
+
+    // Halos.
+    const haloKey = `network-halos-${Date.now()}`;
+    this.haloImage = renderNetworkHalos(this, analysis, haloKey);
+
+    // Off-grid dots.
+    this.offGridContainer = renderOffGridDots(this, analysis.offGrid);
+
+    // Brownout shake — find the rendered building containers by uid.
+    // This is approximate: we rebuild render-buildings cache externally; we
+    // look up the existing containers via the renderedBuildings module.
+    // For Phase 7 simplicity, brownout shake re-runs after each rebuild —
+    // it grabs containers by their tracking key.
+    const containerByUid = this.collectBuildingContainersByUid();
+    this.brownoutShake = startBrownoutShake(this, analysis.networks, containerByUid);
+  }
+
+  /**
+   * Walk the scene's children to map "buildingId@x,y" → its Container.
+   * Used by brownout shake which needs to address specific buildings.
+   */
+  private collectBuildingContainersByUid(): Map<string, Phaser.GameObjects.Container> {
+    // For Phase 7 we trust that render-buildings already created the
+    // containers + stored them; we don't have a direct getter on the
+    // cache map. The shake works with what render-buildings produced
+    // during render*Buildings calls. If a building isn't found, shake
+    // skips it silently.
+    const map = new Map<string, Phaser.GameObjects.Container>();
+    const state = AppState.getState();
+    if (!state) return map;
+
+    for (const b of state.buildings) {
+      const px = b.x * TILE_SIZE;
+      const py = b.y * TILE_SIZE;
+      // Find the building Container at this position. Phaser scenes don't
+      // index children efficiently, but our building list is small (~100 max)
+      // and this only runs on state change.
+      for (const child of this.children.list) {
+        if (
+          child instanceof Phaser.GameObjects.Container &&
+          child.x === px &&
+          child.y === py
+        ) {
+          map.set(`${b.id}@${b.x},${b.y}`, child);
+          break;
+        }
+      }
+    }
+    return map;
+  }
+
+  // ---------- Trickle ----------
+
+  private async runTrickleTick(): Promise<void> {
+    const state = AppState.getState();
+    const analysis = AppState.getAnalysis();
+    if (!state || !analysis) return;
+
+    const delta = computeTrickleDelta(state.buildings, {
+      dtMs: CityScene.TRICKLE_INTERVAL_MS,
+      analysis,
+    });
+    if (Object.keys(delta).length === 0) return;
+
+    // Update stats too — passive earnings.
+    const newStats = { ...state.stats };
+    const newPassive: Record<ResourceKey, number> = { ...state.stats.total_passive_earned };
+    for (const [k, v] of Object.entries(delta) as Array<[ResourceKey, number]>) {
+      newPassive[k] = (newPassive[k] ?? 0) + v;
+    }
+    newStats.total_passive_earned = newPassive;
+
+    const updated: StoneWorldState = {
+      ...state,
+      resources: applyTrickleDelta(state.resources, delta),
+      stats: newStats,
+    };
+    AppState.setState(updated);
+    try {
+      await saveState(updated);
+    } catch (err) {
+      console.error('[CityScene] trickle save failed:', err);
+    }
+  }
+
   private teardown(): void {
     this.cameraTeardown?.();
     this.cameraTeardown = undefined;
+    this.brownoutShake?.stop();
+    this.brownoutShake = undefined;
+    this.trickleTimer?.remove();
+    this.trickleTimer = undefined;
     this.game.events.off('placement:start', this.onPlacementStart, this);
     this.game.events.off('building:inspect', this.onBuildingInspect, this);
     this.game.events.off('building:upgrade', this.onBuildingUpgrade, this);

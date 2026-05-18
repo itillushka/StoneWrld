@@ -334,6 +334,26 @@ export class ModalScene extends Phaser.Scene {
       .setOrigin(0, 0);
     this.contentContainer.add(tagsGo);
 
+    // Research prereqs preview — informational only until Phase 8 enforces the gate.
+    // Per design/06-style §HUD components: surface what the design says
+    // so the player understands the dependency tree even before the
+    // Research scene exists.
+    if (t1.research_prereqs.length > 0) {
+      const prereqsGo = this.add
+        .text(
+          x + 14,
+          y + 46,
+          `research: ${t1.research_prereqs.join(', ')}`,
+          {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '6px',
+            color: '#A47CE0', // endgame violet — flags Phase 8 territory
+          },
+        )
+        .setOrigin(0, 0);
+      this.contentContainer.add(prereqsGo);
+    }
+
     // Cost (right-aligned).
     const costStr = this.formatCost(t1.cost);
     const canAfford = this.canAfford(t1.cost, state?.resources ?? null);
@@ -502,7 +522,33 @@ export class ModalScene extends Phaser.Scene {
         color: canAfford ? '#FFC940' : '#E84B4B',
       })
       .setOrigin(0, 0);
-    y += 22;
+    y += 18;
+
+    // Research prereqs delta for the next tier — show ONLY the additions
+    // beyond what the current tier already required. Informational only
+    // until Phase 8 enforces the gate.
+    const currPrereqs = new Set(currentTier.research_prereqs);
+    const newPrereqs = next.research_prereqs.filter((p) => !currPrereqs.has(p));
+    if (newPrereqs.length > 0) {
+      this.add
+        .text(x, y, `new research: ${newPrereqs.join(', ')}`, {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '8px',
+          color: '#A47CE0', // endgame violet — Phase 8 territory
+        })
+        .setOrigin(0, 0);
+      y += 16;
+    } else if (next.research_prereqs.length > 0) {
+      this.add
+        .text(x, y, 'research: (none new)', {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '8px',
+          color: '#5C6E8E',
+        })
+        .setOrigin(0, 0);
+      y += 16;
+    }
+    y += 4;
 
     // Upgrade button.
     const btnW = 200;

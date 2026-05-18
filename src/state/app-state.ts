@@ -1,5 +1,6 @@
 import type { StoneWorldState } from './schema';
 import { loadState } from './load';
+import { analyzeNetworks, type NetworkAnalysis } from '../economy/network';
 
 /**
  * AppState — shared in-memory snapshot of state.json.
@@ -33,10 +34,13 @@ function statesEqual(a: StoneWorldState, b: StoneWorldState): boolean {
 export class AppStateImpl {
   private state: StoneWorldState | null = null;
   private listeners = new Set<StateListener>();
+  /** Lazily computed; invalidated on setState. */
+  private cachedAnalysis: NetworkAnalysis | null = null;
 
   /** Replace the held state and notify all subscribers. */
   setState(next: StoneWorldState): void {
     this.state = next;
+    this.cachedAnalysis = null; // invalidate — networks rebuild on next getAnalysis()
     for (const fn of this.listeners) {
       try {
         fn(next);
@@ -50,6 +54,21 @@ export class AppStateImpl {
   /** Read-only accessor. Returns null if state hasn't been loaded yet. */
   getState(): StoneWorldState | null {
     return this.state;
+  }
+
+  /**
+   * Lazily-computed network analysis from the current state.buildings.
+   * Cached until next setState; null if state hasn't loaded.
+   *
+   * Per design/05-map §"derived at load, not persisted": networks are
+   * recomputed from state.buildings whenever the building list changes.
+   */
+  getAnalysis(): NetworkAnalysis | null {
+    if (!this.state) return null;
+    if (!this.cachedAnalysis) {
+      this.cachedAnalysis = analyzeNetworks(this.state.buildings);
+    }
+    return this.cachedAnalysis;
   }
 
   /** Subscribe to state changes. Returns an unsubscribe function. */
@@ -89,6 +108,7 @@ export class AppStateImpl {
   /** Test helper — reset to "never loaded" state. */
   reset(): void {
     this.state = null;
+    this.cachedAnalysis = null;
     this.listeners.clear();
   }
 }

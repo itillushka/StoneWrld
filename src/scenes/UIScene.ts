@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { AppState } from '../state/app-state';
 import { ResourcesPanel } from '../hud/resources-panel';
 import type { StoneWorldState } from '../state/schema';
+import type { NetworkAnalysis } from '../economy/network';
 
 /**
  * UIScene — the persistent HUD overlay.
@@ -30,6 +31,7 @@ export class UIScene extends Phaser.Scene {
 
   private resourcesPanel?: ResourcesPanel;
   private statusText?: Phaser.GameObjects.Text;
+  private networksText?: Phaser.GameObjects.Text;
   private pollTimer?: Phaser.Time.TimerEvent;
   private unsubscribe?: () => void;
 
@@ -54,6 +56,7 @@ export class UIScene extends Phaser.Scene {
 
     this.buildMechaSenkuPlaceholder(sidebarX, sidebarW);
     this.buildResourcesPanel(sidebarX, sidebarW);
+    this.buildNetworksPanel(sidebarX, sidebarW);
     this.buildActionButtons(sidebarX, sidebarW);
     this.buildFooter(sidebarX, sidebarW, sidebarH);
 
@@ -113,6 +116,75 @@ export class UIScene extends Phaser.Scene {
     // Place panel below the Mecha Senku portrait block (~ y = 16 + 96 + 32).
     const panelY = 16 + 96 + 32;
     this.resourcesPanel = new ResourcesPanel(this, sidebarX, panelY, sidebarW);
+  }
+
+  /**
+   * Networks panel — per design/06-style §HUD components §2. Lists each
+   * active power network with its capacity/demand state, plus an off-grid
+   * count at the bottom (red if non-zero).
+   *
+   * Phase 7 ships the panel with live data. The Phase 3 stub is gone.
+   */
+  private buildNetworksPanel(sidebarX: number, sidebarW: number): void {
+    const panelTop = 16 + 96 + 32 + ResourcesPanel.height + 16;
+    const padX = 16;
+
+    this.add
+      .text(sidebarX + padX, panelTop, '⚡ Networks', {
+        fontFamily: 'Pixellari, monospace',
+        fontSize: '16px',
+        color: '#FFC940',
+      })
+      .setOrigin(0, 0);
+
+    this.add
+      .rectangle(sidebarX + padX, panelTop + 22, sidebarW - padX * 2, 1, 0x3a4868)
+      .setOrigin(0, 0);
+
+    this.networksText = this.add
+      .text(sidebarX + padX, panelTop + 30, '(no power buildings yet)', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '8px',
+        color: '#5C6E8E',
+        lineSpacing: 4,
+      })
+      .setOrigin(0, 0);
+  }
+
+  /**
+   * Render the Networks panel text from the current analysis. Called from
+   * applyState — re-fires whenever state changes (placement/upgrade/poll).
+   */
+  private renderNetworksContent(analysis: NetworkAnalysis | null): void {
+    if (!this.networksText) return;
+    if (!analysis || analysis.networks.length === 0) {
+      const offGridCount = analysis?.offGrid.length ?? 0;
+      this.networksText
+        .setText(
+          offGridCount > 0
+            ? `(no networks)\nOff-grid: ${offGridCount}`
+            : '(no power buildings yet)',
+        )
+        .setColor(offGridCount > 0 ? '#E84B4B' : '#5C6E8E');
+      return;
+    }
+
+    const lines: string[] = [];
+    for (const net of analysis.networks) {
+      const colorCode =
+        net.state === 'brownout' ? '!' : net.state === 'tight' ? '~' : '';
+      const padded = net.id.padEnd(8, ' ').slice(0, 8);
+      lines.push(`${colorCode}${padded} ${net.capacity}/${net.demand}`);
+    }
+    if (analysis.offGrid.length > 0) {
+      lines.push(`Off-grid: ${analysis.offGrid.length}`);
+    }
+
+    // Color the whole text based on worst-state network.
+    const hasBrownout = analysis.networks.some((n) => n.state === 'brownout');
+    const hasTight = analysis.networks.some((n) => n.state === 'tight');
+    const color = hasBrownout ? '#E84B4B' : hasTight ? '#F0A030' : '#7CD16A';
+    this.networksText.setText(lines.join('\n')).setColor(color);
   }
 
   /**
@@ -199,6 +271,7 @@ export class UIScene extends Phaser.Scene {
 
   private applyState(state: StoneWorldState): void {
     this.resourcesPanel?.update(state, this);
+    this.renderNetworksContent(AppState.getAnalysis());
     if (this.statusText) {
       this.statusText.setText(
         `milestone: ${state.milestone}\n` +
