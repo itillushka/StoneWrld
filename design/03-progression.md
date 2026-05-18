@@ -117,6 +117,8 @@ Cost scaling per milestone: ~3-5× per arc. Stone World ~5-100 of relevant resou
   Prereqs: Wheel, Stone Masonry, Gear — Unlocks: Watermill building (+5 capacity)
 - **Windmill** *(Power — 300⛓+200⚡)*
   Prereqs: Wheel, Wood Frame Construction — Unlocks: Windmill building (+3 capacity)
+- **Wooden Pole** *(Power — 50⛓+30⚡)*
+  Prereqs: Wood Frame Construction — Unlocks: Wooden Pole building (1×1, coverage radius 4 tiles, extends power network per [02 §Power model](./02-game-logic.md))
 - **Steel Production** *(Materials — 500⛓+300📚)* **← MILESTONE 2 BOSS**
   Prereqs: Iron Smelting, Bronze Alloy, Charcoal Making — Unlocks: Steel Foundry T1; enables Lightbulb, Steam Engine, Naval Engineering, Cobalt Smelting, Reinforced Concrete (future)
 
@@ -140,6 +142,8 @@ Cost scaling per milestone: ~3-5× per arc. Stone World ~5-100 of relevant resou
   Prereqs: Iron Smelting, Watermill, Gear — Unlocks: Steam Engine workshop; enables Steam Plant, Steamship, Combustion Engine
 - **Steam Plant** *(Power — 1500⛓+800⚡)*
   Prereqs: Steam Engine, Steel Production, Coal Mining — Unlocks: Steam Plant (+20 capacity)
+- **Iron Pole** *(Power — 200⛓+100⚡)*
+  Prereqs: Steel Production — Unlocks: Iron Pole building (1×1, coverage radius 6 tiles)
 - **Cobalt Smelting** *(Materials — 800⛓+500📚)*
   Prereqs: Iron Smelting, Steel Production — Unlocks: Cobalt Foundry; enables Compass, magnets
 - **Telegraph** *(Communication — 600⚡+400📚)*
@@ -163,6 +167,8 @@ Cost scaling per milestone: ~3-5× per arc. Stone World ~5-100 of relevant resou
   Prereqs: Stone Masonry, Sulfuric Acid — Unlocks: Concrete Workshop; enables Reinforced Concrete (future)
 - **Steel Refining** *(Materials — 4000⛓+2500📚)*
   Prereqs: Steel Production, Hydroelectric Dam — Unlocks: Steel Refinery; enables Aluminum, Composites (future), Steel Frame
+- **Steel Pole** *(Power — 800⛓+400⚡)*
+  Prereqs: Steel Refining — Unlocks: Steel Pole building (1×1, coverage radius 8 tiles — endgame infrastructure)
 - **Naval Engineering** *(Naval — 6000⛓+4000⚡)*
   Prereqs: Steam Engine, Steel Production, Stone Masonry — Unlocks: Shipyard; enables Sailboat, Steamship
 - **Sailboat** *(Naval — 3000⛓+1500⚡)*
@@ -269,14 +275,14 @@ Cost scaling per milestone: ~3-5× per arc. Stone World ~5-100 of relevant resou
 
 ---
 
-## Total tech count: ~82 nodes across 10 branches
+## Total tech count: ~85 nodes across 10 branches
 
 Branch distribution (rough):
 
 | Branch | Node count |
 |---|---|
 | Materials & Processing | 18 |
-| Power Generation | 11 |
+| Power Generation | 14 (incl. Wooden / Iron / Steel Pole research, added when [05-map](./05-map.md) introduced the coverage-chain model) |
 | Chemistry | 7 |
 | Construction | 7 |
 | Mechanics & Engineering | 9 |

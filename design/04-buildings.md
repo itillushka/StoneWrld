@@ -39,19 +39,26 @@ Captain's-eye rule: each building's passive trickle reflects what it conceptuall
 
 ---
 
-## Sprite source plan (corrects 01-vision §Decision #11)
+## Sprite source plan — INVERTED by [07-references](./07-references.md) lock (2026-05-18)
 
-[01-vision](./01-vision.md) decided on a sprite-source MIX with "public sources + AI-generated." Originally I named Kenney as the public source — **Kenney's main packs are smooth/vector, not pure-retro pixel.** Per [01 §Decision #13](./01-vision.md), the aesthetic is pure-retro pixel art (sharp pixels, integer scaling). So the sprite plan updates:
+**This section was originally drafted as "CC0 packs primary + AI-gen for ~15 Dr.Stone signature buildings." [07-references](./07-references.md) inverted the strategy after co-captain reviewed candidate CC0 packs and confirmed:** the entire CC0 / paid pixel-art ecosystem for top-down industrial lives at 32-64 px / tile, while our locked spec is 128 px / tile (2×2 building = 256×256 source — [05-map §3](./05-map.md)). Upscaling 4× breaks the pure-retro pixel rule ([06-style §6](./06-style.md)). Co-captain's call: **keep the 128px spec; generate the assets ourselves.**
 
-- **Primary CC0 pixel-art sources**:
-  - **OpenGameArt.org** (filter `pixel-art` tag) — massive CC0/CC-BY library. LPC (Liberated Pixel Cup) tilesets, Pixel Castle assets, industrial/factory tilesets.
-  - **itch.io free pixel-art assets** — Tio's Tiny Town, Pixel-Boy packs, hundreds of CC0 city-builder tilesets.
-  - **OpenPixelProject** — CC-BY pixel art.
-  - **Kenney pixel-specific packs** (small subset): "1-Bit Pack", "Monochrome Pixel Pack" — fallback only.
-- **AI-generated for Dr.Stone signature buildings**: Sulfa Factory, Perseus Dock, Telephone Exchange, Depetrification Lab, Alchemy Lab, Observatory, Deep-space Radio, Rocket Launch Pad. Tooling: **Retro Diffusion** (pixel-art-specific SD model) or Stable Diffusion + pixel-art LoRA. Hand-touch as needed.
-- **Mecha Senku mascot**: Hand-drawn or AI-gen + heavy hand-touch (he's the focal character, multi-frame, ~6-10 sprites needed). Design specifics in [06-style.md](./06-style.md).
+### Revised sprite-source plan (current truth)
 
-Full per-building sprite-source decisions live in [07-references.md](./07-references.md). This doc just flags which buildings need AI-gen vs CC0-pack.
+- **AI-gen is primary for ~65 of ~67 buildings.** Tooling: **Retro Diffusion** (pixel-native, 256×256/384×384 output) primary, **SD + pixel-art LoRA** fallback. Every output passes through **Aseprite** for outline + palette enforcement before shipping. Full workflow in [07-references §AI-gen tooling](./07-references.md).
+- **Hand-pixel** for:
+  - Mecha Senku character frames (~26 frames at 128×192) — [06-style §Mecha Senku](./06-style.md)
+  - HUD chassis sprites (modal frames, buttons, speech bubble, ~12 sprites)
+  - Auto-tile dirt-path bitmask (~16 variants)
+  - Power-line spark + universal-event smoke/dust overlays (~12 frames)
+- **CC0 packs become fallback / accent only.** No primary reliance. If a 128px+ top-down CC0 industrial pack ever surfaces, revisit — none known at this date.
+- **Mood-board references** (5 itch.io packs co-captain sent on 2026-05-18) live in `~/StoneWrld/moodboard/` and **never bundle into `public/`**. Used as AI-gen prompt seeds + animation studies only. Full pack catalog in [07-references §Mood-board references](./07-references.md).
+
+### Per-building "Sprite source" column convention (going forward)
+
+The per-building entries below still carry a `Sprite source:` note (set during this doc's initial draft when CC0 was assumed primary). **Treat any "CC0 pixel pack" note as legacy and read it as "AI-gen at 128×128 source via Retro Diffusion + Aseprite enforcement."** A captain's-eye sweep to rewrite each individual note is deferred to a v1.x cleanup — the global rule above supersedes per-building text.
+
+Buildings explicitly marked **"AI-gen (Dr.Stone signature)"** or **"AI-gen"** in their entry are already aligned with the new plan; no change needed.
 
 ---
 
@@ -103,9 +110,44 @@ Decorative in v1. Population mechanic deferred to v2. Players build them because
 
 ---
 
-### 2. Power Generation (10 buildings)
+### 2. Power Generation (13 buildings — 10 generators + 3 pole tiers)
 
-Provides power capacity. Brownout when total demand exceeds total capacity → 0% passive across all non-power buildings. No passive output from power buildings themselves (their role is enabling everyone else).
+Provides power **capacity** (generators) and **coverage** (poles). Per [02-game-logic §Power model](./02-game-logic.md) + [05-map §Power coverage](./05-map.md):
+
+- Generators emit a built-in **coverage radius of 3 tiles Manhattan** around their footprint.
+- **Power Poles** (3 tiers, below) are placeable infrastructure that extends coverage via chains. A pole is connected to a network only if its center sits within an already-connected pole's/gen's coverage area.
+- Demanders outside any network's coverage trickle at **0%** independent of brownout.
+- Within a network, brownout (`demand > capacity`) drops in-coverage demanders to 0%.
+
+No passive resource output from power buildings themselves (their role is enabling everyone else).
+
+#### Wooden Pole
+**Category**: Power · **Footprint**: 1×1 · **Milestone first**: Kingdom of Science (#2) · **Sprite source**: CC0 pixel pack
+**Idle animation**: Subtle creak — slight 1px sway in wind, occasional spark crawling along the top crossbar
+
+| Tier | Cost | Research prereqs | Passive / hour | Power (cap / demand / coverage) |
+|------|------|------------------|----------------|----------------------------------|
+| T1 | 15⛓+5⚡ | wooden_pole | — | 0 / 0 / **4** |
+
+(Pole tiers are upgrade-by-replacement, not in-place upgrade — to bump radius, demolish and rebuild as Iron / Steel. See [05-map §Demolish](./05-map.md): 50% refund.)
+
+#### Iron Pole
+**Category**: Power · **Footprint**: 1×1 · **Milestone first**: Phone Era (#3) · **Sprite source**: CC0 pixel pack + AI-gen accent
+**Idle animation**: Subtle hum — faint cyan electric arc shimmer between insulators
+
+| Tier | Cost | Research prereqs | Passive / hour | Power (cap / demand / coverage) |
+|------|------|------------------|----------------|----------------------------------|
+| T1 | 38⛓+13⚡ | iron_pole | — | 0 / 0 / **6** |
+
+#### Steel Pole
+**Category**: Power · **Footprint**: 1×1 · **Milestone first**: Perseus Voyage (#4) · **Sprite source**: AI-gen (lattice tower)
+**Idle animation**: Tower beacon at top blinks slowly; chain-line spark animation more vivid on connected segments
+
+| Tier | Cost | Research prereqs | Passive / hour | Power (cap / demand / coverage) |
+|------|------|------------------|----------------|----------------------------------|
+| T1 | 90⛓+30⚡ | steel_pole | — | 0 / 0 / **8** |
+
+*Captain's note: pole tiers exist as separate buildings (not per-pole upgrades) because the placement decision should be deliberate at each tier. You don't "upgrade" a pole — you place a new better one and tear down the old. Keeps placement legible.*
 
 #### Hearth (heat-only, conceptual power)
 **Category**: Power · **Footprint**: 1×1 · **Milestone first**: Stone World (#1) · **Sprite source**: CC0 pixel pack
@@ -853,14 +895,14 @@ Full source workflow + license discipline in [07-references.md](./07-references.
 | Arc | Buildings count | Polish status in this doc |
 |---|---|---|
 | 1. Stone World | ~10 (Settler Hut, Hearth, Stone Mine, Lumber Camp, Charcoal Kiln, Pottery Kiln, Sulfur Mine, Builder's Hut, Soap Workshop, Alchemy Lab, Herbalist Hut) | **Full detail** — all tiers, idle animations, costs |
-| 2. Kingdom of Science | ~13 (Cottage, Windmill, Watermill, Iron Mine, Iron Smelter, Copper Mine, Copper Smelter, Tin Mine, Bronze Foundry, Stone Workshop, Workshop, Glassworks, Steel Foundry, Library, Foundry Stockpile, Workshop Storage) | **Full detail** |
-| 3. Phone Era | ~12 (Coal Mine, Hydroelectric Dam, Steam Plant, Steam Engine Workshop, Cobalt Foundry, Battery Cell, Lamp Workshop, Radio Lab, Telegraph Office, Radio Hut, Telephone Exchange, Field Clinic, Sulfa Factory) | **Full detail** |
-| 4. Perseus Voyage | ~6 (Concrete Workshop, Steel Refinery, Shipyard, Sailboat Dock, Steamship Dock, Perseus Dock, Map Archive, Trophy Hall) | **Full detail** |
+| 2. Kingdom of Science | ~14 (Cottage, Windmill, Watermill, **Wooden Pole**, Iron Mine, Iron Smelter, Copper Mine, Copper Smelter, Tin Mine, Bronze Foundry, Stone Workshop, Workshop, Glassworks, Steel Foundry, Library, Foundry Stockpile, Workshop Storage) | **Full detail** |
+| 3. Phone Era | ~13 (Coal Mine, Hydroelectric Dam, Steam Plant, **Iron Pole**, Steam Engine Workshop, Cobalt Foundry, Battery Cell, Lamp Workshop, Radio Lab, Telegraph Office, Radio Hut, Telephone Exchange, Field Clinic, Sulfa Factory) | **Full detail** |
+| 4. Perseus Voyage | ~7 (Concrete Workshop, Steel Refinery, **Steel Pole**, Shipyard, Sailboat Dock, Steamship Dock, Perseus Dock, Map Archive, Trophy Hall) | **Full detail** |
 | 5. World Tour | ~6 (Oil Well, Oil Refinery, Petrol Generator, Combustion Engine Workshop, Plastic Factory, Pharmacy, Depetrification Lab) | Structural — costs + prereqs; animation + lore = `TODO v1.x` |
 | 6. Whyman / Moon Signal | ~7 (Apartment Block, Coal Plant, Coke Oven, Aluminum Refinery, Silicon Foundry, IC Factory, CPU Foundry, Computer Workshop, Wireless Tower, Deep-space Radio) | Structural — same |
 | 7. Moon Mission | ~10 (Modern Tower, Solar Panel Array, Wind Turbine, Nuclear Reactor, Uranium Mine, Composite Workshop, Fuel Refinery, Cryogenic Lab, Rocket Workshop, Rocket Launch Pad) | Structural — same |
 
-Total: **~64 buildings** (slightly more than the 60 estimate — some categories ran longer once enumerated; well within scope of the original 60-building plan).
+Total: **~67 buildings** (added 3 Power Pole tiers per [05-map](./05-map.md) coverage model; well within scope of the original 60-building plan).
 
 ---
 
@@ -868,14 +910,16 @@ Total: **~64 buildings** (slightly more than the 60 estimate — some categories
 
 | # | Decision | Choice |
 |---|---|---|
-| 1 | Building count | **~64 buildings × 3 tiers** = ~192 building-tier entries |
-| 2 | Categories | **12**: Dwellings, Power, Materials, Chemistry, Construction, Mechanics, Electronics, Communication, Naval, Medicine, Space, Storage |
+| 1 | Building count | **~67 buildings × 3 tiers** = ~195 building-tier entries (includes 3 single-tier Power Pole buildings — pole "upgrades" are demolish-and-replace, see [05-map](./05-map.md)) |
+| 2 | Categories | **12**: Dwellings, Power (incl. Power Poles), Materials, Chemistry, Construction, Mechanics, Electronics, Communication, Naval, Medicine, Space, Storage |
 | 3 | Storage as separate category | **Yes** — silos folded into their own Storage category (not merged with Space) |
 | 4 | Passive output by category | Materials → ⛓; Construction/Mechanics/Electronics → ⚡; Communication/Naval → 🔭; Medicine/Space → 🏁; Chemistry → mixed; Dwellings/Power/Storage → none (have other roles) |
 | 5 | Dwellings mechanic in v1 | **Pure decoration** (no population mechanic); population gameplay deferred to v2 |
 | 6 | Sprite source mix | **CC0 pixel-art packs** (OpenGameArt / itch.io / OpenPixelProject) + **AI-gen** (Retro Diffusion / SD pixel-art LoRA) for Dr.Stone signature buildings. Kenney noted as fallback only (mostly smooth/vector) |
 | 7 | v1 polish depth | **Arcs 1-4 fully detailed** (animations, lore, sprite source per-building); **arcs 5-7 structurally listed**, animations + lore = `TODO v1.x` |
 | 8 | Entry format | **Compact table** with Tier / Cost / Research prereqs / Passive / Power per row |
+| 9 | State-schema convention (per [05-map](./05-map.md)) | Each building entry = **one placed instance** (no `instances` field); add `spent: { resource: amount }` to track total spent for demolish refund |
+| 10 | Power Pole family | **3 single-tier buildings** (Wooden / Iron / Steel), 1×1, radii 4 / 6 / 8 Manhattan tiles; demolish-and-replace to upgrade tier |
 
 ---
 

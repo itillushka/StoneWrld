@@ -106,37 +106,59 @@ Every building has:
 - `power_demand`: integer ≥ 0 (zero for early manual-labor buildings; rises with tier and category)
 - `power_capacity`: integer ≥ 0 (non-zero only for power-generation buildings)
 
-City has a global pool:
+Plus two **spatial** properties (locked in [05-map §Power grid](./05-map.md)):
+- `coverage_radius`: integer ≥ 0 (non-zero only for generators and the new **Power Pole** building family)
+- A demander is **in-coverage** if any of its footprint tiles is within `coverage_radius` Manhattan distance of any **connected** generator or pole.
+
+### The power network (spatial chain)
+
+The city's power is no longer one global pool — it is the **union of one or more power networks**, each formed by chained gen + pole coverage:
+
+1. Each generator emits a small coverage area (default `coverage_radius = 3` tiles Manhattan around the generator's footprint).
+2. **Power Poles** (new building family, [05-map §Power poles](./05-map.md)) are placeable 1×1 buildings whose coverage areas extend the network. A pole is **connected** to a network if its center tile lies within another connected pole's or generator's coverage area.
+3. The network's coverage area = union of all coverage areas of connected gens + connected poles.
+4. A demander building is **powered** if any of its footprint tiles is inside the network's coverage. Otherwise it is **out-of-coverage** and trickles at **0%**, independent of brownout.
+
+Multiple disjoint networks can coexist (e.g., one gen in the west, one in the east, no pole chain between them — two networks). Each is evaluated independently.
+
+### Capacity and demand (per network)
+
+For each connected network N:
 
 ```
-city_capacity = sum(power_capacity over all power-generation buildings)
-city_demand   = sum(power_demand over all non-power buildings)
+network_capacity(N) = sum(power_capacity for all gens in N)
+network_demand(N)   = sum(power_demand for all in-coverage demanders in N)
 ```
 
-### Three states
+### Three states per network
 
-1. **`ok`** — `city_capacity ≥ city_demand`. Everything runs at 100% passive trickle.
-2. **`tight`** — `city_demand > city_capacity × 0.8` but still ≤ capacity. UI shows amber warning. Trickle still 100% but the player is on notice.
-3. **`brownout`** — `city_demand > city_capacity`. **All non-power buildings' trickle drops to 0** until capacity is restored. UI shows red banner: *"Storm on the power grid — capacity ${capacity}, demand ${demand}."*
+1. **`ok`** — `network_capacity ≥ network_demand`. In-coverage demanders run at 100% passive trickle.
+2. **`tight`** — `network_demand > network_capacity × 0.8` but still ≤ capacity. UI shows amber warning on that network. Trickle still 100%.
+3. **`brownout`** — `network_demand > network_capacity`. **All in-coverage demanders in that network drop to 0%** until capacity is restored. UI shows red banner: *"Storm on the [west] grid — capacity ${capacity}, demand ${demand}."*
 
-**Why 0% (not partial)**: co-captain's call — *"no power means no production"*. Real-world Senku-logic. Forces the player to fix the grid before resuming output.
+**Out-of-coverage demanders** (anywhere on the map but not inside any network's coverage) trickle at **0%** with their own UI cue: *"Off the grid — no pole in reach."* (See [05-map §Coverage UX](./05-map.md).)
+
+**Why 0% (not partial) for both states**: co-captain's call — *"no power means no production"*. Real-world Senku-logic. The spatial coverage requirement adds *"and your wires must reach the building"* on top of *"and you must have enough total power."*
 
 ### Early-game grace
 
-Brownout only activates **after the first power-generation building is built**. Before that, all buildings have implicit power = 0 demand = 0 (manual / muscle / fire-based, in-canon). The Stone World milestone is unconstrained; power-grid planning unlocks only when the player chooses to build a windmill or watermill.
+Brownout AND coverage requirements only activate **after the first power-generation building is built**. Before that, all buildings have implicit power = 0 demand = 0 (manual / muscle / fire-based, in-canon). The Stone World milestone is unconstrained; power-grid planning unlocks only when the player chooses to build a windmill or watermill.
 
 ### Power-generation building preview
 
-(Full power-tech progression in [03-progression.md §Branch 2](./03-progression.md). Sample for context:)
+(Full power-tech progression in [03-progression.md §Branch 2](./03-progression.md). Sample for context. Coverage radii proposed; final per-building values live in [04-buildings](./04-buildings.md) when that doc is reopened to add the pole family.)
 
-| Building | Tier | Capacity | Demand |
-|---|---|---|---|
-| Windmill | T1 | +3 | 0 |
-| Watermill | T1 | +5 | 0 |
-| Hydroelectric Dam | T1 | +15 | 0 |
-| Steam Plant | T3 | +60 | 0 |
-| Coal Plant | T3 | +120 | 0 |
-| Nuclear Reactor | T3 | +500 | 0 |
+| Building | Tier | Capacity | Demand | Coverage radius |
+|---|---|---|---|---|
+| Wooden Pole | T1 | 0 | 0 | 4 |
+| Iron Pole | T2 | 0 | 0 | 6 |
+| Steel Pole | T3 | 0 | 0 | 8 |
+| Windmill | T1 | +3 | 0 | 3 |
+| Watermill | T1 | +5 | 0 | 3 |
+| Hydroelectric Dam | T1 | +15 | 0 | 3 |
+| Steam Plant | T3 | +60 | 0 | 4 |
+| Coal Plant | T3 | +120 | 0 | 4 |
+| Nuclear Reactor | T3 | +500 | 0 | 5 |
 
 ---
 
@@ -330,7 +352,9 @@ Game window and Claude Code hook may both write to `state.json`. Atomic writes (
 
 | # | Decision | Choice |
 |---|---|---|
-| 1 | Brownout severity | **0% production** during brownout |
+| 1 | Brownout severity | **0% production** during brownout; **0% production** when out-of-coverage of any network |
+| 1b | Power model | **Spatial coverage networks** ([05-map](./05-map.md)): generators emit small coverage, Power Poles extend it via chain; multiple disjoint networks possible; per-network cap-vs-demand check |
+| 1c | Power Pole family | **3 tiers** (Wooden / Iron / Steel), 1×1 footprint, radius 4 / 6 / 8 tiles Manhattan; full catalog entries deferred to [04-buildings](./04-buildings.md) reopen |
 | 2 | Subagent yields | **+10** of primary resource per subagent completion (+8 for gen / kohaku) |
 | 3 | Ship-event detection | **commit +20, push +10, PR create +15**, test-pass +5 |
 | 4 | Trickle cap | **72 hours** offline accrual |
