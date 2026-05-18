@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite';
+import { stateApiPlugin } from './src/api/dev-middleware';
 
 /**
  * Vite config for StoneWrld.
@@ -14,6 +15,10 @@ import { defineConfig } from 'vite';
  *   Phaser's own `pixelArt: true` + `roundPixels: true` (see src/config.ts)
  *   does the heavy lifting at render time; Vite only needs to leave the
  *   assets alone (no image transforms, no inlining of large atlases).
+ *
+ * Plugins:
+ *   - stateApiPlugin: exposes GET/POST /api/state during `npm run dev`,
+ *     reading & atomically writing ~/StoneWrld/state.json. Added in Phase 1.
  */
 export default defineConfig({
   server: {
@@ -32,7 +37,5 @@ export default defineConfig({
     // for browser caching + easier debugging during asset iteration.
     assetsInlineLimit: 0,
   },
-  // Reserved for the /api/state dev-middleware (design/08-architecture
-  // §Persistence API) — added in Phase 1.
-  plugins: [],
+  plugins: [stateApiPlugin()],
 });
