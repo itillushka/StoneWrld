@@ -8,6 +8,7 @@ import {
 import { AppState } from '../state/app-state';
 import { categoryColorInt } from '../hud/category-colors';
 import { buildingIsResearched } from '../catalog/techtree';
+import { classifyLogEntry } from '../mecha-senku/voice';
 import type { BuildingInstance, BuildingTier, ResourceKey } from '../state/schema';
 
 /**
@@ -25,7 +26,7 @@ import type { BuildingInstance, BuildingTier, ResourceKey } from '../state/schem
  * frame with 4-pixel gold border, gold title bar with inverse text.
  */
 
-export type ModalMode = 'build' | 'inspect';
+export type ModalMode = 'build' | 'inspect' | 'log';
 
 export interface ModalLaunchData {
   mode: ModalMode;
@@ -82,10 +83,10 @@ export class ModalScene extends Phaser.Scene {
       .setInteractive();
     scrim.on('pointerdown', () => this.closeModal());
 
-    // Frame geometry — taller for build mode (room for many rows), compact for inspect.
-    const isBuild = this.mode === 'build';
-    const frameW = isBuild ? 720 : 480;
-    const frameH = isBuild ? 600 : 360;
+    // Frame geometry — taller for build/log mode (scrollable), compact for inspect.
+    const isLarge = this.mode === 'build' || this.mode === 'log';
+    const frameW = isLarge ? 720 : 480;
+    const frameH = isLarge ? 600 : 360;
     const frameX = (width - frameW) / 2;
     const frameY = (height - frameH) / 2;
 
@@ -138,6 +139,8 @@ export class ModalScene extends Phaser.Scene {
       this.renderBuildContent(frameX, frameY, frameW, frameH);
     } else if (this.mode === 'inspect' && this.buildingForInspect) {
       this.renderInspectContent(frameX, frameY, frameW, frameH, this.buildingForInspect);
+    } else if (this.mode === 'log') {
+      this.renderLogContent(frameX, frameY, frameW, frameH);
     }
 
     // Esc closes.
@@ -152,6 +155,7 @@ export class ModalScene extends Phaser.Scene {
 
   private titleFor(): string {
     if (this.mode === 'build') return 'Build';
+    if (this.mode === 'log') return "Captain's Log";
     if (this.mode === 'inspect' && this.buildingForInspect) {
       const entry = getBuilding(this.buildingForInspect.id);
       return entry ? `${entry.name}` : 'Building';
@@ -410,6 +414,129 @@ export class ModalScene extends Phaser.Scene {
       this.game.events.emit('placement:start', { buildingId: entry.id });
       this.closeModal();
     });
+  }
+
+  // ---------- LOG MODE (Captain's Log scrollback) ----------
+
+  private renderLogContent(
+    frameX: number,
+    frameY: number,
+    frameW: number,
+    frameH: number,
+  ): void {
+    const state = AppState.getState();
+    const entries = state?.captain_log ?? [];
+
+    if (entries.length === 0) {
+      this.add
+        .text(
+          frameX + frameW / 2,
+          frameY + frameH / 2,
+          'Captain\'s Log is empty.\nBuild, upgrade, or research to start the log.',
+          {
+            fontFamily: '"Press Start 2P", monospace',
+            fontSize: '10px',
+            color: '#5C6E8E',
+            align: 'center',
+          },
+        )
+        .setOrigin(0.5);
+      return;
+    }
+
+    const contentX = frameX + FRAME_PADDING;
+    const contentY = frameY + TITLE_BAR_HEIGHT + FRAME_PADDING;
+    const contentW = frameW - FRAME_PADDING * 2;
+    const visibleH = frameH - TITLE_BAR_HEIGHT - FRAME_PADDING * 2;
+
+    this.contentContainer = this.add.container(contentX, contentY);
+
+    let yCursor = 0;
+    const rowH = 40;
+    const gap = 4;
+
+    // Most-recent entries first.
+    const sorted = [...entries].reverse();
+
+    for (const entry of sorted) {
+      this.renderLogRow(0, yCursor, contentW, rowH, entry);
+      yCursor += rowH + gap;
+    }
+
+    // Clip via mask.
+    const maskShape = this.make.graphics({ x: contentX, y: contentY }, false);
+    maskShape.fillStyle(0xffffff);
+    maskShape.fillRect(0, 0, contentW, visibleH);
+    const mask = maskShape.createGeometryMask();
+    this.contentContainer.setMask(mask);
+
+    const totalHeight = yCursor;
+    this.contentMinY = contentY;
+    this.contentMaxY = Math.min(contentY, contentY - (totalHeight - visibleH));
+
+    this.wheelHandler = (
+      _pointer: Phaser.Input.Pointer,
+      _objs: unknown,
+      _dx: number,
+      dy: number,
+    ) => {
+      if (!this.contentContainer) return;
+      const step = Math.sign(dy) * 32;
+      const next = this.contentContainer.y - step;
+      this.contentContainer.y = Phaser.Math.Clamp(next, this.contentMaxY, this.contentMinY);
+    };
+    this.input.on('wheel', this.wheelHandler);
+
+    if (totalHeight > visibleH) {
+      this.add
+        .text(frameX + frameW / 2, frameY + frameH - 8, 'scroll wheel to see more', {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '6px',
+          color: '#5C6E8E',
+        })
+        .setOrigin(0.5, 1);
+    }
+  }
+
+  private renderLogRow(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    entry: { ts: string; operational: string; trigger: string; factoid?: string },
+  ): void {
+    if (!this.contentContainer) return;
+
+    const bg = this.add.rectangle(x, y, width, height, 0x0f1f4d).setOrigin(0, 0);
+    this.contentContainer.add(bg);
+
+    // Trigger-derived accent color via the voice module.
+    const { accentColor } = classifyLogEntry(entry);
+    const stripe = this.add
+      .rectangle(x, y, 4, height, Phaser.Display.Color.HexStringToColor(accentColor).color)
+      .setOrigin(0, 0);
+    this.contentContainer.add(stripe);
+
+    // Timestamp (short — just HH:MM:SS).
+    const tsShort = entry.ts.slice(11, 19);
+    const tsLabel = this.add
+      .text(x + 14, y + 6, tsShort, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '7px',
+        color: '#5C6E8E',
+      })
+      .setOrigin(0, 0);
+    this.contentContainer.add(tsLabel);
+
+    const op = this.add
+      .text(x + 14, y + 18, entry.operational, {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '8px',
+        color: '#F0EBD7',
+        wordWrap: { width: width - 28 },
+      })
+      .setOrigin(0, 0);
+    this.contentContainer.add(op);
   }
 
   // ---------- INSPECT MODE ----------

@@ -25,6 +25,13 @@ export class PreloadScene extends Phaser.Scene {
     super('PreloadScene');
   }
 
+  preload(): void {
+    // Mecha Senku placeholder sprite — single 84×84 frame for Phase 9.
+    // Real 26-frame emotion sheet swaps in via the parallel asset track
+    // (the texture key stays the same, so the swap touches one file).
+    this.load.image('mecha-senku-placeholder', '/sprites/mecha-senku.png');
+  }
+
   create(): void {
     const { width, height } = this.scale;
 

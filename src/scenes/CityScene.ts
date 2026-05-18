@@ -41,6 +41,8 @@ import {
   startBrownoutShake,
 } from '../city/render-networks';
 import { computeTrickleDelta, applyTrickleDelta } from '../economy/trickle';
+import { SpeechBubble } from '../mecha-senku/speech-bubble';
+import { voiceBuild, voiceUpgrade, voiceBrownout } from '../mecha-senku/voice';
 import type { BuildingInstance, LogEntry, ResourceKey, StoneWorldState } from '../state/schema';
 import { CAPTAIN_LOG_MAX } from '../state/schema';
 
@@ -73,8 +75,9 @@ export class CityScene extends Phaser.Scene {
   private placementPreview?: Phaser.GameObjects.Container;
   private placementTooltip?: Phaser.GameObjects.Text;
 
-  // Bottom-left speech bubble (Phase 4 placeholder).
-  private bubbleBody?: Phaser.GameObjects.Text;
+  // Bottom-left speech bubble (Phase 9 real widget).
+  private speechBubble?: SpeechBubble;
+  private lastBrownoutSet = new Set<string>(); // networks currently in brownout, for edge-detect
 
   // Network rendering state — recreated on each rebuild.
   private haloImage?: Phaser.GameObjects.Image;
@@ -237,10 +240,13 @@ export class CityScene extends Phaser.Scene {
       .setScrollFactor(0);
     this.placementTooltip.setVisible(false);
 
-    // Update the speech bubble to announce placement mode.
-    this.bubbleBody?.setText(
-      `Placing ${entry.name}. Click a green tile to build.\nRight-click or Esc to cancel.`,
-    );
+    // Speech bubble: announce placement mode via the same channel the
+    // voiced events use, so the visual cue is consistent.
+    this.speechBubble?.setEntry({
+      ts: new Date().toISOString(),
+      operational: `Placing ${entry.name}. Click a green tile to build. Right-click or Esc to cancel.`,
+      trigger: 'placement:start',
+    });
   }
 
   private onPointerMove(pointer: Phaser.Input.Pointer): void {
@@ -336,21 +342,22 @@ export class CityScene extends Phaser.Scene {
       placed_at: new Date().toISOString(),
     };
 
+    // Voiced log entry per design/06-style §Voice rules.
+    const effectSummary = this.summarizeTierEffect(tier1);
+    const voiced = voiceBuild(entry.name, 1, effectSummary, `build:${buildingId}:1`);
+
     // Deduct + append + log + stats.
     const updated: StoneWorldState = {
       ...state,
       resources: this.subtractCost(state.resources, tier1.cost),
       buildings: [...state.buildings, newBuilding],
-      captain_log: this.appendLog(state.captain_log, {
-        ts: new Date().toISOString(),
-        operational: `Profit. ${entry.name} T1 on the deck at (${x}, ${y}).`,
-        trigger: `build:${buildingId}:1`,
-      }),
+      captain_log: this.appendLog(state.captain_log, voiced),
       stats: {
         ...state.stats,
         total_buildings_placed: state.stats.total_buildings_placed + 1,
       },
     };
+    this.speechBubble?.setEntry(voiced);
 
     // Optimistic UI: render + animate immediately. saveState() persists in
     // background. If save fails, AppState's next poll snaps the world back
@@ -380,9 +387,7 @@ export class CityScene extends Phaser.Scene {
     this.placementPreview = undefined;
     this.placementTooltip?.destroy();
     this.placementTooltip = undefined;
-    this.bubbleBody?.setText(
-      'Stone World — your village awaits.\nBubble system arrives in Phase 9.',
-    );
+    // Bubble fades out on its own via persistence timer; no explicit reset needed.
   }
 
   private subtractCost(
@@ -407,40 +412,12 @@ export class CityScene extends Phaser.Scene {
   private renderSpeechBubblePlaceholder(viewportW: number, viewportH: number): void {
     void viewportW;
 
-    const bubbleX = 16;
-    const bubbleY = viewportH - 96;
-    const bubbleW = 480;
-    const bubbleH = 72;
-
-    const bg = this.add
-      .rectangle(bubbleX, bubbleY, bubbleW, bubbleH, 0x0f1f4d)
-      .setOrigin(0, 0)
-      .setStrokeStyle(2, 0xffc940);
-    bg.setScrollFactor(0).setDepth(10);
-
-    const label = this.add
-      .text(bubbleX + 14, bubbleY + 12, 'Mecha Senku', {
-        fontFamily: 'Pixellari, monospace',
-        fontSize: '16px',
-        color: '#FFC940',
-      })
-      .setOrigin(0, 0);
-    label.setScrollFactor(0).setDepth(11);
-
-    this.bubbleBody = this.add
-      .text(
-        bubbleX + 14,
-        bubbleY + 34,
-        'Stone World — your village awaits.\nBubble system arrives in Phase 9.',
-        {
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: '8px',
-          color: '#F0EBD7',
-          lineSpacing: 6,
-        },
-      )
-      .setOrigin(0, 0);
-    this.bubbleBody.setScrollFactor(0).setDepth(11);
+    // Mecha Senku speech bubble — bottom-left of canvas per design/06-style.
+    // Portrait at (16, viewportH - 100), bubble extends to the right.
+    this.speechBubble = new SpeechBubble(this, {
+      x: 16,
+      y: viewportH - 100,
+    });
   }
 
   private renderTerrainLoadFailure(w: number, h: number, err: unknown): void {
@@ -511,16 +488,14 @@ export class CityScene extends Phaser.Scene {
     const updatedBuildings = [...state.buildings];
     updatedBuildings[idx] = upgraded;
 
+    const voiced = voiceUpgrade(entry.name, nextTier, `upgrade:${building.id}:${nextTier}`);
     const updated: StoneWorldState = {
       ...state,
       resources: this.subtractCost(state.resources, tierData.cost),
       buildings: updatedBuildings,
-      captain_log: this.appendLog(state.captain_log, {
-        ts: new Date().toISOString(),
-        operational: `${entry.name} T${nextTier} redrawn — production scales.`,
-        trigger: `upgrade:${building.id}:${nextTier}`,
-      }),
+      captain_log: this.appendLog(state.captain_log, voiced),
     };
+    this.speechBubble?.setEntry(voiced);
 
     // Optimistic UI: re-render sprite at the new tier + animate.
     const newContainer = replaceBuildingRender(this, upgraded);
@@ -583,6 +558,66 @@ export class CityScene extends Phaser.Scene {
     // it grabs containers by their tracking key.
     const containerByUid = this.collectBuildingContainersByUid();
     this.brownoutShake = startBrownoutShake(this, analysis.networks, containerByUid);
+
+    // Edge-detect brownout transitions — fire a Mecha Senku alert for any
+    // network that JUST entered brownout this cycle.
+    const nowBrownout = new Set(
+      analysis.networks.filter((n) => n.state === 'brownout').map((n) => n.id),
+    );
+    const newlyBrownout: string[] = [];
+    for (const id of nowBrownout) {
+      if (!this.lastBrownoutSet.has(id)) newlyBrownout.push(id);
+    }
+    this.lastBrownoutSet = nowBrownout;
+
+    for (const id of newlyBrownout) {
+      const net = analysis.networks.find((n) => n.id === id);
+      if (!net) continue;
+      const voiced = voiceBrownout(
+        net.id,
+        net.capacity,
+        net.demand,
+        `brownout:${net.id}`,
+      );
+      this.speechBubble?.setEntry(voiced);
+      // Record the brownout in captain_log; this triggers another setState
+      // but the brownout-set is now in lastBrownoutSet so we won't loop.
+      const state = AppState.getState();
+      if (state) {
+        const updated: StoneWorldState = {
+          ...state,
+          captain_log: this.appendLog(state.captain_log, voiced),
+        };
+        AppState.setState(updated);
+        void saveState(updated).catch((err) => {
+          console.error('[CityScene] brownout log save failed:', err);
+        });
+      }
+    }
+  }
+
+  /**
+   * Build a human-readable effect summary for a building tier — used by
+   * voiceBuild to give the player something concrete in the bubble.
+   */
+  private summarizeTierEffect(tier: { passive_per_hour: Partial<Record<ResourceKey, number>>; power_capacity: number; power_demand: number; coverage_radius?: number }): string {
+    const parts: string[] = [];
+    const labels: Record<ResourceKey, string> = {
+      knowledge: '📚',
+      discovery: '🔭',
+      iron: '⛓',
+      innovation: '⚡',
+      completion: '🏁',
+    };
+    for (const [k, v] of Object.entries(tier.passive_per_hour) as Array<[ResourceKey, number]>) {
+      parts.push(`+${v}${labels[k]} / hr`);
+    }
+    if (tier.power_capacity > 0) parts.push(`+${tier.power_capacity} power capacity`);
+    if (tier.coverage_radius && tier.coverage_radius > 0) {
+      parts.push(`coverage ${tier.coverage_radius} tiles`);
+    }
+    if (parts.length === 0) return 'on the deck';
+    return parts.join(', ');
   }
 
   /**

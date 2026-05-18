@@ -81,33 +81,24 @@ export class UIScene extends Phaser.Scene {
   }
 
   private buildMechaSenkuPlaceholder(sidebarX: number, sidebarW: number): void {
-    // Phase 9 brings the real 128×192 robot-Senku sprite. For now: a
-    // gold rectangle stand-in so the layout is final.
-    const portraitW = 64;
-    const portraitH = 96;
+    // Phase 9: real sprite from public/sprites/mecha-senku.png (84×84).
+    // Single static frame for now; the full 26-frame emotion sheet
+    // swaps in later via the parallel asset track (same texture key).
+    const portraitW = 84;
+    const portraitH = 84;
     const px = sidebarX + (sidebarW - portraitW) / 2;
     const py = 16;
 
-    this.add.rectangle(px, py, portraitW, portraitH, 0xffc940).setOrigin(0, 0);
     this.add
-      .text(px + portraitW / 2, py + portraitH / 2 - 4, 'MS', {
-        fontFamily: 'Pixellari, monospace',
-        fontSize: '24px',
-        color: '#0A1228',
-      })
-      .setOrigin(0.5);
+      .image(px, py, 'mecha-senku-placeholder')
+      .setOrigin(0, 0)
+      .setDisplaySize(portraitW, portraitH);
+
     this.add
       .text(px + portraitW / 2, py + portraitH + 8, 'Mecha Senku', {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '8px',
         color: '#F0EBD7',
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(px + portraitW / 2, py + portraitH + 22, '(Phase 9 sprite)', {
-        fontFamily: '"Press Start 2P", monospace',
-        fontSize: '6px',
-        color: '#5C6E8E',
       })
       .setOrigin(0.5);
   }
@@ -217,6 +208,21 @@ export class UIScene extends Phaser.Scene {
       '[ Research ]',
       () => this.openResearchScene(),
     );
+
+    this.makeButton(
+      sidebarX + padX,
+      buttonsY + (buttonH + 8) * 2,
+      buttonW,
+      buttonH,
+      "[ Captain's Log ]",
+      () => this.openLogModal(),
+    );
+  }
+
+  private openLogModal(): void {
+    const modal = this.scene.get('ModalScene');
+    if (modal.scene.isActive()) return;
+    this.scene.launch('ModalScene', { mode: 'log' });
   }
 
   private makeButton(

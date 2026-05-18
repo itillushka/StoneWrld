@@ -15,6 +15,7 @@ import type {
   StoneWorldState,
 } from '../state/schema';
 import { CAPTAIN_LOG_MAX } from '../state/schema';
+import { voiceResearch } from '../mecha-senku/voice';
 
 /**
  * ResearchScene — the tech tree view.
@@ -396,7 +397,15 @@ export class ResearchScene extends Phaser.Scene {
       }
     }
 
-    // Deduct + commit.
+    // Build follow-up text: what does researching this unlock?
+    const followUp =
+      tech.unlocks_buildings.length > 0
+        ? `Unlocks ${tech.unlocks_buildings.slice(0, 2).join(', ')}.`
+        : tech.enables_techs.length > 0
+          ? `Opens ${tech.enables_techs.slice(0, 2).join(', ')}.`
+          : 'The kingdom of science advances.';
+    const voiced = voiceResearch(tech.name, followUp, `research:${tech.id}`);
+
     const updated: StoneWorldState = {
       ...state,
       resources: this.subtractCost(state.resources, tech.cost),
@@ -404,11 +413,7 @@ export class ResearchScene extends Phaser.Scene {
         ...state.research,
         researched: [...state.research.researched, tech.id],
       },
-      captain_log: this.appendLog(state.captain_log, {
-        ts: new Date().toISOString(),
-        operational: `10 billion percent — ${tech.name} unlocked.`,
-        trigger: `research:${tech.id}`,
-      }),
+      captain_log: this.appendLog(state.captain_log, voiced),
     };
     AppState.setState(updated);
     try {
