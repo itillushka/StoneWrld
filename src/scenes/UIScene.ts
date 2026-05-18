@@ -208,6 +208,15 @@ export class UIScene extends Phaser.Scene {
       '[ Build ]',
       () => this.openBuildModal(),
     );
+
+    this.makeButton(
+      sidebarX + padX,
+      buttonsY + buttonH + 8,
+      buttonW,
+      buttonH,
+      '[ Research ]',
+      () => this.openResearchScene(),
+    );
   }
 
   private makeButton(
@@ -255,6 +264,17 @@ export class UIScene extends Phaser.Scene {
     const modal = this.scene.get('ModalScene');
     if (modal.scene.isActive()) return;
     this.scene.launch('ModalScene', { mode: 'build' });
+  }
+
+  private openResearchScene(): void {
+    // Switch the underlying game scene (city → research). UIScene stays
+    // on top across both. Per design/05-map §View switching: Tab toggles
+    // the same way.
+    const city = this.scene.get('CityScene');
+    const research = this.scene.get('ResearchScene');
+    if (research.scene.isActive()) return;
+    if (city.scene.isActive()) this.scene.stop('CityScene');
+    this.scene.run('ResearchScene');
   }
 
   private buildFooter(sidebarX: number, sidebarW: number, sidebarH: number): void {

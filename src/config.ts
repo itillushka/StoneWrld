@@ -4,6 +4,7 @@ import { PreloadScene } from './scenes/PreloadScene';
 import { CityScene } from './scenes/CityScene';
 import { UIScene } from './scenes/UIScene';
 import { ModalScene } from './scenes/ModalScene';
+import { ResearchScene } from './scenes/ResearchScene';
 
 /**
  * Phaser game configuration.
@@ -39,5 +40,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene, PreloadScene, CityScene, UIScene, ModalScene],
+  scene: [BootScene, PreloadScene, CityScene, ResearchScene, UIScene, ModalScene],
 };

@@ -20,7 +20,7 @@
     "dev": "vite",
     "build": "npm run compile && tsc --noEmit && vite build",
     "preview": "vite preview --port 5101",
-    "compile": "tsx scripts/compile-catalog.ts",
+    "compile": "tsx scripts/compile-catalog.ts && tsx scripts/compile-techtree.ts",
     "compile:map": "tsx scripts/generate-map.ts",
     "test": "vitest run",
     "test:ui": "vitest --ui --port 5102",

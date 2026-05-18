@@ -148,6 +148,14 @@ export class CityScene extends Phaser.Scene {
       if (this.placingId) this.cancelPlacement();
     });
 
+    // Tab toggles to ResearchScene per design/05-map §View switching.
+    // Don't fire during placement mode — placement should commit/cancel first.
+    this.input.keyboard?.on('keydown-TAB', (e: KeyboardEvent) => {
+      e.preventDefault();
+      if (this.placingId) return;
+      this.scene.start('ResearchScene');
+    });
+
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
     this.events.once(Phaser.Scenes.Events.DESTROY, () => this.teardown());
   }

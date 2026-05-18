@@ -7,6 +7,7 @@ import {
 } from '../catalog/buildings';
 import { AppState } from '../state/app-state';
 import { categoryColorInt } from '../hud/category-colors';
+import { buildingIsResearched } from '../catalog/techtree';
 import type { BuildingInstance, BuildingTier, ResourceKey } from '../state/schema';
 
 /**
@@ -167,20 +168,41 @@ export class ModalScene extends Phaser.Scene {
     frameH: number,
   ): void {
     const state = AppState.getState();
-    const byCat = buildingsByCategory();
+    const allByCat = buildingsByCategory();
+    const researched = new Set(state?.research.researched ?? []);
+
+    // Phase 8 gating: keep only buildings whose T1 research_prereqs are
+    // all satisfied. Empty-prereq buildings (Stone Mine, Settler Hut after
+    // its mud_brick prereq, etc.) pass through.
+    const byCat = new Map<string, BuildingCatalogEntry[]>();
+    let totalAvailable = 0;
+    let totalLocked = 0;
+    for (const [cat, ents] of allByCat) {
+      const visible: BuildingCatalogEntry[] = [];
+      for (const e of ents) {
+        const t1 = e.tiers[0];
+        if (!t1) continue;
+        if (buildingIsResearched(t1.research_prereqs, researched)) {
+          visible.push(e);
+          totalAvailable++;
+        } else {
+          totalLocked++;
+        }
+      }
+      if (visible.length > 0) byCat.set(cat, visible);
+    }
 
     if (byCat.size === 0) {
+      const msg = totalLocked > 0
+        ? 'All buildings still locked.\nResearch a tech first (press Tab or click [ Research ]).'
+        : 'Catalog not loaded yet.';
       this.add
-        .text(
-          frameX + frameW / 2,
-          frameY + frameH / 2,
-          'Catalog not loaded yet.',
-          {
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: '12px',
-            color: '#E84B4B',
-          },
-        )
+        .text(frameX + frameW / 2, frameY + frameH / 2, msg, {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '12px',
+          color: '#E84B4B',
+          align: 'center',
+        })
         .setOrigin(0.5);
       return;
     }

@@ -1,0 +1,1834 @@
+{
+  "version": 1,
+  "generated_at": "2026-05-18T19:42:51.023Z",
+  "branches": [
+    "Materials",
+    "Power",
+    "Construction",
+    "Mechanics",
+    "Medicine",
+    "Chemistry",
+    "Electronics",
+    "Communication",
+    "Naval",
+    "Materials/Chemistry",
+    "Materials [knowledge axis]",
+    "Medicine/Chemistry",
+    "Space"
+  ],
+  "milestones": [
+    "Stone World",
+    "Kingdom of Science",
+    "Phone Era / Stone Wars",
+    "Perseus Voyage",
+    "World Tour / Petrification Reversal",
+    "Whyman / Moon Signal",
+    "Moon Mission (endgame)"
+  ],
+  "techs": [
+    {
+      "id": "stone_tools",
+      "name": "Stone Tools",
+      "branch": "Materials",
+      "milestone": 1,
+      "cost": {},
+      "prereqs": [],
+      "unlocks_buildings": [
+        "stone_mine"
+      ],
+      "enables_techs": [
+        "wood_cutting",
+        "wheel",
+        "mud_brick"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "branch": "Power",
+      "milestone": 1,
+      "cost": {
+        "iron": 5
+      },
+      "prereqs": [
+        "stone_tools"
+      ],
+      "unlocks_buildings": [
+        "hearth"
+      ],
+      "enables_techs": [
+        "charcoal_making",
+        "pottery"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "wood_cutting",
+      "name": "Wood Cutting",
+      "branch": "Materials",
+      "milestone": 1,
+      "cost": {
+        "iron": 10
+      },
+      "prereqs": [
+        "stone_tools"
+      ],
+      "unlocks_buildings": [
+        "lumber_pile"
+      ],
+      "enables_techs": [
+        "wheel",
+        "mud_brick",
+        "wood_frame"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "mud_brick",
+      "name": "Mud Brick",
+      "branch": "Construction",
+      "milestone": 1,
+      "cost": {
+        "iron": 15,
+        "innovation": 10
+      },
+      "prereqs": [
+        "wood_cutting",
+        "fire"
+      ],
+      "unlocks_buildings": [
+        "settler_hut"
+      ],
+      "enables_techs": [
+        "stone_masonry"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "wheel",
+      "name": "Wheel",
+      "branch": "Mechanics",
+      "milestone": 1,
+      "cost": {
+        "innovation": 20,
+        "iron": 10
+      },
+      "prereqs": [
+        "wood_cutting"
+      ],
+      "unlocks_buildings": [
+        "cart"
+      ],
+      "enables_techs": [
+        "watermill",
+        "windmill",
+        "lever",
+        "gear"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "lever",
+      "name": "Lever",
+      "branch": "Mechanics",
+      "milestone": 1,
+      "cost": {
+        "innovation": 15,
+        "iron": 10
+      },
+      "prereqs": [
+        "wheel"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "pulley_system"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "charcoal_making",
+      "name": "Charcoal Making",
+      "branch": "Materials",
+      "milestone": 1,
+      "cost": {
+        "iron": 30,
+        "knowledge": 15
+      },
+      "prereqs": [
+        "fire",
+        "wood_cutting"
+      ],
+      "unlocks_buildings": [
+        "charcoal_kiln"
+      ],
+      "enables_techs": [
+        "iron_smelting",
+        "glass_making"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "pottery",
+      "name": "Pottery",
+      "branch": "Materials",
+      "milestone": 1,
+      "cost": {
+        "iron": 25,
+        "innovation": 15
+      },
+      "prereqs": [
+        "mud_brick",
+        "fire"
+      ],
+      "unlocks_buildings": [
+        "pottery_kiln"
+      ],
+      "enables_techs": [
+        "glass_making"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "herbal_remedies",
+      "name": "Herbal Remedies",
+      "branch": "Medicine",
+      "milestone": 1,
+      "cost": {
+        "knowledge": 30
+      },
+      "prereqs": [],
+      "unlocks_buildings": [
+        "herbalist_hut"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "sulfur_extraction",
+      "name": "Sulfur Extraction",
+      "branch": "Chemistry",
+      "milestone": 1,
+      "cost": {
+        "iron": 40,
+        "knowledge": 30
+      },
+      "prereqs": [
+        "stone_tools",
+        "mud_brick"
+      ],
+      "unlocks_buildings": [
+        "sulfur_mine"
+      ],
+      "enables_techs": [
+        "soap",
+        "sulfuric_acid"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "soap",
+      "name": "Soap",
+      "branch": "Chemistry",
+      "milestone": 1,
+      "cost": {
+        "knowledge": 50,
+        "iron": 40
+      },
+      "prereqs": [
+        "sulfur_extraction",
+        "fire"
+      ],
+      "unlocks_buildings": [
+        "soap_workshop"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "sulfuric_acid",
+      "name": "Sulfuric Acid",
+      "branch": "Chemistry",
+      "milestone": 1,
+      "cost": {
+        "knowledge": 80,
+        "iron": 60
+      },
+      "prereqs": [
+        "sulfur_extraction",
+        "charcoal_making"
+      ],
+      "unlocks_buildings": [
+        "alchemy_lab_t1"
+      ],
+      "enables_techs": [
+        "battery",
+        "glass_making",
+        "antiseptic",
+        "concrete"
+      ],
+      "is_boss": true
+    },
+    {
+      "id": "iron_ore_extraction",
+      "name": "Iron Ore Extraction",
+      "branch": "Materials",
+      "milestone": 2,
+      "cost": {
+        "iron": 100,
+        "knowledge": 50
+      },
+      "prereqs": [
+        "stone_tools",
+        "mud_brick"
+      ],
+      "unlocks_buildings": [
+        "iron_mine"
+      ],
+      "enables_techs": [
+        "iron_smelting",
+        "tin_mining",
+        "copper_ore_mining"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "iron_smelting",
+      "name": "Iron Smelting",
+      "branch": "Materials",
+      "milestone": 2,
+      "cost": {
+        "iron": 200,
+        "knowledge": 80
+      },
+      "prereqs": [
+        "iron_ore_extraction",
+        "charcoal_making"
+      ],
+      "unlocks_buildings": [
+        "iron_smelter"
+      ],
+      "enables_techs": [
+        "gear",
+        "steel_production",
+        "stone_masonry"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "wood_frame_construction",
+      "name": "Wood Frame Construction",
+      "branch": "Construction",
+      "milestone": 2,
+      "cost": {
+        "iron": 100,
+        "innovation": 50
+      },
+      "prereqs": [
+        "wood_cutting",
+        "stone_tools"
+      ],
+      "unlocks_buildings": [
+        "wood_frame_buildings"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "stone_masonry",
+      "name": "Stone Masonry",
+      "branch": "Construction",
+      "milestone": 2,
+      "cost": {
+        "iron": 150,
+        "innovation": 80
+      },
+      "prereqs": [
+        "mud_brick",
+        "iron_smelting"
+      ],
+      "unlocks_buildings": [
+        "stone_workshop"
+      ],
+      "enables_techs": [
+        "watermill",
+        "concrete",
+        "naval_engineering"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "glass_making",
+      "name": "Glass Making",
+      "branch": "Chemistry",
+      "milestone": 2,
+      "cost": {
+        "knowledge": 120,
+        "iron": 80
+      },
+      "prereqs": [
+        "pottery",
+        "sulfuric_acid"
+      ],
+      "unlocks_buildings": [
+        "glassworks"
+      ],
+      "enables_techs": [
+        "lightbulb",
+        "compass",
+        "silicon"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "copper_ore_mining",
+      "name": "Copper Ore Mining",
+      "branch": "Materials",
+      "milestone": 2,
+      "cost": {
+        "iron": 150,
+        "knowledge": 50
+      },
+      "prereqs": [
+        "iron_ore_extraction"
+      ],
+      "unlocks_buildings": [
+        "copper_mine"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "copper_smelting",
+      "name": "Copper Smelting",
+      "branch": "Materials",
+      "milestone": 2,
+      "cost": {
+        "iron": 200,
+        "knowledge": 80
+      },
+      "prereqs": [
+        "copper_ore_mining",
+        "charcoal_making"
+      ],
+      "unlocks_buildings": [
+        "copper_smelter"
+      ],
+      "enables_techs": [
+        "bronze",
+        "battery",
+        "telegraph"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "tin_mining",
+      "name": "Tin Mining",
+      "branch": "Materials",
+      "milestone": 2,
+      "cost": {
+        "iron": 120,
+        "knowledge": 50
+      },
+      "prereqs": [
+        "iron_ore_extraction"
+      ],
+      "unlocks_buildings": [
+        "tin_mine"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "bronze_alloy",
+      "name": "Bronze Alloy",
+      "branch": "Materials",
+      "milestone": 2,
+      "cost": {
+        "iron": 250,
+        "knowledge": 150
+      },
+      "prereqs": [
+        "copper_smelting",
+        "tin_mining"
+      ],
+      "unlocks_buildings": [
+        "bronze_foundry"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "gear",
+      "name": "Gear",
+      "branch": "Mechanics",
+      "milestone": 2,
+      "cost": {
+        "innovation": 200,
+        "knowledge": 100
+      },
+      "prereqs": [
+        "iron_smelting",
+        "wheel"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "watermill",
+        "pulley_system",
+        "steam_engine"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "pulley_system",
+      "name": "Pulley System",
+      "branch": "Mechanics",
+      "milestone": 2,
+      "cost": {
+        "innovation": 250,
+        "iron": 150
+      },
+      "prereqs": [
+        "gear",
+        "lever"
+      ],
+      "unlocks_buildings": [
+        "lifting_frame"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "watermill",
+      "name": "Watermill",
+      "branch": "Power",
+      "milestone": 2,
+      "cost": {
+        "iron": 300,
+        "innovation": 200
+      },
+      "prereqs": [
+        "wheel",
+        "stone_masonry",
+        "gear"
+      ],
+      "unlocks_buildings": [
+        "watermill_building"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "windmill",
+      "name": "Windmill",
+      "branch": "Power",
+      "milestone": 2,
+      "cost": {
+        "iron": 300,
+        "innovation": 200
+      },
+      "prereqs": [
+        "wheel",
+        "wood_frame_construction"
+      ],
+      "unlocks_buildings": [
+        "windmill_building"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "wooden_pole",
+      "name": "Wooden Pole",
+      "branch": "Power",
+      "milestone": 2,
+      "cost": {
+        "iron": 50,
+        "innovation": 30
+      },
+      "prereqs": [
+        "wood_frame_construction"
+      ],
+      "unlocks_buildings": [
+        "wooden_pole_building_1_1",
+        "coverage_radius_4_tiles",
+        "extends_power_network_per_02_power_model"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "steel_production",
+      "name": "Steel Production",
+      "branch": "Materials",
+      "milestone": 2,
+      "cost": {
+        "iron": 500,
+        "knowledge": 300
+      },
+      "prereqs": [
+        "iron_smelting",
+        "bronze_alloy",
+        "charcoal_making"
+      ],
+      "unlocks_buildings": [
+        "steel_foundry_t1"
+      ],
+      "enables_techs": [
+        "lightbulb",
+        "steam_engine",
+        "naval_engineering",
+        "cobalt_smelting",
+        "reinforced_concrete"
+      ],
+      "is_boss": true
+    },
+    {
+      "id": "battery",
+      "name": "Battery",
+      "branch": "Electronics",
+      "milestone": 3,
+      "cost": {
+        "knowledge": 400,
+        "iron": 200,
+        "innovation": 150
+      },
+      "prereqs": [
+        "copper_smelting",
+        "sulfuric_acid",
+        "stone_masonry"
+      ],
+      "unlocks_buildings": [
+        "battery_cell"
+      ],
+      "enables_techs": [
+        "lightbulb",
+        "telegraph"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "lightbulb",
+      "name": "Lightbulb",
+      "branch": "Electronics",
+      "milestone": 3,
+      "cost": {
+        "innovation": 500,
+        "knowledge": 300
+      },
+      "prereqs": [
+        "battery",
+        "glass_making",
+        "steel_production"
+      ],
+      "unlocks_buildings": [
+        "lamp_workshop"
+      ],
+      "enables_techs": [
+        "radial_lamp"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "radial_lamp",
+      "name": "Radial Lamp",
+      "branch": "Electronics",
+      "milestone": 3,
+      "cost": {
+        "innovation": 800,
+        "knowledge": 500
+      },
+      "prereqs": [
+        "lightbulb",
+        "glass_making"
+      ],
+      "unlocks_buildings": [
+        "radio_lab"
+      ],
+      "enables_techs": [
+        "radio_telephone",
+        "telephony",
+        "transistor"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "coal_mining",
+      "name": "Coal Mining",
+      "branch": "Materials",
+      "milestone": 3,
+      "cost": {
+        "iron": 1500,
+        "knowledge": 800
+      },
+      "prereqs": [
+        "iron_ore_extraction",
+        "steel_production"
+      ],
+      "unlocks_buildings": [
+        "coal_mine"
+      ],
+      "enables_techs": [
+        "coke_production",
+        "steam_plant"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "hydroelectric_dam",
+      "name": "Hydroelectric Dam",
+      "branch": "Power",
+      "milestone": 3,
+      "cost": {
+        "iron": 800,
+        "innovation": 500
+      },
+      "prereqs": [
+        "watermill",
+        "stone_masonry",
+        "battery"
+      ],
+      "unlocks_buildings": [
+        "hydroelectric_dam"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "steam_engine",
+      "name": "Steam Engine",
+      "branch": "Mechanics",
+      "milestone": 3,
+      "cost": {
+        "iron": 1000,
+        "innovation": 600
+      },
+      "prereqs": [
+        "iron_smelting",
+        "watermill",
+        "gear"
+      ],
+      "unlocks_buildings": [
+        "steam_engine_workshop"
+      ],
+      "enables_techs": [
+        "steam_plant",
+        "steamship",
+        "combustion_engine"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "steam_plant",
+      "name": "Steam Plant",
+      "branch": "Power",
+      "milestone": 3,
+      "cost": {
+        "iron": 1500,
+        "innovation": 800
+      },
+      "prereqs": [
+        "steam_engine",
+        "steel_production",
+        "coal_mining"
+      ],
+      "unlocks_buildings": [
+        "steam_plant"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "iron_pole",
+      "name": "Iron Pole",
+      "branch": "Power",
+      "milestone": 3,
+      "cost": {
+        "iron": 200,
+        "innovation": 100
+      },
+      "prereqs": [
+        "steel_production"
+      ],
+      "unlocks_buildings": [
+        "iron_pole_building_1_1",
+        "coverage_radius_6_tiles"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "cobalt_smelting",
+      "name": "Cobalt Smelting",
+      "branch": "Materials",
+      "milestone": 3,
+      "cost": {
+        "iron": 800,
+        "knowledge": 500
+      },
+      "prereqs": [
+        "iron_smelting",
+        "steel_production"
+      ],
+      "unlocks_buildings": [
+        "cobalt_foundry"
+      ],
+      "enables_techs": [
+        "compass",
+        "magnets"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "telegraph",
+      "name": "Telegraph",
+      "branch": "Communication",
+      "milestone": 3,
+      "cost": {
+        "innovation": 600,
+        "knowledge": 400
+      },
+      "prereqs": [
+        "battery",
+        "copper_smelting"
+      ],
+      "unlocks_buildings": [
+        "telegraph_office"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "radio_telephone",
+      "name": "Radio Telephone",
+      "branch": "Communication",
+      "milestone": 3,
+      "cost": {
+        "innovation": 1200,
+        "knowledge": 800
+      },
+      "prereqs": [
+        "telegraph",
+        "radial_lamp"
+      ],
+      "unlocks_buildings": [
+        "radio_hut"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "telephony",
+      "name": "Telephony",
+      "branch": "Communication",
+      "milestone": 3,
+      "cost": {
+        "innovation": 2500,
+        "knowledge": 1500
+      },
+      "prereqs": [
+        "radio_telephone",
+        "radial_lamp",
+        "battery"
+      ],
+      "unlocks_buildings": [
+        "telephone_exchange_t1"
+      ],
+      "enables_techs": [],
+      "is_boss": true
+    },
+    {
+      "id": "antiseptic",
+      "name": "Antiseptic",
+      "branch": "Medicine",
+      "milestone": 3,
+      "cost": {
+        "knowledge": 500,
+        "iron": 300
+      },
+      "prereqs": [
+        "soap",
+        "sulfuric_acid",
+        "herbal_remedies"
+      ],
+      "unlocks_buildings": [
+        "field_clinic"
+      ],
+      "enables_techs": [
+        "sulfa_drug"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "sulfa_drug",
+      "name": "Sulfa Drug",
+      "branch": "Medicine",
+      "milestone": 3,
+      "cost": {
+        "knowledge": 2000,
+        "iron": 1500,
+        "discovery": 800
+      },
+      "prereqs": [
+        "antiseptic",
+        "sulfuric_acid",
+        "glass_making"
+      ],
+      "unlocks_buildings": [
+        "sulfa_factory_t1"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "concrete",
+      "name": "Concrete",
+      "branch": "Construction",
+      "milestone": 4,
+      "cost": {
+        "iron": 5000,
+        "innovation": 3000
+      },
+      "prereqs": [
+        "stone_masonry",
+        "sulfuric_acid"
+      ],
+      "unlocks_buildings": [
+        "concrete_workshop"
+      ],
+      "enables_techs": [
+        "reinforced_concrete"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "steel_refining",
+      "name": "Steel Refining",
+      "branch": "Materials",
+      "milestone": 4,
+      "cost": {
+        "iron": 4000,
+        "knowledge": 2500
+      },
+      "prereqs": [
+        "steel_production",
+        "hydroelectric_dam"
+      ],
+      "unlocks_buildings": [
+        "steel_refinery"
+      ],
+      "enables_techs": [
+        "aluminum",
+        "composites",
+        "steel_frame"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "steel_pole",
+      "name": "Steel Pole",
+      "branch": "Power",
+      "milestone": 4,
+      "cost": {
+        "iron": 800,
+        "innovation": 400
+      },
+      "prereqs": [
+        "steel_refining"
+      ],
+      "unlocks_buildings": [
+        "steel_pole_building_1_1",
+        "coverage_radius_8_tiles_endgame_infrastructure"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "naval_engineering",
+      "name": "Naval Engineering",
+      "branch": "Naval",
+      "milestone": 4,
+      "cost": {
+        "iron": 6000,
+        "innovation": 4000
+      },
+      "prereqs": [
+        "steam_engine",
+        "steel_production",
+        "stone_masonry"
+      ],
+      "unlocks_buildings": [
+        "shipyard"
+      ],
+      "enables_techs": [
+        "sailboat",
+        "steamship"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "sailboat",
+      "name": "Sailboat",
+      "branch": "Naval",
+      "milestone": 4,
+      "cost": {
+        "iron": 3000,
+        "innovation": 1500
+      },
+      "prereqs": [
+        "naval_engineering"
+      ],
+      "unlocks_buildings": [
+        "sailboat_dock"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "compass",
+      "name": "Compass",
+      "branch": "Mechanics",
+      "milestone": 4,
+      "cost": {
+        "knowledge": 2000,
+        "discovery": 1500
+      },
+      "prereqs": [
+        "cobalt_smelting",
+        "glass_making",
+        "battery"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "navigation",
+        "perseus_hull"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "steam_boiler_marine_engine",
+      "name": "Steam Boiler / Marine Engine",
+      "branch": "Mechanics",
+      "milestone": 4,
+      "cost": {
+        "iron": 5000,
+        "innovation": 3000
+      },
+      "prereqs": [
+        "steam_engine",
+        "steel_refining"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "steamship",
+        "refrigeration"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "refrigeration",
+      "name": "Refrigeration",
+      "branch": "Mechanics",
+      "milestone": 4,
+      "cost": {
+        "innovation": 3000,
+        "knowledge": 2000
+      },
+      "prereqs": [
+        "steam_engine",
+        "sulfuric_acid"
+      ],
+      "unlocks_buildings": [
+        "cold_storage"
+      ],
+      "enables_techs": [
+        "cryogenics"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "steamship",
+      "name": "Steamship",
+      "branch": "Naval",
+      "milestone": 4,
+      "cost": {
+        "iron": 5000,
+        "innovation": 3500
+      },
+      "prereqs": [
+        "sailboat",
+        "steam_boiler"
+      ],
+      "unlocks_buildings": [
+        "steamship_dock"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "perseus_hull",
+      "name": "Perseus Hull",
+      "branch": "Naval",
+      "milestone": 4,
+      "cost": {
+        "iron": 10000,
+        "innovation": 6000,
+        "knowledge": 3000
+      },
+      "prereqs": [
+        "steamship",
+        "steel_refining",
+        "telephony",
+        "compass_unlocks_perseus_dock_t1"
+      ],
+      "unlocks_buildings": [
+        "perseus_dock_t1"
+      ],
+      "enables_techs": [],
+      "is_boss": true
+    },
+    {
+      "id": "oil_extraction",
+      "name": "Oil Extraction",
+      "branch": "Materials",
+      "milestone": 5,
+      "cost": {
+        "iron": 15000,
+        "knowledge": 10000
+      },
+      "prereqs": [
+        "iron_smelting",
+        "stone_masonry"
+      ],
+      "unlocks_buildings": [
+        "oil_well"
+      ],
+      "enables_techs": [
+        "oil_refinery"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "oil_refinery",
+      "name": "Oil Refinery",
+      "branch": "Materials/Chemistry",
+      "milestone": 5,
+      "cost": {
+        "iron": 25000,
+        "knowledge": 15000,
+        "discovery": 5000
+      },
+      "prereqs": [
+        "oil_extraction",
+        "sulfuric_acid",
+        "steel_refining"
+      ],
+      "unlocks_buildings": [
+        "oil_refinery_building"
+      ],
+      "enables_techs": [
+        "combustion_engine",
+        "polymers"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "combustion_engine",
+      "name": "Combustion Engine",
+      "branch": "Mechanics",
+      "milestone": 5,
+      "cost": {
+        "iron": 20000,
+        "innovation": 15000
+      },
+      "prereqs": [
+        "steam_engine",
+        "oil_refinery",
+        "steel_refining"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "petrol_generator",
+        "modern_vessel",
+        "rocketry"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "petrol_generator",
+      "name": "Petrol Generator",
+      "branch": "Power",
+      "milestone": 5,
+      "cost": {
+        "iron": 25000,
+        "innovation": 15000
+      },
+      "prereqs": [
+        "combustion_engine",
+        "oil_refinery"
+      ],
+      "unlocks_buildings": [
+        "petrol_generator"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "world_map_cartography",
+      "name": "World Map / Cartography",
+      "branch": "Materials [knowledge axis]",
+      "milestone": 5,
+      "cost": {
+        "knowledge": 8000,
+        "discovery": 5000
+      },
+      "prereqs": [
+        "perseus_hull",
+        "telephony"
+      ],
+      "unlocks_buildings": [
+        "world_map_ui_feature"
+      ],
+      "enables_techs": [
+        "nital_reagent"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "polymers",
+      "name": "Polymers",
+      "branch": "Chemistry",
+      "milestone": 5,
+      "cost": {
+        "knowledge": 15000,
+        "iron": 10000,
+        "discovery": 5000
+      },
+      "prereqs": [
+        "oil_refinery",
+        "sulfuric_acid"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "plastic_production",
+        "cryogenic_fuel"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "plastic_production",
+      "name": "Plastic Production",
+      "branch": "Materials",
+      "milestone": 5,
+      "cost": {
+        "knowledge": 20000,
+        "iron": 15000,
+        "discovery": 5000
+      },
+      "prereqs": [
+        "polymers",
+        "oil_refinery"
+      ],
+      "unlocks_buildings": [
+        "plastic_factory"
+      ],
+      "enables_techs": [
+        "integrated_circuit",
+        "composites"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "antibiotics",
+      "name": "Antibiotics",
+      "branch": "Medicine",
+      "milestone": 5,
+      "cost": {
+        "knowledge": 12000,
+        "iron": 8000,
+        "discovery": 5000
+      },
+      "prereqs": [
+        "sulfa_drug",
+        "polymers"
+      ],
+      "unlocks_buildings": [
+        "pharmacy"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "nital_reagent",
+      "name": "Nital Reagent",
+      "branch": "Medicine/Chemistry",
+      "milestone": 5,
+      "cost": {
+        "knowledge": 25000,
+        "discovery": 18000,
+        "iron": 12000,
+        "innovation": 8000
+      },
+      "prereqs": [
+        "sulfuric_acid",
+        "polymers",
+        "antibiotics",
+        "world_map"
+      ],
+      "unlocks_buildings": [
+        "depetrification_lab_t1"
+      ],
+      "enables_techs": [],
+      "is_boss": true
+    },
+    {
+      "id": "coke_production",
+      "name": "Coke Production",
+      "branch": "Materials",
+      "milestone": 6,
+      "cost": {
+        "iron": 25000,
+        "knowledge": 15000
+      },
+      "prereqs": [
+        "coal_mining",
+        "steel_refining",
+        "oil_refinery"
+      ],
+      "unlocks_buildings": [
+        "coke_oven"
+      ],
+      "enables_techs": [
+        "coal_plant"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "coal_plant",
+      "name": "Coal Plant",
+      "branch": "Power",
+      "milestone": 6,
+      "cost": {
+        "iron": 35000,
+        "innovation": 20000
+      },
+      "prereqs": [
+        "steam_plant",
+        "coke_production",
+        "steel_refining"
+      ],
+      "unlocks_buildings": [
+        "coal_plant"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "aluminum_smelting",
+      "name": "Aluminum Smelting",
+      "branch": "Materials",
+      "milestone": 6,
+      "cost": {
+        "iron": 30000,
+        "knowledge": 15000
+      },
+      "prereqs": [
+        "steel_refining",
+        "hydroelectric_dam",
+        "sulfuric_acid"
+      ],
+      "unlocks_buildings": [
+        "aluminum_refinery"
+      ],
+      "enables_techs": [
+        "composites",
+        "solar_panel",
+        "wind_turbine"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "silicon_refining",
+      "name": "Silicon Refining",
+      "branch": "Materials",
+      "milestone": 6,
+      "cost": {
+        "iron": 30000,
+        "knowledge": 20000,
+        "discovery": 10000
+      },
+      "prereqs": [
+        "glass_making",
+        "oil_refinery",
+        "coal_plant"
+      ],
+      "unlocks_buildings": [
+        "silicon_foundry"
+      ],
+      "enables_techs": [
+        "transistor"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "transistor",
+      "name": "Transistor",
+      "branch": "Electronics",
+      "milestone": 6,
+      "cost": {
+        "innovation": 40000,
+        "knowledge": 25000
+      },
+      "prereqs": [
+        "silicon_refining",
+        "battery",
+        "aluminum_smelting"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "integrated_circuit",
+        "wireless"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "integrated_circuit",
+      "name": "Integrated Circuit",
+      "branch": "Electronics",
+      "milestone": 6,
+      "cost": {
+        "innovation": 60000,
+        "knowledge": 40000
+      },
+      "prereqs": [
+        "transistor",
+        "plastic_production"
+      ],
+      "unlocks_buildings": [
+        "ic_factory"
+      ],
+      "enables_techs": [
+        "cpu"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "cpu",
+      "name": "CPU",
+      "branch": "Electronics",
+      "milestone": 6,
+      "cost": {
+        "innovation": 100000,
+        "knowledge": 60000
+      },
+      "prereqs": [
+        "integrated_circuit",
+        "silicon_refining",
+        "aluminum_smelting"
+      ],
+      "unlocks_buildings": [
+        "cpu_foundry"
+      ],
+      "enables_techs": [
+        "computer",
+        "automation"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "computer",
+      "name": "Computer",
+      "branch": "Electronics",
+      "milestone": 6,
+      "cost": {
+        "innovation": 150000,
+        "knowledge": 80000,
+        "discovery": 30000
+      },
+      "prereqs": [
+        "cpu",
+        "plastic_production",
+        "telephony"
+      ],
+      "unlocks_buildings": [
+        "computer_workshop"
+      ],
+      "enables_techs": [
+        "orbital_mechanics",
+        "modern_industrial"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "wireless",
+      "name": "Wireless",
+      "branch": "Communication",
+      "milestone": 6,
+      "cost": {
+        "innovation": 80000,
+        "knowledge": 50000
+      },
+      "prereqs": [
+        "telephony",
+        "transistor",
+        "steel_refining"
+      ],
+      "unlocks_buildings": [
+        "wireless_tower"
+      ],
+      "enables_techs": [
+        "long_wave_communication"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "long_wave_communication",
+      "name": "Long-wave Communication",
+      "branch": "Communication",
+      "milestone": 6,
+      "cost": {
+        "innovation": 120000,
+        "knowledge": 80000,
+        "discovery": 40000
+      },
+      "prereqs": [
+        "wireless",
+        "computer",
+        "aluminum_smelting",
+        "hydroelectric_dam"
+      ],
+      "unlocks_buildings": [
+        "deep_space_radio_t1"
+      ],
+      "enables_techs": [],
+      "is_boss": true
+    },
+    {
+      "id": "reinforced_concrete",
+      "name": "Reinforced Concrete",
+      "branch": "Construction",
+      "milestone": 7,
+      "cost": {
+        "iron": 60000,
+        "innovation": 40000
+      },
+      "prereqs": [
+        "concrete",
+        "steel_refining",
+        "coal_plant"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "modern_industrial",
+        "launch_pad"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "steel_frame_construction",
+      "name": "Steel Frame Construction",
+      "branch": "Construction",
+      "milestone": 7,
+      "cost": {
+        "iron": 80000,
+        "innovation": 50000
+      },
+      "prereqs": [
+        "steel_refining",
+        "reinforced_concrete",
+        "aluminum_smelting"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "high_rise_civic_buildings"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "modern_industrial",
+      "name": "Modern Industrial",
+      "branch": "Construction",
+      "milestone": 7,
+      "cost": {
+        "iron": 120000,
+        "innovation": 80000
+      },
+      "prereqs": [
+        "steel_frame",
+        "computer",
+        "solar_panel"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "modern_industrial_buildings"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "composites",
+      "name": "Composites",
+      "branch": "Materials",
+      "milestone": 7,
+      "cost": {
+        "iron": 100000,
+        "knowledge": 60000,
+        "discovery": 30000
+      },
+      "prereqs": [
+        "plastic_production",
+        "aluminum_smelting",
+        "polymers"
+      ],
+      "unlocks_buildings": [
+        "composite_workshop"
+      ],
+      "enables_techs": [
+        "rocketry",
+        "solar_panel",
+        "wind_turbine"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "solar_panel",
+      "name": "Solar Panel",
+      "branch": "Power",
+      "milestone": 7,
+      "cost": {
+        "iron": 80000,
+        "innovation": 50000
+      },
+      "prereqs": [
+        "silicon_refining",
+        "integrated_circuit",
+        "aluminum_smelting",
+        "glass_making"
+      ],
+      "unlocks_buildings": [
+        "solar_panel_array"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "wind_turbine",
+      "name": "Wind Turbine",
+      "branch": "Power",
+      "milestone": 7,
+      "cost": {
+        "iron": 80000,
+        "innovation": 50000
+      },
+      "prereqs": [
+        "steel_refining",
+        "aluminum_smelting",
+        "integrated_circuit"
+      ],
+      "unlocks_buildings": [
+        "wind_turbine"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "uranium_extraction",
+      "name": "Uranium Extraction",
+      "branch": "Materials",
+      "milestone": 7,
+      "cost": {
+        "iron": 120000,
+        "knowledge": 80000
+      },
+      "prereqs": [
+        "oil_extraction",
+        "steel_refining",
+        "long_wave_communication_unlocks_uranium_mine",
+        "enables_nuclear_reactor"
+      ],
+      "unlocks_buildings": [
+        "uranium_mine"
+      ],
+      "enables_techs": [
+        "nuclear_reactor"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "nuclear_reactor",
+      "name": "Nuclear Reactor",
+      "branch": "Power",
+      "milestone": 7,
+      "cost": {
+        "iron": 200000,
+        "innovation": 120000,
+        "knowledge": 60000
+      },
+      "prereqs": [
+        "uranium_extraction",
+        "reinforced_concrete",
+        "cpu",
+        "aluminum_smelting",
+        "composites"
+      ],
+      "unlocks_buildings": [
+        "nuclear_reactor"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "automation",
+      "name": "Automation",
+      "branch": "Mechanics",
+      "milestone": 7,
+      "cost": {
+        "innovation": 100000,
+        "knowledge": 60000
+      },
+      "prereqs": [
+        "cpu",
+        "combustion_engine",
+        "steel_refining"
+      ],
+      "unlocks_buildings": [
+        "automated_factory_upgrade_tier"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "cryogenics",
+      "name": "Cryogenics",
+      "branch": "Medicine/Chemistry",
+      "milestone": 7,
+      "cost": {
+        "knowledge": 150000,
+        "innovation": 100000,
+        "discovery": 50000
+      },
+      "prereqs": [
+        "refrigeration",
+        "composites",
+        "cpu",
+        "polymers"
+      ],
+      "unlocks_buildings": [
+        "cryogenic_lab"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "cryogenic_fuel",
+      "name": "Cryogenic Fuel",
+      "branch": "Chemistry",
+      "milestone": 7,
+      "cost": {
+        "iron": 200000,
+        "innovation": 120000,
+        "discovery": 60000
+      },
+      "prereqs": [
+        "cryogenics",
+        "oil_refinery",
+        "composites"
+      ],
+      "unlocks_buildings": [
+        "fuel_refinery"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "rocketry",
+      "name": "Rocketry",
+      "branch": "Space",
+      "milestone": 7,
+      "cost": {
+        "iron": 150000,
+        "innovation": 100000,
+        "knowledge": 50000
+      },
+      "prereqs": [
+        "combustion_engine",
+        "composites",
+        "computer",
+        "aluminum_smelting"
+      ],
+      "unlocks_buildings": [
+        "rocket_workshop"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "orbital_mechanics",
+      "name": "Orbital Mechanics",
+      "branch": "Space",
+      "milestone": 7,
+      "cost": {
+        "knowledge": 200000,
+        "discovery": 120000,
+        "innovation": 60000
+      },
+      "prereqs": [
+        "rocketry",
+        "cpu",
+        "computer",
+        "long_wave_communication_unlocks_enables_launch_pad"
+      ],
+      "unlocks_buildings": [],
+      "enables_techs": [
+        "launch_pad"
+      ],
+      "is_boss": false
+    },
+    {
+      "id": "launch_pad",
+      "name": "Launch Pad",
+      "branch": "Space",
+      "milestone": 7,
+      "cost": {
+        "iron": 300000,
+        "innovation": 200000,
+        "knowledge": 100000
+      },
+      "prereqs": [
+        "orbital_mechanics",
+        "reinforced_concrete",
+        "cryogenic_fuel",
+        "nuclear_reactor"
+      ],
+      "unlocks_buildings": [
+        "rocket_launch_pad_t1"
+      ],
+      "enables_techs": [],
+      "is_boss": false
+    },
+    {
+      "id": "cryogenic_rocketry_moon_mission",
+      "name": "Cryogenic Rocketry / Moon Mission",
+      "branch": "Space",
+      "milestone": 7,
+      "cost": {
+        "iron": 500000,
+        "innovation": 300000,
+        "knowledge": 200000,
+        "discovery": 100000,
+        "completion": 50000
+      },
+      "prereqs": [
+        "launch_pad",
+        "cryogenic_fuel",
+        "composites",
+        "solar_panel"
+      ],
+      "unlocks_buildings": [
+        "endgame_achievement_mecha_senku_delivers_the_moon_launch_animation_game_continues_post_endgame_city_can_be_expanded_forever",
+        "new_milestones_may_be_added_in_v2"
+      ],
+      "enables_techs": [],
+      "is_boss": true
+    }
+  ]
+}

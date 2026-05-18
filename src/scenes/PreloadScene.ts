@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { AppState } from '../state/app-state';
 import { fetchTerrainMap } from '../city/terrain';
 import { loadCatalog } from '../catalog/buildings';
+import { loadTechTree } from '../catalog/techtree';
 
 /**
  * PreloadScene — heavy lifting before the game world appears.
@@ -81,6 +82,12 @@ export class PreloadScene extends Phaser.Scene {
         'building catalog',
         async () => {
           await loadCatalog();
+        },
+      ],
+      [
+        'tech tree',
+        async () => {
+          await loadTechTree();
         },
       ],
     ];
