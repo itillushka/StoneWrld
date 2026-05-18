@@ -16,6 +16,7 @@ import type {
 } from '../state/schema';
 import { CAPTAIN_LOG_MAX } from '../state/schema';
 import { voiceResearch } from '../mecha-senku/voice';
+import { compactN } from '../hud/format';
 
 /**
  * ResearchScene — the tech tree view.
@@ -76,19 +77,6 @@ interface NodeRender {
   y: number; // top-left y
 }
 
-/** Format a large number compactly: 200000 → 200k, 1500 → 1.5k, 1200000 → 1.2M. */
-function compactN(n: number): string {
-  if (n >= 1_000_000) {
-    const m = n / 1_000_000;
-    return `${m >= 10 ? Math.round(m) : Math.round(m * 10) / 10}M`;
-  }
-  if (n >= 10_000) return `${Math.round(n / 1_000)}k`;
-  if (n >= 1_000) {
-    const k = n / 1_000;
-    return `${Math.round(k * 10) / 10}k`;
-  }
-  return String(n);
-}
 
 export class ResearchScene extends Phaser.Scene {
   private nodesById = new Map<string, NodeRender>();
@@ -164,20 +152,34 @@ export class ResearchScene extends Phaser.Scene {
   }
 
   private renderHeader(): void {
+    // Opaque background bar so scrolled content (milestone-column labels)
+    // doesn't bleed through the static header. Per screenshot 04: without
+    // this mask, the M1-M7 labels were visible behind the "Research" title.
+    this.add
+      .rectangle(0, 0, this.viewportWidth(), PAD_Y, 0x0a1228, 1)
+      .setOrigin(0, 0)
+      .setDepth(50);
+    this.add
+      .rectangle(0, PAD_Y - 1, this.viewportWidth(), 1, 0x3a4868)
+      .setOrigin(0, 0)
+      .setDepth(50);
+
     this.add
       .text(this.viewportWidth() / 2, 24, 'Research', {
         fontFamily: 'Pixellari, monospace',
         fontSize: '32px',
         color: '#FFC940',
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(51);
     this.add
       .text(this.viewportWidth() / 2, 56, 'press Tab to return to the city', {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '8px',
         color: '#5C6E8E',
       })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setDepth(51);
   }
 
   private renderBranchLabels(): void {

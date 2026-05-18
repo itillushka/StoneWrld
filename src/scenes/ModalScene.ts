@@ -9,6 +9,7 @@ import { AppState } from '../state/app-state';
 import { categoryColorInt } from '../hud/category-colors';
 import { buildingIsResearched } from '../catalog/techtree';
 import { classifyLogEntry } from '../mecha-senku/voice';
+import { formatResourceList } from '../hud/format';
 import type { BuildingInstance, BuildingTier, ResourceKey } from '../state/schema';
 
 /**
@@ -742,32 +743,12 @@ export class ModalScene extends Phaser.Scene {
   // ---------- Formatting helpers ----------
 
   private formatCost(cost: Partial<Record<ResourceKey, number>>): string {
-    const labels: Record<ResourceKey, string> = {
-      knowledge: 'K',
-      discovery: 'D',
-      iron: 'I',
-      innovation: 'N',
-      completion: 'C',
-    };
-    return Object.entries(cost)
-      .map(([k, v]) => `${v}${labels[k as ResourceKey]}`)
-      .join(' + ');
+    return formatResourceList(cost, ' + ');
   }
 
   private formatPassive(p: Partial<Record<ResourceKey, number>>): string {
     if (Object.keys(p).length === 0) return 'none';
-    const labels: Record<ResourceKey, string> = {
-      knowledge: 'K',
-      discovery: 'D',
-      iron: 'I',
-      innovation: 'N',
-      completion: 'C',
-    };
-    return (
-      Object.entries(p)
-        .map(([k, v]) => `+${v}${labels[k as ResourceKey]}`)
-        .join(' ') + ' / hr'
-    );
+    return '+' + formatResourceList(p, ' +') + ' / hr';
   }
 
   private canAfford(

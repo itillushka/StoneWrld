@@ -24,6 +24,7 @@ assets/source-raw/
 # --- Coverage / test artifacts ---
 coverage/
 .nyc_output/
+.playwright-screenshots/
 
 # --- Editor / OS noise ---
 .vscode/
