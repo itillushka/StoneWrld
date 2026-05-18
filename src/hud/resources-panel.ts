@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import type { ResourceKey, StoneWorldState } from '../state/schema';
+import { computeCaps, isNearCap, NEAR_CAP_THRESHOLD } from '../economy/storage';
 
 /**
  * Resources panel — the 5-counter readout at the top of the HUD sidebar.
@@ -47,6 +48,14 @@ interface RowGameObjects {
   value: Phaser.GameObjects.Text;
   /** Last value we rendered — used to detect ticks for the flash highlight. */
   lastValue: number;
+  /** Optional fill-bar widgets — only created when the row first hits near-cap. */
+  fillTrack?: Phaser.GameObjects.Rectangle;
+  fillFill?: Phaser.GameObjects.Rectangle;
+  fillLabel?: Phaser.GameObjects.Text;
+  /** Width that the fillTrack spans. */
+  fillBarWidth?: number;
+  /** Y baseline of the fill-bar group (relative to panel container). */
+  fillBarY?: number;
 }
 
 export class ResourcesPanel {
@@ -98,7 +107,13 @@ export class ResourcesPanel {
       valueGo.setOrigin(1, 0.5); // right-anchored
 
       this.container.add([labelGo, nameGo, valueGo]);
-      this.rows.set(row.key, { label: labelGo, value: valueGo, lastValue: 0 });
+      this.rows.set(row.key, {
+        label: labelGo,
+        value: valueGo,
+        lastValue: 0,
+        fillBarY: rowY + ROW_HEIGHT / 2 + 4,
+        fillBarWidth: width - PANEL_PAD_X * 2,
+      });
     });
   }
 
@@ -106,26 +121,95 @@ export class ResourcesPanel {
    * Apply a fresh state to the panel. Numerals that changed since the
    * last update briefly flash KoS green to draw the eye, then return
    * to their canonical color.
+   *
+   * Phase 10 addition: fill bars appear beneath rows whose resource is
+   * within 10% of its silo cap. Bar turns red when fully at cap.
    */
   update(state: StoneWorldState, scene: Phaser.Scene): void {
+    const caps = computeCaps(state.buildings);
+
     for (const row of ROWS) {
       const go = this.rows.get(row.key);
       if (!go) continue;
 
       const current = state.resources[row.key] ?? 0;
-      if (current === go.lastValue) {
-        continue; // no change → skip
+      const cap = caps[row.key] ?? 0;
+
+      if (current !== go.lastValue) {
+        go.value.setText(formatNumber(current));
+        if (current > go.lastValue) {
+          this.flash(go.value, row.color, scene);
+        }
+        go.lastValue = current;
       }
 
-      go.value.setText(formatNumber(current));
-
-      // Flash highlight if the value INCREASED (the common case from hook ticks).
-      // Decrements (player spends in later phases) get no highlight — different cue.
-      if (current > go.lastValue) {
-        this.flash(go.value, row.color, scene);
-      }
-      go.lastValue = current;
+      // Cap-aware fill bar — show / hide / update based on threshold.
+      this.updateFillBar(scene, go, current, cap, row.color);
     }
+  }
+
+  private updateFillBar(
+    scene: Phaser.Scene,
+    go: RowGameObjects,
+    current: number,
+    cap: number,
+    rowColor: string,
+  ): void {
+    const showBar = isNearCap(current, cap);
+    if (!showBar) {
+      go.fillTrack?.destroy();
+      go.fillFill?.destroy();
+      go.fillLabel?.destroy();
+      go.fillTrack = undefined;
+      go.fillFill = undefined;
+      go.fillLabel = undefined;
+      return;
+    }
+
+    const atCap = current >= cap;
+    const fraction = Math.min(1, current / cap);
+    const totalW = go.fillBarWidth ?? 100;
+    const filledW = Math.max(2, Math.round(totalW * fraction));
+    const barY = go.fillBarY ?? 0;
+    const trackColor = 0x3a4868; // inactive grey
+    const fillColor = atCap ? 0xe84b4b : 0xf0a030; // red at cap, amber tight
+
+    if (!go.fillTrack) {
+      go.fillTrack = scene.add
+        .rectangle(PANEL_PAD_X, barY, totalW, 4, trackColor)
+        .setOrigin(0, 0);
+      this.container.add(go.fillTrack);
+    }
+    if (!go.fillFill) {
+      go.fillFill = scene.add
+        .rectangle(PANEL_PAD_X, barY, filledW, 4, fillColor)
+        .setOrigin(0, 0);
+      this.container.add(go.fillFill);
+    } else {
+      go.fillFill.width = filledW;
+      go.fillFill.setFillStyle(fillColor);
+    }
+    const pct = Math.round(fraction * 100);
+    const labelText = `${pct}% of ${formatNumber(cap)}`;
+    if (!go.fillLabel) {
+      go.fillLabel = scene.add
+        .text(PANEL_PAD_X, barY + 6, labelText, {
+          fontFamily: '"Press Start 2P", monospace',
+          fontSize: '6px',
+          color: atCap ? '#E84B4B' : '#F0A030',
+        })
+        .setOrigin(0, 0);
+      this.container.add(go.fillLabel);
+    } else {
+      go.fillLabel.setText(labelText);
+      go.fillLabel.setColor(atCap ? '#E84B4B' : '#F0A030');
+    }
+    void rowColor;
+  }
+
+  /** Threshold accessor exposed for tests / sanity checks. */
+  static get nearCapThreshold(): number {
+    return NEAR_CAP_THRESHOLD;
   }
 
   /** Brief tween: green flash → fade back to canonical color over 600ms. */

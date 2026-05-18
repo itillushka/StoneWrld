@@ -41,7 +41,20 @@ import {
   startBrownoutShake,
 } from '../city/render-networks';
 import { computeTrickleDelta, applyTrickleDelta } from '../economy/trickle';
-import { voiceBuild, voiceUpgrade, voiceBrownout } from '../mecha-senku/voice';
+import {
+  computeCaps,
+  clampResources,
+  isNearCap,
+  isAtCap,
+  SILO_DISPLAY_NAME,
+} from '../economy/storage';
+import {
+  voiceBuild,
+  voiceUpgrade,
+  voiceBrownout,
+  voiceStorageTight,
+  voiceStorageFull,
+} from '../mecha-senku/voice';
 import type { BuildingInstance, LogEntry, ResourceKey, StoneWorldState } from '../state/schema';
 import { CAPTAIN_LOG_MAX } from '../state/schema';
 
@@ -88,6 +101,8 @@ export class CityScene extends Phaser.Scene {
   // Speech bubble now lives in UIScene (overlay layer); CityScene fires
   // bubble:show events on the game bus to trigger it.
   private lastBrownoutSet = new Set<string>(); // networks currently in brownout, for edge-detect
+  private lastSiloTightSet = new Set<ResourceKey>();
+  private lastSiloFullSet = new Set<ResourceKey>();
 
   // Network rendering state — recreated on each rebuild.
   private haloImage?: Phaser.GameObjects.Image;
@@ -674,9 +689,14 @@ export class CityScene extends Phaser.Scene {
       dtMs: CityScene.TRICKLE_INTERVAL_MS,
       analysis,
     });
-    if (Object.keys(delta).length === 0) return;
 
-    // Update stats too — passive earnings.
+    // Phase 10: cap-aware accrual. Stats track what was EARNED (uncapped);
+    // resources track what we KEEP (clamped at silo caps).
+    const caps = computeCaps(state.buildings);
+    let updatedResources = applyTrickleDelta(state.resources, delta);
+    updatedResources = clampResources(updatedResources, caps);
+
+    // Update stats — passive earnings (uncapped, for player progress tracking).
     const newStats = { ...state.stats };
     const newPassive: Record<ResourceKey, number> = { ...state.stats.total_passive_earned };
     for (const [k, v] of Object.entries(delta) as Array<[ResourceKey, number]>) {
@@ -684,9 +704,19 @@ export class CityScene extends Phaser.Scene {
     }
     newStats.total_passive_earned = newPassive;
 
+    // Detect silo near-cap / full transitions — fire bubbles ONCE per crossing.
+    this.checkSiloThresholds(updatedResources, caps);
+
+    if (Object.keys(delta).length === 0) {
+      // No trickle delta this tick → no state write needed UNLESS the
+      // cap-clamp itself changed something (e.g. external state edit
+      // pushed values above cap). For simplicity always write on trickle.
+      return;
+    }
+
     const updated: StoneWorldState = {
       ...state,
-      resources: applyTrickleDelta(state.resources, delta),
+      resources: updatedResources,
       stats: newStats,
     };
     AppState.setState(updated);
@@ -695,6 +725,46 @@ export class CityScene extends Phaser.Scene {
     } catch (err) {
       console.error('[CityScene] trickle save failed:', err);
     }
+  }
+
+  /**
+   * Compare current resource levels against silo caps and emit Mecha Senku
+   * bubbles on threshold transitions. lastSiloTightSet + lastSiloFullSet
+   * track which resources were ALREADY tight/full last tick so we don't
+   * spam the bubble every 30 seconds.
+   */
+  private checkSiloThresholds(
+    resources: Record<ResourceKey, number>,
+    caps: Record<ResourceKey, number>,
+  ): void {
+    const RESOURCE_KEYS: ResourceKey[] = ['knowledge', 'discovery', 'iron', 'innovation', 'completion'];
+    const nowTight = new Set<ResourceKey>();
+    const nowFull = new Set<ResourceKey>();
+    for (const r of RESOURCE_KEYS) {
+      const c = resources[r] ?? 0;
+      const cap = caps[r] ?? 0;
+      if (isAtCap(c, cap)) nowFull.add(r);
+      else if (isNearCap(c, cap)) nowTight.add(r);
+    }
+
+    // Newly-full takes priority over newly-tight (full is more urgent).
+    for (const r of nowFull) {
+      if (!this.lastSiloFullSet.has(r)) {
+        const v = voiceStorageFull(SILO_DISPLAY_NAME[r], caps[r], `storage_full:${r}`);
+        this.game.events.emit('bubble:show', v);
+      }
+    }
+    for (const r of nowTight) {
+      // Only fire if not also full (otherwise tight bubble would override full).
+      if (nowFull.has(r)) continue;
+      if (!this.lastSiloTightSet.has(r)) {
+        const pct = Math.round((resources[r] / caps[r]) * 100);
+        const v = voiceStorageTight(SILO_DISPLAY_NAME[r], pct, `storage_tight:${r}`);
+        this.game.events.emit('bubble:show', v);
+      }
+    }
+    this.lastSiloTightSet = nowTight;
+    this.lastSiloFullSet = nowFull;
   }
 
   /** Window resize handler — update camera viewport. (Bubble lives in UIScene now.) */
