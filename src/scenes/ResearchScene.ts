@@ -39,14 +39,16 @@ import { voiceResearch } from '../mecha-senku/voice';
 
 const HUD_SIDEBAR_WIDTH = 256; // matches UIScene.SIDEBAR_WIDTH
 
-// Layout constants — tuned for ~85 nodes.
+// Layout constants — tuned for ~85 nodes across a viewport up to ~1500px wide.
 const PAD_X = 32;
 const PAD_Y = 64;
 const COLUMN_GAP = 4;
-const NODE_W = 124;
-const NODE_H = 44;
-const NODE_GAP_Y = 6;
+const NODE_W = 110;
+const NODE_H = 34;          // tighter than v1 (was 44) to fit dense cells
+const NODE_GAP_Y = 4;
 const HEADER_HEIGHT = 24;
+const LANE_LABEL_HEIGHT = 16;
+const MIN_LANE_HEIGHT = 44;
 
 // Color palette — design/06-style §State colors.
 const COLOR_LOCKED_FILL = 0x1b2d5c;
@@ -70,8 +72,22 @@ interface NodeRender {
   fill: Phaser.GameObjects.Rectangle;
   nameText: Phaser.GameObjects.Text;
   costText: Phaser.GameObjects.Text;
-  x: number; // top-left x
+  x: number; // top-left x (in scrollable content space, NOT screen space)
   y: number; // top-left y
+}
+
+/** Format a large number compactly: 200000 → 200k, 1500 → 1.5k, 1200000 → 1.2M. */
+function compactN(n: number): string {
+  if (n >= 1_000_000) {
+    const m = n / 1_000_000;
+    return `${m >= 10 ? Math.round(m) : Math.round(m * 10) / 10}M`;
+  }
+  if (n >= 10_000) return `${Math.round(n / 1_000)}k`;
+  if (n >= 1_000) {
+    const k = n / 1_000;
+    return `${Math.round(k * 10) / 10}k`;
+  }
+  return String(n);
 }
 
 export class ResearchScene extends Phaser.Scene {
@@ -79,6 +95,16 @@ export class ResearchScene extends Phaser.Scene {
   private arrows: Phaser.GameObjects.Graphics | null = null;
   private tooltip?: Phaser.GameObjects.Text;
   private unsubscribe?: () => void;
+  /** Holds all scrollable content (lanes, columns, nodes, arrows). */
+  private contentContainer?: Phaser.GameObjects.Container;
+  private contentMinY = 0;
+  private contentMaxY = 0;
+  private wheelHandler?: (
+    p: Phaser.Input.Pointer,
+    o: unknown,
+    dx: number,
+    dy: number,
+  ) => void;
 
   constructor() {
     super('ResearchScene');
@@ -96,11 +122,20 @@ export class ResearchScene extends Phaser.Scene {
     this.scale.on('resize', this.onResize, this);
     this.cameras.main.setBackgroundColor('#0A1228');
 
+    // Static header at the top of the viewport (above the scroll region).
     this.renderHeader();
+
+    // Scrollable content holds lanes, milestone columns, nodes, arrows.
+    const contentTop = PAD_Y;
+    this.contentContainer = this.add.container(0, contentTop);
+    this.contentContainer.setDepth(2);
+
     this.renderBranchLabels();
     this.renderMilestoneColumns();
     this.layoutAndRenderNodes();
     this.renderArrows();
+
+    this.setupScroll(contentTop);
 
     this.tooltip = this.add
       .text(0, 0, '', {
@@ -146,45 +181,52 @@ export class ResearchScene extends Phaser.Scene {
   }
 
   private renderBranchLabels(): void {
+    if (!this.contentContainer) return;
     const branches = listBranches();
     const laneHeight = this.computeLaneHeight();
     for (let i = 0; i < branches.length; i++) {
-      const y = PAD_Y + HEADER_HEIGHT + i * laneHeight + laneHeight / 2;
-      this.add
-        .text(8, y, branches[i]!, {
+      // Lane Y is relative to contentContainer (which is at y = PAD_Y).
+      const laneTop = HEADER_HEIGHT + i * laneHeight;
+
+      const label = this.add
+        .text(8, laneTop + LANE_LABEL_HEIGHT / 2, branches[i]!, {
           fontFamily: '"Press Start 2P", monospace',
           fontSize: '8px',
           color: '#F0EBD7',
         })
         .setOrigin(0, 0.5);
+      this.contentContainer.add(label);
 
       // Faint lane separator at the top of each lane (except the first).
       if (i > 0) {
-        this.add
+        const sep = this.add
           .rectangle(
             PAD_X,
-            PAD_Y + HEADER_HEIGHT + i * laneHeight,
+            laneTop,
             this.viewportWidth() - PAD_X * 2,
             1,
             0x3a4868,
           )
           .setOrigin(0, 0);
+        this.contentContainer.add(sep);
       }
     }
   }
 
   private renderMilestoneColumns(): void {
+    if (!this.contentContainer) return;
     const milestones = [1, 2, 3, 4, 5, 6, 7];
     const colWidth = this.computeColumnWidth();
     for (let i = 0; i < milestones.length; i++) {
       const x = PAD_X + i * colWidth;
-      this.add
-        .text(x + colWidth / 2, PAD_Y, `M${milestones[i]}`, {
+      const label = this.add
+        .text(x + colWidth / 2, 0, `M${milestones[i]}`, {
           fontFamily: 'Pixellari, monospace',
           fontSize: '14px',
           color: '#FFC940',
         })
         .setOrigin(0.5, 0);
+      this.contentContainer.add(label);
     }
   }
 
@@ -193,11 +235,23 @@ export class ResearchScene extends Phaser.Scene {
     return Math.floor((usable - 6 * COLUMN_GAP) / 7);
   }
 
+  /**
+   * Dynamic lane height — accommodates the densest (milestone, branch) cell.
+   * If the densest cell has N techs, the lane must fit N nodes vertically
+   * stacked, plus label + padding. Earlier version divided viewport
+   * height by branch count, which crushed dense cells.
+   */
   private computeLaneHeight(): number {
-    const branches = listBranches();
-    if (branches.length === 0) return 60;
-    const usable = this.scale.height - PAD_Y - HEADER_HEIGHT - 16;
-    return Math.floor(usable / branches.length);
+    let maxDensity = 1;
+    const counter = new Map<string, number>();
+    for (const t of listTechs()) {
+      const key = `${t.milestone}|${t.branch}`;
+      const c = (counter.get(key) ?? 0) + 1;
+      counter.set(key, c);
+      if (c > maxDensity) maxDensity = c;
+    }
+    const needed = LANE_LABEL_HEIGHT + maxDensity * (NODE_H + NODE_GAP_Y) + NODE_GAP_Y * 2;
+    return Math.max(MIN_LANE_HEIGHT, needed);
   }
 
   /**
@@ -228,12 +282,10 @@ export class ResearchScene extends Phaser.Scene {
       const idxInCell = cellTechs.indexOf(t);
 
       const x = PAD_X + (t.milestone - 1) * colWidth + 4;
-      // Position within lane: center base + stack offset.
-      const laneTop = PAD_Y + HEADER_HEIGHT + lane * laneHeight;
-      const y =
-        laneTop +
-        4 +
-        idxInCell * (NODE_H + NODE_GAP_Y);
+      // Y is RELATIVE to contentContainer (which is offset by PAD_Y).
+      // No PAD_Y added here — contentContainer's own y handles the offset.
+      const laneTop = HEADER_HEIGHT + lane * laneHeight + LANE_LABEL_HEIGHT;
+      const y = laneTop + idxInCell * (NODE_H + NODE_GAP_Y);
 
       const w = Math.min(NODE_W, colWidth - 8);
 
@@ -242,8 +294,10 @@ export class ResearchScene extends Phaser.Scene {
   }
 
   private renderNode(tech: TechEntry, x: number, y: number, w: number): void {
+    if (!this.contentContainer) return;
     const container = this.add.container(x, y);
     container.setDepth(2);
+    this.contentContainer.add(container);
 
     const border = this.add
       .rectangle(0, 0, w, NODE_H, COLOR_LOCKED_BORDER)
@@ -350,8 +404,10 @@ export class ResearchScene extends Phaser.Scene {
   }
 
   private renderArrows(): void {
+    if (!this.contentContainer) return;
     this.arrows?.destroy();
     this.arrows = this.add.graphics().setDepth(1);
+    this.contentContainer.add(this.arrows);
 
     for (const tech of listTechs()) {
       const dst = this.nodesById.get(tech.id);
@@ -366,13 +422,14 @@ export class ResearchScene extends Phaser.Scene {
 
   private drawArrow(src: NodeRender, dst: NodeRender): void {
     if (!this.arrows) return;
-    // Faint navy line by default.
-    this.arrows.lineStyle(1, 0x3a4868, 0.55);
+    // Subtle line — design/06-style §HUD principles, low-distraction prereq hint.
+    this.arrows.lineStyle(1, 0x3a4868, 0.4);
     const sx = src.x + NODE_W;
     const sy = src.y + NODE_H / 2;
     const dx = dst.x;
     const dy = dst.y + NODE_H / 2;
-    // Simple bezier curve for cross-branch readability.
+    // Orthogonal "S-curve": exit src's right edge, go halfway across,
+    // turn vertically, then approach dst's left edge.
     const mid = (sx + dx) / 2;
     this.arrows.beginPath();
     this.arrows.moveTo(sx, sy);
@@ -469,7 +526,7 @@ export class ResearchScene extends Phaser.Scene {
       completion: 'C',
     };
     return Object.entries(cost)
-      .map(([k, v]) => `${v}${labels[k as ResourceKey]}`)
+      .map(([k, v]) => `${compactN(v)}${labels[k as ResourceKey]}`)
       .join('+');
   }
 
@@ -491,9 +548,51 @@ export class ResearchScene extends Phaser.Scene {
   }
 
   /**
+   * Set up vertical scroll for the contentContainer. The dense-cell lane
+   * height can blow past the viewport, so we add a wheel handler that
+   * translates the container's Y, clamped to keep at least one row visible.
+   */
+  private setupScroll(contentTop: number): void {
+    if (!this.contentContainer) return;
+    const branches = listBranches();
+    const totalContentHeight =
+      HEADER_HEIGHT + branches.length * this.computeLaneHeight() + 32;
+    const visibleH = this.scale.height - contentTop - 16;
+
+    this.contentMinY = contentTop;
+    this.contentMaxY = Math.min(contentTop, contentTop - (totalContentHeight - visibleH));
+
+    if (totalContentHeight <= visibleH) {
+      return; // no overflow → no scroll needed
+    }
+
+    this.wheelHandler = (
+      _pointer: Phaser.Input.Pointer,
+      _objs: unknown,
+      _dx: number,
+      dy: number,
+    ) => {
+      if (!this.contentContainer) return;
+      const step = Math.sign(dy) * 48;
+      const next = this.contentContainer.y - step;
+      this.contentContainer.y = Phaser.Math.Clamp(next, this.contentMaxY, this.contentMinY);
+    };
+    this.input.on('wheel', this.wheelHandler);
+
+    // Tiny hint at the bottom of the viewport.
+    this.add
+      .text(this.viewportWidth() / 2, this.scale.height - 8, 'scroll wheel to see more', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '6px',
+        color: '#5C6E8E',
+      })
+      .setOrigin(0.5, 1);
+  }
+
+  /**
    * Window resize handler — re-clip camera. The tree layout uses
    * viewportWidth() dynamically already, but already-drawn nodes don't
-   * re-layout. For Phase 9.5 we accept a stale layout on resize; the
+   * re-layout. For now we accept a stale layout on resize; the
    * player can press Tab and come back for a fresh paint if needed.
    */
   private onResize(): void {
@@ -502,6 +601,10 @@ export class ResearchScene extends Phaser.Scene {
 
   private teardown(): void {
     this.scale.off('resize', this.onResize, this);
+    if (this.wheelHandler) {
+      this.input.off('wheel', this.wheelHandler);
+      this.wheelHandler = undefined;
+    }
     this.unsubscribe?.();
     this.unsubscribe = undefined;
     this.input.keyboard?.removeAllListeners('keydown-TAB');

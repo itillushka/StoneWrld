@@ -34,11 +34,16 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   /**
-   * Strip near-white background pixels by editing the texture's underlying
-   * canvas after Phaser finishes loading. The source PNG has no alpha
-   * channel; we chroma-key everything brighter than (240,240,240) to alpha 0.
+   * Strip the white background ONLY where it's connected to the image edge.
+   * Previous version naively thresholded across the whole image, which made
+   * interior near-white pixels (eye whites, glasses gleam, lab-coat highlights)
+   * also transparent — visually punched holes through Mecha Senku.
    *
-   * Re-keyed under 'mecha-senku-placeholder' so the consuming scenes
+   * Flood-fill from every edge pixel: only pixels that are (a) near-white
+   * AND (b) reachable from the canvas edge through other near-white pixels
+   * become transparent. White pixels surrounded by non-white stay opaque.
+   *
+   * Re-publishes under 'mecha-senku-placeholder' so the consuming scenes
    * don't have to know about the source-image quirk.
    */
   private chromaKeyMechaSenku(): void {
@@ -54,12 +59,51 @@ export class PreloadScene extends Phaser.Scene {
     ctx.drawImage(img, 0, 0);
     const data = ctx.getImageData(0, 0, w, h);
     const px = data.data;
-    for (let i = 0; i < px.length; i += 4) {
-      // Near-white → transparent (covers JPG-artifacted backgrounds too).
-      if (px[i]! > 240 && px[i + 1]! > 240 && px[i + 2]! > 240) {
-        px[i + 3] = 0;
-      }
+
+    const NEAR_WHITE = 240;
+    const visited = new Uint8Array(w * h);
+    const queue: number[] = []; // (y * w + x) cell indices
+
+    function isNearWhite(cellIdx: number): boolean {
+      const pxIdx = cellIdx * 4;
+      return (
+        px[pxIdx]! >= NEAR_WHITE &&
+        px[pxIdx + 1]! >= NEAR_WHITE &&
+        px[pxIdx + 2]! >= NEAR_WHITE
+      );
     }
+
+    function trySeed(x: number, y: number): void {
+      if (x < 0 || x >= w || y < 0 || y >= h) return;
+      const idx = y * w + x;
+      if (visited[idx]) return;
+      if (!isNearWhite(idx)) return;
+      visited[idx] = 1;
+      queue.push(idx);
+    }
+
+    // Seed from every edge pixel — top + bottom rows, left + right columns.
+    for (let x = 0; x < w; x++) {
+      trySeed(x, 0);
+      trySeed(x, h - 1);
+    }
+    for (let y = 0; y < h; y++) {
+      trySeed(0, y);
+      trySeed(w - 1, y);
+    }
+
+    // BFS flood — set every reachable near-white pixel to alpha 0.
+    while (queue.length > 0) {
+      const idx = queue.shift()!;
+      px[idx * 4 + 3] = 0;
+      const x = idx % w;
+      const y = (idx - x) / w;
+      trySeed(x + 1, y);
+      trySeed(x - 1, y);
+      trySeed(x, y + 1);
+      trySeed(x, y - 1);
+    }
+
     ctx.putImageData(data, 0, 0);
     if (this.textures.exists('mecha-senku-placeholder')) {
       this.textures.remove('mecha-senku-placeholder');
