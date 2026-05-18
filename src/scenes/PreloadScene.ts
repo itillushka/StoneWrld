@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { AppState } from '../state/app-state';
+import { fetchTerrainMap } from '../city/terrain';
 
 /**
  * PreloadScene — heavy lifting before the game world appears.
@@ -57,14 +58,22 @@ export class PreloadScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Phase 3 has exactly one loading step: state.json. As the catalog +
-    // atlases land in later phases, this list grows and the bar gets
-    // proper segments. For now we animate it across the single load.
+    // Per-phase load steps. The list grows as later phases add atlases /
+    // catalogs / factoids. Each step shows its label on the bar so a
+    // failing step is identifiable at a glance.
     const steps: Array<[string, () => Promise<void>]> = [
       [
         'state.json',
         async () => {
           await AppState.refresh();
+        },
+      ],
+      [
+        'terrain map',
+        async () => {
+          // Validate the map fetches + parses cleanly before CityScene tries
+          // to use it. Errors here are caught + surfaced on the bar.
+          await fetchTerrainMap();
         },
       ],
     ];
