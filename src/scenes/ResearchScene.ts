@@ -78,9 +78,26 @@ interface NodeRender {
 }
 
 
+/**
+ * One drawn arrow connecting two tech nodes. We keep a Graphics object
+ * per arrow so we can re-style individual arrows for hover-highlight
+ * without redrawing the whole edge set.
+ */
+interface ArrowRender {
+  srcId: string;
+  dstId: string;
+  graphics: Phaser.GameObjects.Graphics;
+  /** Default color (source branch color) when no node is hovered. */
+  baseColor: number;
+}
+
 export class ResearchScene extends Phaser.Scene {
   private nodesById = new Map<string, NodeRender>();
-  private arrows: Phaser.GameObjects.Graphics | null = null;
+  private arrows: ArrowRender[] = [];
+  /** Index: arrows arriving at this dst — used for hover-highlight. */
+  private arrowsByDst = new Map<string, ArrowRender[]>();
+  /** Index: arrows leaving this src — used for hover-highlight. */
+  private arrowsBySrc = new Map<string, ArrowRender[]>();
   private tooltip?: Phaser.GameObjects.Text;
   private unsubscribe?: () => void;
   /** Holds all scrollable content (lanes, columns, nodes, arrows). */
@@ -190,28 +207,20 @@ export class ResearchScene extends Phaser.Scene {
       // Lane Y is relative to contentContainer (which is at y = PAD_Y).
       const laneTop = HEADER_HEIGHT + i * laneHeight;
 
+      // Lane label in the branch's canonical color — gives the player
+      // a quick visual anchor that matches the arrow color (see drawArrow).
+      const branchColor = categoryColorInt(branches[i]!) || 0xf0ebd7;
+      const colorHex = `#${branchColor.toString(16).padStart(6, '0')}`;
       const label = this.add
         .text(8, laneTop + LANE_LABEL_HEIGHT / 2, branches[i]!, {
           fontFamily: '"Press Start 2P", monospace',
           fontSize: '8px',
-          color: '#F0EBD7',
+          color: colorHex,
         })
         .setOrigin(0, 0.5);
       this.contentContainer.add(label);
-
-      // Faint lane separator at the top of each lane (except the first).
-      if (i > 0) {
-        const sep = this.add
-          .rectangle(
-            PAD_X,
-            laneTop,
-            this.viewportWidth() - PAD_X * 2,
-            1,
-            0x3a4868,
-          )
-          .setOrigin(0, 0);
-        this.contentContainer.add(sep);
-      }
+      // Lane separators removed per co-captain — frees up visual space
+      // for the arrow ribbons.
     }
   }
 
@@ -346,8 +355,17 @@ export class ResearchScene extends Phaser.Scene {
 
     // Click hit area = fill rect.
     fill.setInteractive({ useHandCursor: true });
-    fill.on('pointerover', () => this.onNodeHover(tech, x, y));
-    fill.on('pointerout', () => this.tooltip?.setVisible(false));
+    fill.on('pointerover', () => {
+      this.onNodeHover(tech, x, y);
+      // Brighten arrows touching this node; dim everything else so the
+      // player can read THIS tech's prereq chain clearly.
+      this.restyleAllArrows(tech.id);
+    });
+    fill.on('pointerout', () => {
+      this.tooltip?.setVisible(false);
+      // Restore default styling.
+      this.restyleAllArrows(null);
+    });
     fill.on('pointerdown', () => void this.onNodeClick(tech));
 
     this.nodesById.set(tech.id, {
@@ -407,9 +425,11 @@ export class ResearchScene extends Phaser.Scene {
 
   private renderArrows(): void {
     if (!this.contentContainer) return;
-    this.arrows?.destroy();
-    this.arrows = this.add.graphics().setDepth(1);
-    this.contentContainer.add(this.arrows);
+    // Tear down any previous arrows.
+    for (const a of this.arrows) a.graphics.destroy();
+    this.arrows = [];
+    this.arrowsByDst.clear();
+    this.arrowsBySrc.clear();
 
     for (const tech of listTechs()) {
       const dst = this.nodesById.get(tech.id);
@@ -417,28 +437,127 @@ export class ResearchScene extends Phaser.Scene {
       for (const prereqId of tech.prereqs) {
         const src = this.nodesById.get(prereqId);
         if (!src) continue;
-        this.drawArrow(src, dst);
+        this.createArrow(src, dst);
       }
+    }
+    // Initial render at default styling (no hovered node).
+    this.restyleAllArrows(null);
+  }
+
+  /** Create the per-arrow Graphics object + index it. */
+  private createArrow(src: NodeRender, dst: NodeRender): void {
+    if (!this.contentContainer) return;
+    const baseColor = categoryColorInt(src.tech.branch) || 0x7a8ca8;
+    const g = this.add.graphics().setDepth(1);
+    this.contentContainer.add(g);
+
+    const ar: ArrowRender = {
+      srcId: src.tech.id,
+      dstId: dst.tech.id,
+      graphics: g,
+      baseColor,
+    };
+    this.arrows.push(ar);
+    this.arrowsByDst.set(dst.tech.id, [...(this.arrowsByDst.get(dst.tech.id) ?? []), ar]);
+    this.arrowsBySrc.set(src.tech.id, [...(this.arrowsBySrc.get(src.tech.id) ?? []), ar]);
+  }
+
+  /**
+   * Apply default / highlighted styling to every arrow based on which
+   * node (if any) is currently hovered:
+   *
+   *   - No hover            → all arrows at their default branch color, alpha 0.55
+   *   - Hovering tech T     → arrows touching T painted bright + opaque;
+   *                           ALL other arrows dimmed to alpha 0.1.
+   *
+   * Bezier curve from src's right-mid to dst's left-mid, with control
+   * points offset horizontally so cross-lane arrows arc smoothly instead
+   * of zig-zagging through orthogonal corners.
+   *
+   * Arrowhead is a small triangle at the destination side.
+   */
+  private restyleAllArrows(hoveredId: string | null): void {
+    // Default-view arrows are intentionally faint — with ~85 nodes and
+    // many cross-branch prereqs the graph is dense by nature; we rely on
+    // HOVER-HIGHLIGHT to make any specific tech's chain readable.
+    const dimAlpha = 0.08;
+    const baseAlpha = 0.28;
+    const highlightAlpha = 1.0;
+    const highlightColor = 0xffc940; // captain gold for the focused chain
+
+    const touched = new Set<string>();
+    if (hoveredId) {
+      for (const a of this.arrowsByDst.get(hoveredId) ?? []) touched.add(this.arrowKey(a));
+      for (const a of this.arrowsBySrc.get(hoveredId) ?? []) touched.add(this.arrowKey(a));
+    }
+
+    for (const ar of this.arrows) {
+      const isTouched = touched.has(this.arrowKey(ar));
+      const color = isTouched ? highlightColor : ar.baseColor;
+      const alpha = hoveredId === null
+        ? baseAlpha
+        : isTouched
+          ? highlightAlpha
+          : dimAlpha;
+      const lineWidth = isTouched ? 2.5 : 1;
+      this.drawArrowGraphics(ar, color, alpha, lineWidth);
     }
   }
 
-  private drawArrow(src: NodeRender, dst: NodeRender): void {
-    if (!this.arrows) return;
-    // Subtle line — design/06-style §HUD principles, low-distraction prereq hint.
-    this.arrows.lineStyle(1, 0x3a4868, 0.4);
+  private arrowKey(a: ArrowRender): string {
+    return `${a.srcId}→${a.dstId}`;
+  }
+
+  private drawArrowGraphics(
+    ar: ArrowRender,
+    color: number,
+    alpha: number,
+    lineWidth: number,
+  ): void {
+    const src = this.nodesById.get(ar.srcId);
+    const dst = this.nodesById.get(ar.dstId);
+    if (!src || !dst) return;
+    const w = Math.min(NODE_W, src.fill.width + 4); // approx node width — fine for layout
+    void w;
+
     const sx = src.x + NODE_W;
     const sy = src.y + NODE_H / 2;
     const dx = dst.x;
     const dy = dst.y + NODE_H / 2;
-    // Orthogonal "S-curve": exit src's right edge, go halfway across,
-    // turn vertically, then approach dst's left edge.
-    const mid = (sx + dx) / 2;
-    this.arrows.beginPath();
-    this.arrows.moveTo(sx, sy);
-    this.arrows.lineTo(mid, sy);
-    this.arrows.lineTo(mid, dy);
-    this.arrows.lineTo(dx, dy);
-    this.arrows.strokePath();
+
+    const g = ar.graphics;
+    g.clear();
+
+    // Bezier: exit src horizontally, sweep across, arrive at dst horizontally.
+    // Control points are 40% of the horizontal distance, on each side.
+    const span = Math.max(40, dx - sx);
+    const ctrlOffset = span * 0.4;
+    const c1x = sx + ctrlOffset;
+    const c1y = sy;
+    const c2x = dx - ctrlOffset;
+    const c2y = dy;
+
+    // Phaser Graphics has no native bezier — sample the curve via
+    // Phaser.Curves.CubicBezier and stroke as a connected polyline.
+    const curve = new Phaser.Curves.CubicBezier(
+      new Phaser.Math.Vector2(sx, sy),
+      new Phaser.Math.Vector2(c1x, c1y),
+      new Phaser.Math.Vector2(c2x, c2y),
+      new Phaser.Math.Vector2(dx, dy),
+    );
+    const points = curve.getPoints(24);
+    g.lineStyle(lineWidth, color, alpha);
+    g.strokePoints(points, false, false);
+
+    // Arrowhead at the destination — small triangle pointing into the node.
+    const arrowSize = lineWidth >= 2 ? 8 : 6;
+    g.fillStyle(color, alpha);
+    g.beginPath();
+    g.moveTo(dx, dy);
+    g.lineTo(dx - arrowSize, dy - arrowSize / 2);
+    g.lineTo(dx - arrowSize, dy + arrowSize / 2);
+    g.closePath();
+    g.fillPath();
   }
 
   private async onNodeClick(tech: TechEntry): Promise<void> {

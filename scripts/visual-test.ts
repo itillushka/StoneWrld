@@ -89,6 +89,15 @@ async function main(): Promise<void> {
   await page.waitForTimeout(300);
   await shoot(page, '04-research-scrolled');
 
+  // Hover over a tech node to verify the arrow-highlight focus mode.
+  // Scroll back to top first so M2 column is at predictable y.
+  await page.mouse.wheel(0, -1000);
+  await page.waitForTimeout(300);
+  // Iron Smelting sits in Materials lane, M2 column — roughly here:
+  await page.mouse.move(285, 158);
+  await page.waitForTimeout(300);
+  await shoot(page, '04b-research-hover');
+
   // Tab back to City.
   await page.keyboard.press('Tab');
   await page.waitForTimeout(600);
