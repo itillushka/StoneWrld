@@ -28,18 +28,22 @@ export class BootScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.scale;
 
+    // Pixellari is native 16px; render at integer multiples (32px = 2×) for
+    // pixel-perfect sharpness with Phaser's pixelArt + roundPixels.
     this.add
       .text(width / 2, height / 2, 'StoneWrld — boot', {
-        fontFamily: 'monospace',
+        fontFamily: 'Pixellari, monospace',
         fontSize: '32px',
         color: '#F0EBD7',
       })
       .setOrigin(0.5);
 
+    // Press Start 2P at 12px = 1.5× of its native 8px grid → mild blur.
+    // Use 16px (2× native) for crispness.
     this.add
-      .text(width / 2, height / 2 + 48, 'Phase 1 — state API', {
-        fontFamily: 'monospace',
-        fontSize: '14px',
+      .text(width / 2, height / 2 + 64, 'Phase 1 — state API', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '16px',
         color: '#FFC940', // captain gold
       })
       .setOrigin(0.5);
@@ -51,9 +55,9 @@ export class BootScene extends Phaser.Scene {
 
   private smokeTestStateApi(width: number, height: number): void {
     const statusText = this.add
-      .text(width / 2, height / 2 + 96, 'state: loading…', {
-        fontFamily: 'monospace',
-        fontSize: '12px',
+      .text(width / 2, height / 2 + 128, 'state: loading…', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '8px',
         color: '#5C6E8E', // inactive grey while pending
       })
       .setOrigin(0.5);
@@ -64,8 +68,8 @@ export class BootScene extends Phaser.Scene {
           `state: v${state.version} • ` +
           `milestone=${state.milestone} • ` +
           `buildings=${state.buildings.length} • ` +
-          `📚${state.resources.knowledge} 🔭${state.resources.discovery} ` +
-          `⛓${state.resources.iron} ⚡${state.resources.innovation} 🏁${state.resources.completion}`;
+          `K${state.resources.knowledge} D${state.resources.discovery} ` +
+          `I${state.resources.iron} N${state.resources.innovation} C${state.resources.completion}`;
         statusText.setText(summary).setColor('#7CD16A'); // KoS green
         console.log('[StoneWrld] State loaded:', state);
       })
