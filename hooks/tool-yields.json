@@ -1,0 +1,26 @@
+{
+  "_description": "Tool → resource yields per design/02-game-logic §Resource yields. Single source of truth for both the PostToolUse hook (hooks/stoneworld.js) and the in-game tooltip / Captain's-Log display (Phase 9+). Values are STRUCTURE-locked, NUMBERS get tuned during playtest (per design/08-architecture §Decisions to confirm #3).",
+  "tools": {
+    "Edit": { "innovation": 2 },
+    "MultiEdit": { "innovation": 3 },
+    "Write": { "innovation": 3 },
+    "Read": { "knowledge": 1 },
+    "Bash": { "innovation": 1, "iron": 1 },
+    "Agent": { "discovery": 10 },
+    "Agent.gen-negotiator": { "discovery": 8 },
+    "Agent.kohaku-guard": { "discovery": 8 },
+    "Skill": { "knowledge": 3 },
+    "WebFetch": { "discovery": 2 },
+    "WebSearch": { "discovery": 2 },
+    "Grep": { "knowledge": 1 },
+    "Glob": { "knowledge": 1 },
+    "TodoWrite": { "innovation": 1 }
+  },
+  "bash_patterns": {
+    "^git commit": { "completion": 20 },
+    "^git push": { "completion": 10 },
+    "^gh pr create": { "completion": 15 },
+    "^(npm test|npm run test|vitest)": { "completion": 5 },
+    "^(uv run pytest|pytest)": { "completion": 5 }
+  }
+}

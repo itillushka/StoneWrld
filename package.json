@@ -23,7 +23,9 @@
     "test": "vitest run",
     "test:ui": "vitest --ui --port 5102",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "hook:install": "node hooks/install.js",
+    "hook:uninstall": "node hooks/uninstall.js"
   },
   "dependencies": {
     "phaser": "^3.80.0"
