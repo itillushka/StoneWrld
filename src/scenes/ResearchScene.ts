@@ -597,6 +597,9 @@ export class ResearchScene extends Phaser.Scene {
       captain_log: this.appendLog(state.captain_log, voiced),
     };
     AppState.setState(updated);
+    // Speech bubble (now in UIScene overlay) shows the message on top of
+    // ResearchScene as well — no need to Tab back to City to see it.
+    this.game.events.emit('bubble:show', voiced);
     try {
       await saveState(updated);
     } catch (err) {

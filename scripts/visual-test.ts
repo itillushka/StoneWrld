@@ -57,6 +57,21 @@ async function main(): Promise<void> {
   console.log('Screenshots:');
   await shoot(page, '01-city-default');
 
+  // Fire a bubble:show event directly so we can verify the new bubble size + position.
+  await page.evaluate(() => {
+    // Grab the Phaser game via the canvas's debug hook.
+    type GameWithEvents = { events: { emit: (k: string, e: unknown) => void } };
+    const game = (window as unknown as { game?: GameWithEvents }).game;
+    if (!game) return;
+    game.events.emit('bubble:show', {
+      ts: new Date().toISOString(),
+      operational: 'Profit. Settler Hut T2 on the deck — production scales. The deck has more hands.',
+      trigger: 'build:settler_hut:2',
+    });
+  });
+  await page.waitForTimeout(500);
+  await shoot(page, '01b-city-with-bubble');
+
   // Open Build modal.
   console.log('Clicking [ Build ]…');
   // The button text is rendered to canvas — we can't click by text. Instead

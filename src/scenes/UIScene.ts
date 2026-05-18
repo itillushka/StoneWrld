@@ -1,7 +1,8 @@
 import Phaser from 'phaser';
 import { AppState } from '../state/app-state';
 import { ResourcesPanel } from '../hud/resources-panel';
-import type { StoneWorldState } from '../state/schema';
+import { SpeechBubble } from '../mecha-senku/speech-bubble';
+import type { LogEntry, StoneWorldState } from '../state/schema';
 import type { NetworkAnalysis } from '../economy/network';
 
 /**
@@ -30,6 +31,7 @@ export class UIScene extends Phaser.Scene {
   private networksText?: Phaser.GameObjects.Text;
   private pollTimer?: Phaser.Time.TimerEvent;
   private unsubscribe?: () => void;
+  private speechBubble?: SpeechBubble;
 
   constructor() {
     super('UIScene');
@@ -64,6 +66,14 @@ export class UIScene extends Phaser.Scene {
     this.repositionSidebar();
     this.scale.on('resize', this.repositionSidebar, this);
 
+    // Mecha Senku speech bubble lives in UIScene now (overlay layer) so it
+    // floats above both CityScene and ResearchScene. Anchored bottom-left
+    // of the WINDOW, repositions on resize.
+    this.speechBubble = new SpeechBubble(this, this.bubbleAnchor());
+
+    // Cross-scene wiring: anyone can fire bubble:show on game.events.
+    this.game.events.on('bubble:show', this.onBubbleShow, this);
+
     // Subscribe + start polling (unchanged from Phase 3).
     this.unsubscribe = AppState.subscribe((state) => this.applyState(state));
     this.pollTimer = this.time.addEvent({
@@ -91,6 +101,23 @@ export class UIScene extends Phaser.Scene {
     if (this.statusText) {
       this.statusText.setPosition(sidebarW / 2, this.scale.height - 16);
     }
+
+    // Speech bubble re-anchors to bottom-left of canvas.
+    if (this.speechBubble) {
+      const a = this.bubbleAnchor();
+      this.speechBubble.setPosition(a.x, a.y);
+    }
+  }
+
+  /** Bottom-left anchor for the SpeechBubble — 16px in, 16px above bottom. */
+  private bubbleAnchor(): { x: number; y: number } {
+    // Bubble portrait height = 168, total widget height ~168.
+    return { x: 16, y: this.scale.height - 184 };
+  }
+
+  /** Global bubble:show handler — any scene can fire it on game.events. */
+  private onBubbleShow(entry: LogEntry): void {
+    this.speechBubble?.setEntry(entry);
   }
 
   private buildMechaSenkuPortrait(sidebarW: number): void {
@@ -309,9 +336,12 @@ export class UIScene extends Phaser.Scene {
 
   private teardown(): void {
     this.scale.off('resize', this.repositionSidebar, this);
+    this.game.events.off('bubble:show', this.onBubbleShow, this);
     this.pollTimer?.remove();
     this.pollTimer = undefined;
     this.unsubscribe?.();
     this.unsubscribe = undefined;
+    this.speechBubble?.destroy();
+    this.speechBubble = undefined;
   }
 }

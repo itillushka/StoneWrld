@@ -50,7 +50,11 @@ async function bootstrap(): Promise<void> {
     // is strict about NOT shipping with the wrong font).
     console.warn('[StoneWrld] Font preload failed:', err);
   }
-  new Phaser.Game(gameConfig);
+  const game = new Phaser.Game(gameConfig);
+  // Expose for the headless visual-test (scripts/visual-test.ts) and
+  // ad-hoc browser-console debugging. Captain-only; no production code
+  // should pull from window.game.
+  (window as unknown as { game?: Phaser.Game }).game = game;
 }
 
 bootstrap();

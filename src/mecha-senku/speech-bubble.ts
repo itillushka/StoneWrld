@@ -21,7 +21,12 @@ import { classifyLogEntry } from './voice';
 
 const BUBBLE_PERSISTENCE_MS = 6000;
 const BUBBLE_FADE_OUT_MS = 800;
-const PORTRAIT_DISPLAY_SIZE = 84; // matches the source sprite native size
+// Portrait + bubble doubled relative to the v1 84/480-wide sizing per
+// co-captain's "way bigger" request. Source sprite scales 2× to 168px
+// via nearest-neighbour (keeps pixel-art sharp).
+const PORTRAIT_DISPLAY_SIZE = 168;
+const BUBBLE_WIDTH = 900;
+const BUBBLE_HEIGHT = 168;
 
 export interface SpeechBubbleOptions {
   /** Anchor x in canvas pixels (top-left of the portrait+bubble). */
@@ -46,45 +51,48 @@ export class SpeechBubble {
     this.scene = scene;
 
     // Container holds the portrait + bubble together, anchored in screen
-    // space (scrollFactor 0) so it doesn't pan with the camera.
+    // space (scrollFactor 0) so it doesn't pan with the camera. Lives in
+    // UIScene now (per co-captain) so it overlays both CityScene and
+    // ResearchScene at the same layer as the sidebar.
     this.container = scene.add.container(opts.x, opts.y);
     this.container.setDepth(100).setScrollFactor(0);
 
-    // Portrait — Mecha Senku placeholder (84 × 84 native).
+    // Portrait — Mecha Senku 168×168 (2× the native 84px source via
+    // nearest-neighbour, stays pixel-sharp).
     this.portrait = scene.add
       .image(0, 0, 'mecha-senku-placeholder')
       .setOrigin(0, 0)
       .setDisplaySize(PORTRAIT_DISPLAY_SIZE, PORTRAIT_DISPLAY_SIZE);
     this.container.add(this.portrait);
 
-    // Bubble background — to the right of the portrait.
-    const bubbleX = PORTRAIT_DISPLAY_SIZE + 12;
-    const bubbleW = 480;
-    const bubbleH = 80;
+    // Bubble background — to the right of the portrait, sized to fit the
+    // doubled portrait height.
+    const bubbleX = PORTRAIT_DISPLAY_SIZE + 16;
     this.bubbleBg = scene.add
-      .rectangle(bubbleX, 0, bubbleW, bubbleH, 0x0f1f4d)
+      .rectangle(bubbleX, 0, BUBBLE_WIDTH, BUBBLE_HEIGHT, 0x0f1f4d)
       .setOrigin(0, 0)
-      .setStrokeStyle(2, 0xffc940);
+      .setStrokeStyle(4, 0xffc940);
     this.container.add(this.bubbleBg);
 
-    // Heading label inside the bubble.
+    // Heading label inside the bubble — 32px Pixellari (2× native).
     this.bubbleLabel = scene.add
-      .text(bubbleX + 12, 8, 'Mecha Senku', {
+      .text(bubbleX + 20, 16, 'Mecha Senku', {
         fontFamily: 'Pixellari, monospace',
-        fontSize: '16px',
+        fontSize: '32px',
         color: '#FFC940',
       })
       .setOrigin(0, 0);
     this.container.add(this.bubbleLabel);
 
-    // Operational body line.
+    // Operational body line — 16px Press Start 2P (2× native), word-wrapped
+    // to bubble width with generous line spacing.
     this.bubbleBody = scene.add
-      .text(bubbleX + 12, 30, '', {
+      .text(bubbleX + 20, 64, '', {
         fontFamily: '"Press Start 2P", monospace',
-        fontSize: '10px',
+        fontSize: '16px',
         color: '#F0EBD7',
-        wordWrap: { width: bubbleW - 24 },
-        lineSpacing: 4,
+        wordWrap: { width: BUBBLE_WIDTH - 40 },
+        lineSpacing: 8,
       })
       .setOrigin(0, 0);
     this.container.add(this.bubbleBody);

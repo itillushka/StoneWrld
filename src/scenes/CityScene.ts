@@ -41,7 +41,6 @@ import {
   startBrownoutShake,
 } from '../city/render-networks';
 import { computeTrickleDelta, applyTrickleDelta } from '../economy/trickle';
-import { SpeechBubble } from '../mecha-senku/speech-bubble';
 import { voiceBuild, voiceUpgrade, voiceBrownout } from '../mecha-senku/voice';
 import type { BuildingInstance, LogEntry, ResourceKey, StoneWorldState } from '../state/schema';
 import { CAPTAIN_LOG_MAX } from '../state/schema';
@@ -86,8 +85,8 @@ export class CityScene extends Phaser.Scene {
   private placementPreview?: Phaser.GameObjects.Container;
   private placementTooltip?: Phaser.GameObjects.Text;
 
-  // Bottom-left speech bubble (Phase 9 real widget).
-  private speechBubble?: SpeechBubble;
+  // Speech bubble now lives in UIScene (overlay layer); CityScene fires
+  // bubble:show events on the game bus to trigger it.
   private lastBrownoutSet = new Set<string>(); // networks currently in brownout, for edge-detect
 
   // Network rendering state — recreated on each rebuild.
@@ -257,7 +256,7 @@ export class CityScene extends Phaser.Scene {
 
     // Speech bubble: announce placement mode via the same channel the
     // voiced events use, so the visual cue is consistent.
-    this.speechBubble?.setEntry({
+    this.game.events.emit('bubble:show', {
       ts: new Date().toISOString(),
       operational: `Placing ${entry.name}. Click a green tile to build. Right-click or Esc to cancel.`,
       trigger: 'placement:start',
@@ -372,7 +371,7 @@ export class CityScene extends Phaser.Scene {
         total_buildings_placed: state.stats.total_buildings_placed + 1,
       },
     };
-    this.speechBubble?.setEntry(voiced);
+    this.game.events.emit("bubble:show", voiced);
 
     // Optimistic UI: render + animate immediately. saveState() persists in
     // background. If save fails, AppState's next poll snaps the world back
@@ -424,15 +423,10 @@ export class CityScene extends Phaser.Scene {
 
   // ---------- Speech bubble placeholder ----------
 
-  private renderSpeechBubblePlaceholder(viewportW: number, viewportH: number): void {
-    void viewportW;
-
-    // Mecha Senku speech bubble — bottom-left of canvas per design/06-style.
-    // Portrait at (16, viewportH - 100), bubble extends to the right.
-    this.speechBubble = new SpeechBubble(this, {
-      x: 16,
-      y: viewportH - 100,
-    });
+  private renderSpeechBubblePlaceholder(_viewportW: number, _viewportH: number): void {
+    // Bubble lives in UIScene now (overlay layer above both CityScene and
+    // ResearchScene). CityScene fires bubble:show events on the game bus.
+    // Method kept as a no-op stub so the existing create() call doesn't break.
   }
 
   private renderTerrainLoadFailure(w: number, h: number, err: unknown): void {
@@ -510,7 +504,7 @@ export class CityScene extends Phaser.Scene {
       buildings: updatedBuildings,
       captain_log: this.appendLog(state.captain_log, voiced),
     };
-    this.speechBubble?.setEntry(voiced);
+    this.game.events.emit("bubble:show", voiced);
 
     // Optimistic UI: re-render sprite at the new tier + animate.
     const newContainer = replaceBuildingRender(this, upgraded);
@@ -594,7 +588,7 @@ export class CityScene extends Phaser.Scene {
         net.demand,
         `brownout:${net.id}`,
       );
-      this.speechBubble?.setEntry(voiced);
+      this.game.events.emit("bubble:show", voiced);
       // Record the brownout in captain_log; this triggers another setState
       // but the brownout-set is now in lastBrownoutSet so we won't loop.
       const state = AppState.getState();
@@ -703,11 +697,9 @@ export class CityScene extends Phaser.Scene {
     }
   }
 
-  /** Window resize handler — update camera viewport + reposition the speech bubble. */
+  /** Window resize handler — update camera viewport. (Bubble lives in UIScene now.) */
   private onResize(): void {
     this.cameras.main.setViewport(0, 0, this.viewportWidth, this.viewportHeight);
-    // Speech bubble lives 16px in from left, 100px above bottom.
-    this.speechBubble?.setPosition(16, this.viewportHeight - 100);
   }
 
   private teardown(): void {
