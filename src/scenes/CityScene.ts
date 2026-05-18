@@ -46,6 +46,10 @@ import { voiceBuild, voiceUpgrade, voiceBrownout } from '../mecha-senku/voice';
 import type { BuildingInstance, LogEntry, ResourceKey, StoneWorldState } from '../state/schema';
 import { CAPTAIN_LOG_MAX } from '../state/schema';
 
+// Sidebar width — must match UIScene.SIDEBAR_WIDTH. Imported via static
+// lookup to avoid a hard dep cycle between scenes.
+const HUD_SIDEBAR_WIDTH = 256;
+
 /**
  * CityScene — the main game world.
  *
@@ -62,9 +66,16 @@ import { CAPTAIN_LOG_MAX } from '../state/schema';
  * 1280 × 800 canvas — UIScene owns the right 256 px.
  */
 export class CityScene extends Phaser.Scene {
-  public static readonly VIEWPORT_WIDTH = 1024;
   public static readonly DEFAULT_ZOOM_INDEX = 1;
   private static readonly CAMERA_MARGIN_PX = 2 * TILE_SIZE;
+
+  /** Computed dynamically from current canvas size (window resize friendly). */
+  private get viewportWidth(): number {
+    return Math.max(320, this.scale.width - HUD_SIDEBAR_WIDTH);
+  }
+  private get viewportHeight(): number {
+    return this.scale.height;
+  }
 
   private cameraTeardown?: () => void;
   private terrainMap?: TerrainMap;
@@ -93,10 +104,14 @@ export class CityScene extends Phaser.Scene {
   async create(): Promise<void> {
     resetBuildingRenderCache();
 
-    const viewportW = CityScene.VIEWPORT_WIDTH;
-    const viewportH = this.scale.height;
+    const viewportW = this.viewportWidth;
+    const viewportH = this.viewportHeight;
 
     this.cameras.main.setViewport(0, 0, viewportW, viewportH);
+
+    // React to window resize — keep the camera viewport flush with the
+    // window width minus the right-anchored HUD sidebar.
+    this.scale.on('resize', this.onResize, this);
 
     // Load terrain. Bail with red banner if the map fetch fails.
     try {
@@ -688,7 +703,15 @@ export class CityScene extends Phaser.Scene {
     }
   }
 
+  /** Window resize handler — update camera viewport + reposition the speech bubble. */
+  private onResize(): void {
+    this.cameras.main.setViewport(0, 0, this.viewportWidth, this.viewportHeight);
+    // Speech bubble lives 16px in from left, 100px above bottom.
+    this.speechBubble?.setPosition(16, this.viewportHeight - 100);
+  }
+
   private teardown(): void {
+    this.scale.off('resize', this.onResize, this);
     this.cameraTeardown?.();
     this.cameraTeardown = undefined;
     this.brownoutShake?.stop();

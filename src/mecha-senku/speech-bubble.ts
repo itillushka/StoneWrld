@@ -79,7 +79,7 @@ export class SpeechBubble {
 
     // Operational body line.
     this.bubbleBody = scene.add
-      .text(bubbleX + 12, 30, 'Stone World — your village awaits.', {
+      .text(bubbleX + 12, 30, '', {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '10px',
         color: '#F0EBD7',
@@ -96,8 +96,11 @@ export class SpeechBubble {
       this.hideNow();
     });
 
-    // Idle state — display the welcome placeholder.
-    this.fadeIn();
+    // Start fully hidden — bubble only appears when setEntry() fires
+    // (e.g. build / upgrade / brownout / research). Per co-captain's
+    // request: pop on event, disappear after 6s, stay invisible otherwise.
+    this.container.setAlpha(0);
+    this.container.setVisible(false);
   }
 
   /** Register a callback fired when the player click-dismisses a real entry. */
@@ -116,24 +119,21 @@ export class SpeechBubble {
       .setText(entry.operational)
       .setColor('#F0EBD7');
 
-    // Restart visibility cycle.
-    this.container.setAlpha(1);
+    // Pop in: container becomes visible + fades from 0 → 1 over 200ms.
     this.fadeTween?.stop();
-    this.fadeTween = undefined;
     this.hideTimer?.remove();
+    this.container.setVisible(true);
+    this.fadeTween = this.scene.tweens.add({
+      targets: this.container,
+      alpha: { from: 0, to: 1 },
+      duration: 200,
+      ease: 'Cubic.easeOut',
+    });
+
+    // Schedule fade-out + hide.
     this.hideTimer = this.scene.time.delayedCall(BUBBLE_PERSISTENCE_MS, () =>
       this.fadeOut(),
     );
-  }
-
-  private fadeIn(): void {
-    this.container.setAlpha(0);
-    this.scene.tweens.add({
-      targets: this.container,
-      alpha: 1,
-      duration: 300,
-      ease: 'Cubic.easeOut',
-    });
   }
 
   private fadeOut(): void {
@@ -142,6 +142,10 @@ export class SpeechBubble {
       alpha: 0,
       duration: BUBBLE_FADE_OUT_MS,
       ease: 'Cubic.easeIn',
+      onComplete: () => {
+        // Fully invisible AND non-interactive once the tween settles.
+        this.container.setVisible(false);
+      },
     });
   }
 
@@ -150,7 +154,12 @@ export class SpeechBubble {
     this.hideTimer = undefined;
     this.fadeTween?.stop();
     this.fadeTween = undefined;
-    this.container.setAlpha(0);
+    this.container.setAlpha(0).setVisible(false);
+  }
+
+  /** Allow CityScene to reposition on window resize. */
+  setPosition(x: number, y: number): void {
+    this.container.setPosition(x, y);
   }
 
   destroy(): void {

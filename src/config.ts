@@ -31,14 +31,17 @@ import { ResearchScene } from './scenes/ResearchScene';
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   parent: 'game',
-  width: 1280,
-  height: 800,
   backgroundColor: '#0A1228',
   pixelArt: true,
   roundPixels: true,
   scale: {
-    mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    // RESIZE mode: the Phaser canvas fills its parent (which we size to
+    // the browser window in index.html). City + UI scenes react to
+    // resize events to keep the HUD anchored to the right edge of the
+    // window rather than a fixed 1280px canvas.
+    mode: Phaser.Scale.RESIZE,
+    width: '100%',
+    height: '100%',
   },
   scene: [BootScene, PreloadScene, CityScene, ResearchScene, UIScene, ModalScene],
 };

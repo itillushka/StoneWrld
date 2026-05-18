@@ -7,28 +7,24 @@ import type { NetworkAnalysis } from '../economy/network';
 /**
  * UIScene — the persistent HUD overlay.
  *
- * Per design/08-architecture §Per-scene responsibility:
- *   Renders the 256-px sidebar on the right edge of the canvas. Persists
- *   across CityScene ↔ ResearchScene transitions (Phase 8). Always on top
- *   of the city / research scenes, always under ModalScene (Phase 5).
+ * After Phase 9 fix: with Scale.RESIZE in src/config.ts the canvas now
+ * fills the browser window. The sidebar lives inside a Container which
+ * we re-anchor to (window.width - SIDEBAR_WIDTH) on every resize event.
+ * No more "dark navy bars on the side" — the HUD sits flush against the
+ * right edge regardless of window size.
  *
- * Phase 3 (this iteration):
- *   - Sidebar background (surface navy)
- *   - Mecha Senku inline portrait placeholder at the top
- *   - ResourcesPanel — 5 live counters that poll state every 5s
- *   - Footer with milestone + version
- *
- * Phases 7 / 8 / 9 / 13 add the Networks panel, action buttons, Captain's Log
- * scrollback, and overlay-toggle panel respectively.
+ * Resources panel, Networks panel, action buttons, and Mecha Senku
+ * portrait all use COORDINATES RELATIVE TO THE SIDEBAR (0..SIDEBAR_WIDTH),
+ * not absolute screen coords. The container's position handles the actual
+ * placement.
  */
 export class UIScene extends Phaser.Scene {
-  /** Sidebar geometry — locked in design/05-map §HUD layout. */
-  public static readonly SIDEBAR_X = 1024;
   public static readonly SIDEBAR_WIDTH = 256;
-
-  /** Polling interval per design/09-roadmap §Phase 3. */
   private static readonly POLL_INTERVAL_MS = 5000;
 
+  private sidebarContainer!: Phaser.GameObjects.Container;
+  private sidebarBg!: Phaser.GameObjects.Rectangle;
+  private sidebarSeparator!: Phaser.GameObjects.Rectangle;
   private resourcesPanel?: ResourcesPanel;
   private statusText?: Phaser.GameObjects.Text;
   private networksText?: Phaser.GameObjects.Text;
@@ -40,112 +36,128 @@ export class UIScene extends Phaser.Scene {
   }
 
   create(): void {
-    const sidebarX = UIScene.SIDEBAR_X;
     const sidebarW = UIScene.SIDEBAR_WIDTH;
-    const sidebarH = this.scale.height;
 
-    // Sidebar background — surface navy per design/06-style §Core surfaces.
-    this.add
-      .rectangle(sidebarX, 0, sidebarW, sidebarH, 0x1b2d5c)
+    // Container holds the entire HUD. All children use container-relative
+    // coordinates (x: 0..sidebarW, y: 0..scene-height).
+    this.sidebarContainer = this.add.container(0, 0);
+    this.sidebarContainer.setDepth(50);
+
+    // Sidebar background — full height. Recreated on resize.
+    this.sidebarBg = this.add
+      .rectangle(0, 0, sidebarW, this.scale.height, 0x1b2d5c)
       .setOrigin(0, 0);
-
-    // Faint left edge separator vs the game canvas.
-    this.add
-      .rectangle(sidebarX, 0, 1, sidebarH, 0x3a4868)
+    this.sidebarSeparator = this.add
+      .rectangle(0, 0, 1, this.scale.height, 0x3a4868)
       .setOrigin(0, 0);
+    this.sidebarContainer.add(this.sidebarBg);
+    this.sidebarContainer.add(this.sidebarSeparator);
 
-    this.buildMechaSenkuPlaceholder(sidebarX, sidebarW);
-    this.buildResourcesPanel(sidebarX, sidebarW);
-    this.buildNetworksPanel(sidebarX, sidebarW);
-    this.buildActionButtons(sidebarX, sidebarW);
-    this.buildFooter(sidebarX, sidebarW, sidebarH);
+    // Build each widget with x relative to the sidebar (0..sidebarW).
+    this.buildMechaSenkuPortrait(sidebarW);
+    this.buildResourcesPanel(sidebarW);
+    this.buildNetworksPanel(sidebarW);
+    this.buildActionButtons(sidebarW);
+    this.buildFooter(sidebarW);
 
-    // Subscribe to AppState. When state updates (from poll or other source),
-    // re-render dependent HUD widgets. The subscribe call also fires
-    // synchronously with the current state if one is loaded — first paint
-    // is already correct.
+    // Initial anchor + resize handler.
+    this.repositionSidebar();
+    this.scale.on('resize', this.repositionSidebar, this);
+
+    // Subscribe + start polling (unchanged from Phase 3).
     this.unsubscribe = AppState.subscribe((state) => this.applyState(state));
-
-    // Start polling. The interval is reset on every scene-restart (the
-    // shutdown handler cleans the timer below).
     this.pollTimer = this.time.addEvent({
       delay: UIScene.POLL_INTERVAL_MS,
       callback: () => this.poll(),
       loop: true,
     });
 
-    // Belt-and-suspenders cleanup so a Phaser scene reset doesn't leak
-    // intervals or zombie subscriptions.
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
     this.events.once(Phaser.Scenes.Events.DESTROY, () => this.teardown());
   }
 
-  private buildMechaSenkuPlaceholder(sidebarX: number, sidebarW: number): void {
-    // Phase 9: real sprite from public/sprites/mecha-senku.png (84×84).
-    // Single static frame for now; the full 26-frame emotion sheet
-    // swaps in later via the parallel asset track (same texture key).
+  /**
+   * Re-anchor the sidebar to the right edge of the current canvas.
+   * Also resizes the bg + separator to match the new height (which
+   * matters if the user pulls the window taller).
+   */
+  private repositionSidebar(): void {
+    const sidebarW = UIScene.SIDEBAR_WIDTH;
+    this.sidebarContainer.setPosition(this.scale.width - sidebarW, 0);
+    this.sidebarBg.height = this.scale.height;
+    this.sidebarSeparator.height = this.scale.height;
+
+    // Footer y depends on canvas height — re-anchor.
+    if (this.statusText) {
+      this.statusText.setPosition(sidebarW / 2, this.scale.height - 16);
+    }
+  }
+
+  private buildMechaSenkuPortrait(sidebarW: number): void {
     const portraitW = 84;
     const portraitH = 84;
-    const px = sidebarX + (sidebarW - portraitW) / 2;
+    const px = (sidebarW - portraitW) / 2;
     const py = 16;
 
-    this.add
+    const portrait = this.add
       .image(px, py, 'mecha-senku-placeholder')
       .setOrigin(0, 0)
       .setDisplaySize(portraitW, portraitH);
+    this.sidebarContainer.add(portrait);
 
-    this.add
+    const label = this.add
       .text(px + portraitW / 2, py + portraitH + 8, 'Mecha Senku', {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '8px',
         color: '#F0EBD7',
       })
       .setOrigin(0.5);
+    this.sidebarContainer.add(label);
   }
 
-  private buildResourcesPanel(sidebarX: number, sidebarW: number): void {
-    // Place panel below the Mecha Senku portrait block (~ y = 16 + 96 + 32).
+  private buildResourcesPanel(sidebarW: number): void {
     const panelY = 16 + 96 + 32;
-    this.resourcesPanel = new ResourcesPanel(this, sidebarX, panelY, sidebarW);
+    // ResourcesPanel uses absolute coords; we wrap its container into ours.
+    this.resourcesPanel = new ResourcesPanel(this, 0, panelY, sidebarW);
+    // ResourcesPanel internally creates a Container at (x, y). We grab it
+    // and reparent into the sidebarContainer so resize moves it together.
+    const panelContainer = (this.resourcesPanel as unknown as {
+      container: Phaser.GameObjects.Container;
+    }).container;
+    if (panelContainer) {
+      this.sidebarContainer.add(panelContainer);
+    }
   }
 
-  /**
-   * Networks panel — per design/06-style §HUD components §2. Lists each
-   * active power network with its capacity/demand state, plus an off-grid
-   * count at the bottom (red if non-zero).
-   *
-   * Phase 7 ships the panel with live data. The Phase 3 stub is gone.
-   */
-  private buildNetworksPanel(sidebarX: number, sidebarW: number): void {
+  private buildNetworksPanel(sidebarW: number): void {
     const panelTop = 16 + 96 + 32 + ResourcesPanel.height + 16;
     const padX = 16;
 
-    this.add
-      .text(sidebarX + padX, panelTop, '⚡ Networks', {
+    const heading = this.add
+      .text(padX, panelTop, '⚡ Networks', {
         fontFamily: 'Pixellari, monospace',
         fontSize: '16px',
         color: '#FFC940',
       })
       .setOrigin(0, 0);
+    this.sidebarContainer.add(heading);
 
-    this.add
-      .rectangle(sidebarX + padX, panelTop + 22, sidebarW - padX * 2, 1, 0x3a4868)
+    const sep = this.add
+      .rectangle(padX, panelTop + 22, sidebarW - padX * 2, 1, 0x3a4868)
       .setOrigin(0, 0);
+    this.sidebarContainer.add(sep);
 
     this.networksText = this.add
-      .text(sidebarX + padX, panelTop + 30, '(no power buildings yet)', {
+      .text(padX, panelTop + 30, '(no power buildings yet)', {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '8px',
         color: '#5C6E8E',
         lineSpacing: 4,
       })
       .setOrigin(0, 0);
+    this.sidebarContainer.add(this.networksText);
   }
 
-  /**
-   * Render the Networks panel text from the current analysis. Called from
-   * applyState — re-fires whenever state changes (placement/upgrade/poll).
-   */
   private renderNetworksContent(analysis: NetworkAnalysis | null): void {
     if (!this.networksText) return;
     if (!analysis || analysis.networks.length === 0) {
@@ -159,7 +171,6 @@ export class UIScene extends Phaser.Scene {
         .setColor(offGridCount > 0 ? '#E84B4B' : '#5C6E8E');
       return;
     }
-
     const lines: string[] = [];
     for (const net of analysis.networks) {
       const colorCode =
@@ -170,59 +181,38 @@ export class UIScene extends Phaser.Scene {
     if (analysis.offGrid.length > 0) {
       lines.push(`Off-grid: ${analysis.offGrid.length}`);
     }
-
-    // Color the whole text based on worst-state network.
     const hasBrownout = analysis.networks.some((n) => n.state === 'brownout');
     const hasTight = analysis.networks.some((n) => n.state === 'tight');
     const color = hasBrownout ? '#E84B4B' : hasTight ? '#F0A030' : '#7CD16A';
     this.networksText.setText(lines.join('\n')).setColor(color);
   }
 
-  /**
-   * Action buttons block — Phase 5 has just [Build]. Phases 8 / 11 / 13 add
-   * [Research], [Silos], [Overlays], [Captain's Log] per design/06-style §HUD
-   * components §3.
-   */
-  private buildActionButtons(sidebarX: number, sidebarW: number): void {
-    // Position below the resources panel.
-    const panelTop = 16 + 96 + 32; // mirrors buildResourcesPanel offset
-    const buttonsY = panelTop + ResourcesPanel.height + 16;
+  private buildActionButtons(sidebarW: number): void {
+    const panelTop = 16 + 96 + 32 + ResourcesPanel.height + 16;
+    const buttonsY = panelTop + 96; // below the Networks panel area
     const padX = 16;
     const buttonW = sidebarW - padX * 2;
     const buttonH = 36;
 
-    this.makeButton(
-      sidebarX + padX,
-      buttonsY,
-      buttonW,
-      buttonH,
-      '[ Build ]',
-      () => this.openBuildModal(),
+    this.makeButton(padX, buttonsY, buttonW, buttonH, '[ Build ]', () =>
+      this.openBuildModal(),
     );
-
     this.makeButton(
-      sidebarX + padX,
-      buttonsY + buttonH + 8,
+      padX,
+      buttonsY + (buttonH + 8),
       buttonW,
       buttonH,
       '[ Research ]',
       () => this.openResearchScene(),
     );
-
     this.makeButton(
-      sidebarX + padX,
+      padX,
       buttonsY + (buttonH + 8) * 2,
       buttonW,
       buttonH,
       "[ Captain's Log ]",
       () => this.openLogModal(),
     );
-  }
-
-  private openLogModal(): void {
-    const modal = this.scene.get('ModalScene');
-    if (modal.scene.isActive()) return;
-    this.scene.launch('ModalScene', { mode: 'log' });
   }
 
   private makeButton(
@@ -233,7 +223,6 @@ export class UIScene extends Phaser.Scene {
     label: string,
     onClick: () => void,
   ): void {
-    // 4-pixel gold border per design/06-style §Action buttons.
     const border = this.add.rectangle(x, y, w, h, 0xffc940).setOrigin(0, 0);
     const fill = this.add
       .rectangle(x + 2, y + 2, w - 4, h - 4, 0x0a1228)
@@ -249,33 +238,30 @@ export class UIScene extends Phaser.Scene {
 
     fill.on('pointerover', () => {
       fill.setFillStyle(0x1b2d5c);
-      text.setColor('#FFE680'); // gold-shimmer hover
+      text.setColor('#FFE680');
     });
     fill.on('pointerout', () => {
       fill.setFillStyle(0x0a1228);
       text.setColor('#F0EBD7');
     });
     fill.on('pointerdown', () => {
-      // Brief inset-press cue.
       fill.setFillStyle(0x0f1f4d);
       this.time.delayedCall(80, () => fill.setFillStyle(0x1b2d5c));
       onClick();
     });
 
-    void border;
+    this.sidebarContainer.add(border);
+    this.sidebarContainer.add(fill);
+    this.sidebarContainer.add(text);
   }
 
   private openBuildModal(): void {
-    // Don't double-launch — if ModalScene is already up, do nothing.
     const modal = this.scene.get('ModalScene');
     if (modal.scene.isActive()) return;
     this.scene.launch('ModalScene', { mode: 'build' });
   }
 
   private openResearchScene(): void {
-    // Switch the underlying game scene (city → research). UIScene stays
-    // on top across both. Per design/05-map §View switching: Tab toggles
-    // the same way.
     const city = this.scene.get('CityScene');
     const research = this.scene.get('ResearchScene');
     if (research.scene.isActive()) return;
@@ -283,16 +269,22 @@ export class UIScene extends Phaser.Scene {
     this.scene.run('ResearchScene');
   }
 
-  private buildFooter(sidebarX: number, sidebarW: number, sidebarH: number): void {
-    // Footer: milestone label + small status indicator updated on each poll.
+  private openLogModal(): void {
+    const modal = this.scene.get('ModalScene');
+    if (modal.scene.isActive()) return;
+    this.scene.launch('ModalScene', { mode: 'log' });
+  }
+
+  private buildFooter(sidebarW: number): void {
     this.statusText = this.add
-      .text(sidebarX + sidebarW / 2, sidebarH - 16, 'milestone: …', {
+      .text(sidebarW / 2, this.scale.height - 16, 'milestone: …', {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '6px',
         color: '#5C6E8E',
         align: 'center',
       })
       .setOrigin(0.5);
+    this.sidebarContainer.add(this.statusText);
   }
 
   private applyState(state: StoneWorldState): void {
@@ -307,15 +299,6 @@ export class UIScene extends Phaser.Scene {
     }
   }
 
-  /**
-   * Poll state.json once. If it changed, AppState.refresh() fires the
-   * subscribe callback which calls applyState — no need to handle the
-   * "changed" return value here.
-   *
-   * On polling errors (network blip, dev server restart), log loud but
-   * don't crash — the next poll will retry. This matches design/02-game-logic
-   * §"surface failures plainly first" — visible-to-console, not silent.
-   */
   private async poll(): Promise<void> {
     try {
       await AppState.refresh();
@@ -325,6 +308,7 @@ export class UIScene extends Phaser.Scene {
   }
 
   private teardown(): void {
+    this.scale.off('resize', this.repositionSidebar, this);
     this.pollTimer?.remove();
     this.pollTimer = undefined;
     this.unsubscribe?.();

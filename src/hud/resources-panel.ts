@@ -50,7 +50,9 @@ interface RowGameObjects {
 }
 
 export class ResourcesPanel {
-  private readonly container: Phaser.GameObjects.Container;
+  /** Public so UIScene can reparent the panel into the sidebar Container
+   * for synchronized resize-anchoring. */
+  public readonly container: Phaser.GameObjects.Container;
   private readonly rows = new Map<ResourceKey, RowGameObjects>();
 
   /**

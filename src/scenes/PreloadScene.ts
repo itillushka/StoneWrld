@@ -27,12 +27,50 @@ export class PreloadScene extends Phaser.Scene {
 
   preload(): void {
     // Mecha Senku placeholder sprite — single 84×84 frame for Phase 9.
-    // Real 26-frame emotion sheet swaps in via the parallel asset track
-    // (the texture key stays the same, so the swap touches one file).
-    this.load.image('mecha-senku-placeholder', '/sprites/mecha-senku.png');
+    // Loaded under a RAW key; create() does a chroma-key pass to make
+    // the near-white background transparent before publishing under the
+    // 'mecha-senku-placeholder' key that scenes consume.
+    this.load.image('mecha-senku-raw', '/sprites/mecha-senku.png');
+  }
+
+  /**
+   * Strip near-white background pixels by editing the texture's underlying
+   * canvas after Phaser finishes loading. The source PNG has no alpha
+   * channel; we chroma-key everything brighter than (240,240,240) to alpha 0.
+   *
+   * Re-keyed under 'mecha-senku-placeholder' so the consuming scenes
+   * don't have to know about the source-image quirk.
+   */
+  private chromaKeyMechaSenku(): void {
+    const src = this.textures.get('mecha-senku-raw');
+    const img = src.getSourceImage(0) as HTMLImageElement | HTMLCanvasElement;
+    const w = img.width;
+    const h = img.height;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.drawImage(img, 0, 0);
+    const data = ctx.getImageData(0, 0, w, h);
+    const px = data.data;
+    for (let i = 0; i < px.length; i += 4) {
+      // Near-white → transparent (covers JPG-artifacted backgrounds too).
+      if (px[i]! > 240 && px[i + 1]! > 240 && px[i + 2]! > 240) {
+        px[i + 3] = 0;
+      }
+    }
+    ctx.putImageData(data, 0, 0);
+    if (this.textures.exists('mecha-senku-placeholder')) {
+      this.textures.remove('mecha-senku-placeholder');
+    }
+    this.textures.addCanvas('mecha-senku-placeholder', canvas);
   }
 
   create(): void {
+    // Convert the raw white-bg PNG into a chroma-keyed canvas texture.
+    this.chromaKeyMechaSenku();
+
     const { width, height } = this.scale;
 
     // Bar geometry — centered, 60% of canvas width.

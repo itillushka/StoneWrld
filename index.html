@@ -39,12 +39,22 @@
         overflow: hidden;
       }
       #game {
-        display: block;
-        margin: 0 auto;
+        /* Fill the viewport so the Phaser RESIZE canvas has the whole
+           browser window to draw on. No letterbox bars — HUD anchors
+           to the right edge dynamically via UIScene. */
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
         /* Defeat browser-side image smoothing — pixel art upscales via
            nearest-neighbour per design/06-style §Pixel-art principles. */
         image-rendering: pixelated;
         image-rendering: crisp-edges;
+      }
+      #game canvas {
+        display: block;
+        width: 100% !important;
+        height: 100% !important;
       }
     </style>
   </head>

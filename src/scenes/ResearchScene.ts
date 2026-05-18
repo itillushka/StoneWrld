@@ -37,8 +37,7 @@ import { voiceResearch } from '../mecha-senku/voice';
  * Future polish (v1.x): zoom/pan, filter modes, search.
  */
 
-const SIDEBAR_X = 1024; // matches UIScene
-const SCENE_W = 1024;   // game viewport (left of HUD)
+const HUD_SIDEBAR_WIDTH = 256; // matches UIScene.SIDEBAR_WIDTH
 
 // Layout constants — tuned for ~85 nodes.
 const PAD_X = 32;
@@ -85,9 +84,16 @@ export class ResearchScene extends Phaser.Scene {
     super('ResearchScene');
   }
 
+  /** Game-viewport width = window width minus the right-anchored HUD sidebar. */
+  private viewportWidth(): number {
+    return Math.max(320, this.scale.width - HUD_SIDEBAR_WIDTH);
+  }
+
   create(): void {
     // Clip the main camera to the game viewport (HUD sits on top via UIScene).
-    this.cameras.main.setViewport(0, 0, SCENE_W, this.scale.height);
+    this.cameras.main.setViewport(0, 0, this.viewportWidth(), this.scale.height);
+
+    this.scale.on('resize', this.onResize, this);
     this.cameras.main.setBackgroundColor('#0A1228');
 
     this.renderHeader();
@@ -124,14 +130,14 @@ export class ResearchScene extends Phaser.Scene {
 
   private renderHeader(): void {
     this.add
-      .text(SCENE_W / 2, 24, 'Research', {
+      .text(this.viewportWidth() / 2, 24, 'Research', {
         fontFamily: 'Pixellari, monospace',
         fontSize: '32px',
         color: '#FFC940',
       })
       .setOrigin(0.5);
     this.add
-      .text(SCENE_W / 2, 56, 'press Tab to return to the city', {
+      .text(this.viewportWidth() / 2, 56, 'press Tab to return to the city', {
         fontFamily: '"Press Start 2P", monospace',
         fontSize: '8px',
         color: '#5C6E8E',
@@ -158,7 +164,7 @@ export class ResearchScene extends Phaser.Scene {
           .rectangle(
             PAD_X,
             PAD_Y + HEADER_HEIGHT + i * laneHeight,
-            SCENE_W - PAD_X * 2,
+            this.viewportWidth() - PAD_X * 2,
             1,
             0x3a4868,
           )
@@ -183,7 +189,7 @@ export class ResearchScene extends Phaser.Scene {
   }
 
   private computeColumnWidth(): number {
-    const usable = SCENE_W - PAD_X * 2;
+    const usable = this.viewportWidth() - PAD_X * 2;
     return Math.floor((usable - 6 * COLUMN_GAP) / 7);
   }
 
@@ -450,7 +456,7 @@ export class ResearchScene extends Phaser.Scene {
     if (tech.is_boss) lines.push('★ milestone boss');
     this.tooltip
       .setText(lines.join('\n'))
-      .setPosition(Math.min(x + NODE_W + 4, SCENE_W - 200), Math.max(8, y))
+      .setPosition(Math.min(x + NODE_W + 4, this.viewportWidth() - 200), Math.max(8, y))
       .setVisible(true);
   }
 
@@ -484,14 +490,25 @@ export class ResearchScene extends Phaser.Scene {
     return next;
   }
 
+  /**
+   * Window resize handler — re-clip camera. The tree layout uses
+   * viewportWidth() dynamically already, but already-drawn nodes don't
+   * re-layout. For Phase 9.5 we accept a stale layout on resize; the
+   * player can press Tab and come back for a fresh paint if needed.
+   */
+  private onResize(): void {
+    this.cameras.main.setViewport(0, 0, this.viewportWidth(), this.scale.height);
+  }
+
   private teardown(): void {
+    this.scale.off('resize', this.onResize, this);
     this.unsubscribe?.();
     this.unsubscribe = undefined;
     this.input.keyboard?.removeAllListeners('keydown-TAB');
   }
 }
 
-// Unused import shim — eliminates the noUnusedLocals warning when SIDEBAR_X
-// is only referenced by future code paths.
-void SIDEBAR_X;
+// Keep getTech reference live — it's exposed for future per-node tooltip
+// enrichment; suppress the unused-import warning until that lands.
 void getTech;
+void HUD_SIDEBAR_WIDTH;
