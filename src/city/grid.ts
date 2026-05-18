@@ -17,10 +17,21 @@ import type { MilestoneKey } from '../state/schema';
 
 export const GRID_WIDTH = 32;
 export const GRID_HEIGHT = 24;
-export const TILE_SIZE = 128; // source pixels per tile (design/05-map §Tile dimensions)
+/**
+ * Source pixels per tile. Co-captain's revision (post-Phase 10): buildings
+ * are 64×64 source px for the default 2×2 footprint, which means tile = 32 px.
+ * Previous lock was 128 (256×256 for 2×2) — now overridden because the
+ * available CC0/AI-gen pixel-art ecosystem aligns much better at 32 px.
+ *
+ * Implications:
+ *   - World = 32*32 = 1024 wide × 24*32 = 768 tall (fits a 1024×800 viewport at 1× zoom)
+ *   - 1×1 building = 32×32, 2×2 = 64×64, 3×3 = 96×96
+ *   - Default camera zoom = 2× for a comfortable view
+ */
+export const TILE_SIZE = 32;
 
-export const WORLD_WIDTH_PX = GRID_WIDTH * TILE_SIZE;   // 4096
-export const WORLD_HEIGHT_PX = GRID_HEIGHT * TILE_SIZE; // 3072
+export const WORLD_WIDTH_PX = GRID_WIDTH * TILE_SIZE;   // 1024
+export const WORLD_HEIGHT_PX = GRID_HEIGHT * TILE_SIZE; // 768
 
 /** A rectangular slice of the grid — both ends inclusive. */
 export interface GridRect {

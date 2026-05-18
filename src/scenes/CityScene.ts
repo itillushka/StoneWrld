@@ -78,8 +78,9 @@ const HUD_SIDEBAR_WIDTH = 256;
  * 1280 × 800 canvas — UIScene owns the right 256 px.
  */
 export class CityScene extends Phaser.Scene {
+  /** Default zoom index into ZOOM_LEVELS [1, 2, 3, 4] — 2× shows whole map roomily. */
   public static readonly DEFAULT_ZOOM_INDEX = 1;
-  private static readonly CAMERA_MARGIN_PX = 2 * TILE_SIZE;
+  private static readonly CAMERA_MARGIN_PX = 4 * TILE_SIZE;
 
   /** Computed dynamically from current canvas size (window resize friendly). */
   private get viewportWidth(): number {

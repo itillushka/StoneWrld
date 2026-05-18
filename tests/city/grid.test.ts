@@ -16,12 +16,12 @@ import {
 import type { MilestoneKey } from '../../src/state/schema';
 
 describe('grid constants', () => {
-  it('locks 32 × 24 grid at 128 px / tile', () => {
+  it('locks 32 × 24 grid at 32 px / tile (post co-captain revision: 64×64 default building)', () => {
     expect(GRID_WIDTH).toBe(32);
     expect(GRID_HEIGHT).toBe(24);
-    expect(TILE_SIZE).toBe(128);
-    expect(WORLD_WIDTH_PX).toBe(4096);
-    expect(WORLD_HEIGHT_PX).toBe(3072);
+    expect(TILE_SIZE).toBe(32);
+    expect(WORLD_WIDTH_PX).toBe(1024);
+    expect(WORLD_HEIGHT_PX).toBe(768);
   });
 
   it('BUILDABLE_AREA has 8 expansion levels (0 through 7) matching design/05-map §Expansion', () => {
@@ -101,18 +101,18 @@ describe('tileToPixel / pixelToTile', () => {
     expect(tileToPixel(0, 0)).toEqual({ x: 0, y: 0 });
   });
 
-  it('tile (16, 12) maps to pixel (2048, 1536)', () => {
-    expect(tileToPixel(16, 12)).toEqual({ x: 2048, y: 1536 });
+  it('tile (16, 12) maps to pixel (512, 384) at 32 px/tile', () => {
+    expect(tileToPixel(16, 12)).toEqual({ x: 512, y: 384 });
   });
 
   it('pixel (0, 0) maps back to tile (0, 0)', () => {
     expect(pixelToTile(0, 0)).toEqual({ x: 0, y: 0 });
   });
 
-  it('pixel midpoint inside a tile floors to that tile', () => {
-    expect(pixelToTile(64, 64)).toEqual({ x: 0, y: 0 });
-    expect(pixelToTile(127, 127)).toEqual({ x: 0, y: 0 });
-    expect(pixelToTile(128, 128)).toEqual({ x: 1, y: 1 });
+  it('pixel midpoint inside a tile floors to that tile (TILE_SIZE = 32)', () => {
+    expect(pixelToTile(16, 16)).toEqual({ x: 0, y: 0 });
+    expect(pixelToTile(31, 31)).toEqual({ x: 0, y: 0 });
+    expect(pixelToTile(32, 32)).toEqual({ x: 1, y: 1 });
   });
 
   it('pixelToTile clamps out-of-bounds inputs to valid tile coords', () => {

@@ -91,29 +91,22 @@ export function renderBuilding(
     .setOrigin(0, 0);
   container.add(stripe);
 
-  // Label — name + tier, centered.
-  const label = scene.add
-    .text(w / 2, h / 2 - 8, entry.name, {
+  // Tier badge only — 64×64 buildings can't fit a name label readably.
+  // Building identity comes from sprite + category stripe + hover tooltip
+  // (and the upcoming AI-gen sprites will be visually distinct).
+  const tierBadge = scene.add
+    .text(w / 2, h / 2, `T${building.tier}`, {
       fontFamily: 'Pixellari, monospace',
       fontSize: '14px',
       color: '#0A1228',
     })
     .setOrigin(0.5);
-  container.add(label);
-
-  const tierBadge = scene.add
-    .text(w / 2, h / 2 + 12, `T${building.tier}`, {
-      fontFamily: '"Press Start 2P", monospace',
-      fontSize: '8px',
-      color: '#0A1228',
-    })
-    .setOrigin(0.5);
   container.add(tierBadge);
 
-  // T3 endgame accent — a small endgame-violet bar across the bottom edge.
+  // T3 endgame accent — small endgame-violet bar across the bottom edge.
   if (building.tier === 3) {
     const t3Bar = scene.add
-      .rectangle(OUTLINE_WIDTH, h - OUTLINE_WIDTH - 4, w - OUTLINE_WIDTH * 2, 4, 0xa47ce0)
+      .rectangle(OUTLINE_WIDTH, h - OUTLINE_WIDTH - 2, w - OUTLINE_WIDTH * 2, 2, 0xa47ce0)
       .setOrigin(0, 0);
     container.add(t3Bar);
   }

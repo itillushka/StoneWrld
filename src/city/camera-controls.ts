@@ -18,7 +18,12 @@ import Phaser from 'phaser';
  * city-builder camera convention.
  */
 
-export const ZOOM_LEVELS: readonly number[] = [0.25, 0.5, 1, 2] as const;
+/**
+ * Integer-clean zoom multiples for nearest-neighbour pixel-art rendering.
+ * With TILE_SIZE = 32, the full 32×24 grid at 1× is 1024×768 (fits a
+ * 1024-wide viewport already). Higher zooms let the player inspect detail.
+ */
+export const ZOOM_LEVELS: readonly number[] = [1, 2, 3, 4] as const;
 
 const PAN_SPEED_PX_PER_SEC = 600;
 
