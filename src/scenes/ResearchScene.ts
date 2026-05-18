@@ -517,47 +517,44 @@ export class ResearchScene extends Phaser.Scene {
     const src = this.nodesById.get(ar.srcId);
     const dst = this.nodesById.get(ar.dstId);
     if (!src || !dst) return;
-    const w = Math.min(NODE_W, src.fill.width + 4); // approx node width — fine for layout
-    void w;
 
-    const sx = src.x + NODE_W;
-    const sy = src.y + NODE_H / 2;
-    const dx = dst.x;
-    const dy = dst.y + NODE_H / 2;
+    // Integer-aligned endpoints — keeps the orthogonal segments pixel-sharp
+    // (no anti-alias smear on horizontal / vertical lines).
+    const sx = Math.round(src.x + NODE_W);
+    const sy = Math.round(src.y + NODE_H / 2);
+    const dx = Math.round(dst.x);
+    const dy = Math.round(dst.y + NODE_H / 2);
+
+    // Fan-out: each outgoing arrow from a source gets a slightly different
+    // turn-x so multiple arrows don't stack on top of each other along the
+    // shared vertical run. Index by the arrow's position in this source's
+    // outgoing list — small offset (3 px per arrow) keeps the fan tight.
+    const outgoing = this.arrowsBySrc.get(ar.srcId) ?? [];
+    const fanIndex = outgoing.indexOf(ar);
+    const exitOffset = 6 + fanIndex * 3;
 
     const g = ar.graphics;
     g.clear();
 
-    // Bezier: exit src horizontally, sweep across, arrive at dst horizontally.
-    // Control points are 40% of the horizontal distance, on each side.
-    const span = Math.max(40, dx - sx);
-    const ctrlOffset = span * 0.4;
-    const c1x = sx + ctrlOffset;
-    const c1y = sy;
-    const c2x = dx - ctrlOffset;
-    const c2y = dy;
-
-    // Phaser Graphics has no native bezier — sample the curve via
-    // Phaser.Curves.CubicBezier and stroke as a connected polyline.
-    const curve = new Phaser.Curves.CubicBezier(
-      new Phaser.Math.Vector2(sx, sy),
-      new Phaser.Math.Vector2(c1x, c1y),
-      new Phaser.Math.Vector2(c2x, c2y),
-      new Phaser.Math.Vector2(dx, dy),
-    );
-    const points = curve.getPoints(24);
+    // Three-segment orthogonal path: right-out, vertical, right-in.
+    // Pixel-art friendly: 90° corners only, no curves.
+    const turnX = sx + exitOffset;
     g.lineStyle(lineWidth, color, alpha);
-    g.strokePoints(points, false, false);
-
-    // Arrowhead at the destination — small triangle pointing into the node.
-    const arrowSize = lineWidth >= 2 ? 8 : 6;
-    g.fillStyle(color, alpha);
     g.beginPath();
-    g.moveTo(dx, dy);
-    g.lineTo(dx - arrowSize, dy - arrowSize / 2);
-    g.lineTo(dx - arrowSize, dy + arrowSize / 2);
-    g.closePath();
-    g.fillPath();
+    g.moveTo(sx, sy);
+    g.lineTo(turnX, sy);
+    g.lineTo(turnX, dy);
+    g.lineTo(dx, dy);
+    g.strokePath();
+
+    // Arrowhead — chunky pixel triangle. Integer coords ensure crisp edges.
+    const head = lineWidth >= 2 ? 5 : 4;
+    g.fillStyle(color, alpha);
+    g.fillTriangle(
+      dx, dy,
+      dx - head, dy - head,
+      dx - head, dy + head,
+    );
   }
 
   private async onNodeClick(tech: TechEntry): Promise<void> {
