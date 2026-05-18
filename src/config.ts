@@ -1,5 +1,8 @@
 import Phaser from 'phaser';
 import { BootScene } from './scenes/BootScene';
+import { PreloadScene } from './scenes/PreloadScene';
+import { CityScene } from './scenes/CityScene';
+import { UIScene } from './scenes/UIScene';
 
 /**
  * Phaser game configuration.
@@ -16,7 +19,12 @@ import { BootScene } from './scenes/BootScene';
  * Background #0A1228 = Ryusui deep navy from design/06-style §Master palette.
  *
  * Scene list grows phase-by-phase per design/09-roadmap.
- * Phase 0: BootScene only (placeholder).
+ * Phase 3: Boot → Preload → City (default game world) + UI (persistent overlay).
+ * Future: ResearchScene (Phase 8), ModalScene (Phase 5).
+ *
+ * The scene array's order is the registration order, not the start order.
+ * BootScene's `autoStart: true` (Phaser default for the first scene) is what
+ * actually kicks off the pipeline; subsequent scenes are launched explicitly.
  */
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -30,5 +38,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [BootScene],
+  scene: [BootScene, PreloadScene, CityScene, UIScene],
 };
