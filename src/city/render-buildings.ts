@@ -1,0 +1,168 @@
+import Phaser from 'phaser';
+import type { BuildingInstance } from '../state/schema';
+import { getBuilding } from '../catalog/buildings';
+import { TILE_SIZE } from './grid';
+
+/**
+ * Render placed buildings as Phaser game objects.
+ *
+ * Phase 5 placeholder per design/09-roadmap §Phase 5 risks:
+ *   "No sprites for most buildings yet. Mitigation: render colored squares
+ *    with the building name as overlay text."
+ *
+ * Each building → one Phaser.Container at (x*TILE_SIZE, y*TILE_SIZE) holding:
+ *   - Captain-gold rectangle sized to the footprint
+ *   - 2-pixel deep-navy outline (design/06-style §Pixel-art rule #3)
+ *   - 4-pixel black shadow blob below (design/06-style §Pixel-art rule #4)
+ *   - Building name in Pixellari, centered
+ *
+ * Real sprites swap in via the parallel asset track. The atlas-frame
+ * registration is a single-file change in this module.
+ */
+
+const SHADOW_HEIGHT = 4;
+const OUTLINE_WIDTH = 2;
+const PLACEHOLDER_FILL = 0xffc940; // captain gold (matches Mecha Senku body)
+const OUTLINE_COLOR = 0x0a1228;    // deep navy
+
+/** Internal map: building "uid" (id + x + y) → container — for diffing later. */
+const renderedBuildings = new Map<string, Phaser.GameObjects.Container>();
+
+function buildingUid(b: BuildingInstance): string {
+  return `${b.id}@${b.x},${b.y}`;
+}
+
+/**
+ * Render a single building. Returns the container so the caller can
+ * animate it (e.g. construction drop on freshly-placed instances).
+ */
+export function renderBuilding(
+  scene: Phaser.Scene,
+  building: BuildingInstance,
+): Phaser.GameObjects.Container | null {
+  const entry = getBuilding(building.id);
+  if (!entry) return null;
+
+  const px = building.x * TILE_SIZE;
+  const py = building.y * TILE_SIZE;
+  const w = entry.footprint.w * TILE_SIZE;
+  const h = entry.footprint.h * TILE_SIZE;
+
+  const container = scene.add.container(px, py);
+  // Buildings render between terrain (depth 0) and frontier (depth 1).
+  // Setting depth 2 keeps them readable when the player zooms in.
+  container.setDepth(2);
+
+  // Shadow — a thin dark slab at the base of the footprint.
+  const shadow = scene.add
+    .rectangle(0, h, w, SHADOW_HEIGHT, 0x000000, 0.55)
+    .setOrigin(0, 0);
+  container.add(shadow);
+
+  // Outline.
+  const outline = scene.add
+    .rectangle(0, 0, w, h, OUTLINE_COLOR)
+    .setOrigin(0, 0);
+  container.add(outline);
+
+  // Fill (inset by outline width).
+  const fill = scene.add
+    .rectangle(
+      OUTLINE_WIDTH,
+      OUTLINE_WIDTH,
+      w - OUTLINE_WIDTH * 2,
+      h - OUTLINE_WIDTH * 2,
+      PLACEHOLDER_FILL,
+    )
+    .setOrigin(0, 0);
+  container.add(fill);
+
+  // Label — name + tier, centered.
+  const label = scene.add
+    .text(w / 2, h / 2 - 8, entry.name, {
+      fontFamily: 'Pixellari, monospace',
+      fontSize: '14px',
+      color: '#0A1228',
+    })
+    .setOrigin(0.5);
+  container.add(label);
+
+  const tierBadge = scene.add
+    .text(w / 2, h / 2 + 12, `T${building.tier}`, {
+      fontFamily: '"Press Start 2P", monospace',
+      fontSize: '8px',
+      color: '#0A1228',
+    })
+    .setOrigin(0.5);
+  container.add(tierBadge);
+
+  renderedBuildings.set(buildingUid(building), container);
+  return container;
+}
+
+/**
+ * Render all buildings from state, skipping any already rendered.
+ * Returns containers for newly-rendered ones so the caller can animate them.
+ */
+export function renderAllBuildings(
+  scene: Phaser.Scene,
+  buildings: readonly BuildingInstance[],
+): Phaser.GameObjects.Container[] {
+  const newOnes: Phaser.GameObjects.Container[] = [];
+  for (const b of buildings) {
+    if (renderedBuildings.has(buildingUid(b))) continue;
+    const c = renderBuilding(scene, b);
+    if (c) newOnes.push(c);
+  }
+  return newOnes;
+}
+
+/** Test / scene-reset helper — clear the cache. */
+export function resetBuildingRenderCache(): void {
+  renderedBuildings.clear();
+}
+
+/**
+ * Construction-drop animation per design/06-style §Universal events:
+ *   "Sprite drops in from above with elastic-bounce ease + dust puff
+ *    at landing | 400 ms"
+ */
+export function animateConstructionDrop(
+  scene: Phaser.Scene,
+  container: Phaser.GameObjects.Container,
+): void {
+  const finalY = container.y;
+  const dropDistance = 160; // pixels above final
+  container.y = finalY - dropDistance;
+
+  scene.tweens.add({
+    targets: container,
+    y: finalY,
+    duration: 400,
+    ease: 'Back.easeOut', // elastic-bounce feel
+    onComplete: () => spawnDustPuff(scene, container),
+  });
+}
+
+/** Tiny dust puff at the base of the footprint when construction lands. */
+function spawnDustPuff(scene: Phaser.Scene, container: Phaser.GameObjects.Container): void {
+  const entry = container.getData('entry') as { w: number; h: number } | undefined;
+  void entry;
+  // Use the container's first child (shadow) to figure out the base position.
+  // Falls back to container origin if not yet set.
+  const baseY = container.y + (container.list[0] as Phaser.GameObjects.Rectangle).height;
+  const baseX = container.x;
+
+  const puff = scene.add
+    .ellipse(baseX + 32, baseY, 16, 8, 0x826048, 0.7)
+    .setDepth(2.5);
+  scene.tweens.add({
+    targets: puff,
+    scaleX: 4,
+    scaleY: 4,
+    alpha: 0,
+    duration: 320,
+    ease: 'Cubic.easeOut',
+    onComplete: () => puff.destroy(),
+  });
+}

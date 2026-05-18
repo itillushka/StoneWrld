@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { AppState } from '../state/app-state';
+import { saveState } from '../state/save';
 import {
   TILE_SIZE,
   WORLD_WIDTH_PX,
@@ -8,6 +9,7 @@ import {
   GRID_HEIGHT,
   currentBuildableArea,
   isBuildable,
+  pixelToTile,
 } from '../city/grid';
 import {
   fetchTerrainMap,
@@ -15,53 +17,73 @@ import {
   TERRAIN_COLOR_INT,
 } from '../city/terrain';
 import { setupCameraControls } from '../city/camera-controls';
+import {
+  buildOccupancy,
+  addToOccupancy,
+  type OccupancyMap,
+} from '../city/occupancy';
+import {
+  validatePlacement,
+  explainRejection,
+  type PlacementValidation,
+} from '../city/placement';
+import { getBuilding, getTier } from '../catalog/buildings';
+import {
+  renderAllBuildings,
+  animateConstructionDrop,
+  resetBuildingRenderCache,
+} from '../city/render-buildings';
+import type { BuildingInstance, LogEntry, ResourceKey, StoneWorldState } from '../state/schema';
+import { CAPTAIN_LOG_MAX } from '../state/schema';
 
 /**
  * CityScene — the main game world.
  *
- * Per design/05-map: orthogonal 32×24 grid, 128px source tiles, integer
- * zoom 0.25× / 0.5× / 1× / 2×, default 0.5× centered on Stone World plaza.
- * Camera pans with WASD / arrows / middle-drag.
+ * Phase 5 additions on top of Phase 4 terrain + camera:
+ *   - Render any buildings already in state.json as gold-square placeholders.
+ *   - Listen for `placement:start` on the global game event bus (fired by
+ *     ModalScene) and enter placement mode.
+ *   - Placement mode: footprint preview at cursor (green = valid, red = invalid),
+ *     click-to-place, right-click / Esc to cancel.
+ *   - On successful place: deduct cost, append building, append captain_log
+ *     entry, atomic-save via /api/state, animate construction drop.
  *
- * Phase 4 deliverables (per design/09-roadmap §Phase 4):
- *   - Static terrain map rendered from public/maps/stoneworld.json
- *   - All 6 terrain types as solid-color placeholder tiles (real sprites
- *     land via the parallel asset track in later phases)
- *   - Frontier overlay on locked tiles (desaturated grey, 60% alpha)
- *   - Camera pan + zoom controls
- *   - Static speech-bubble placeholder anchored bottom-left of canvas
- *     (real Mecha Senku speech bubble lands Phase 9)
- *
- * Sized to the LEFT 1024 × 800 of the 1280 × 800 canvas. The right 256-px
- * column is the UIScene HUD sidebar. The camera viewport is clipped so the
- * city never bleeds under the HUD.
+ * Per design/05-map §Build UX. Sized to the LEFT 1024 × 800 of the
+ * 1280 × 800 canvas — UIScene owns the right 256 px.
  */
 export class CityScene extends Phaser.Scene {
-  /** Game viewport width (canvas total minus HUD sidebar). */
   public static readonly VIEWPORT_WIDTH = 1024;
-  /** Default zoom level — 0.5× per design/05-map §Camera default. */
-  public static readonly DEFAULT_ZOOM_INDEX = 1; // index into ZOOM_LEVELS [0.25, 0.5, 1, 2]
-  /** Camera margin around world bounds, in source pixels. */
+  public static readonly DEFAULT_ZOOM_INDEX = 1;
   private static readonly CAMERA_MARGIN_PX = 2 * TILE_SIZE;
 
   private cameraTeardown?: () => void;
+  private terrainMap?: TerrainMap;
+  private occupancy: OccupancyMap = { cells: [] };
+
+  // Placement-mode state.
+  private placingId: string | null = null;
+  private placementPreview?: Phaser.GameObjects.Container;
+  private placementTooltip?: Phaser.GameObjects.Text;
+
+  // Bottom-left speech bubble (Phase 4 placeholder).
+  private bubbleBody?: Phaser.GameObjects.Text;
 
   constructor() {
     super('CityScene');
   }
 
   async create(): Promise<void> {
+    resetBuildingRenderCache();
+
     const viewportW = CityScene.VIEWPORT_WIDTH;
     const viewportH = this.scale.height;
 
-    // Clip the main camera to the LEFT 1024px so the city render never
-    // bleeds under the HUD sidebar (UIScene overlays the right 256px).
     this.cameras.main.setViewport(0, 0, viewportW, viewportH);
 
-    // Load + render the static terrain map.
+    // Load terrain. Bail with red banner if the map fetch fails.
     try {
-      const map = await fetchTerrainMap();
-      this.renderTerrain(map);
+      this.terrainMap = await fetchTerrainMap();
+      this.renderTerrain(this.terrainMap);
       this.renderFrontier();
     } catch (err) {
       console.error('[CityScene] Failed to load terrain map:', err);
@@ -69,33 +91,40 @@ export class CityScene extends Phaser.Scene {
       return;
     }
 
-    // Camera setup — pan + integer zoom, default centered on plaza.
+    // Camera.
     const controls = setupCameraControls(this, {
       worldBounds: { x: 0, y: 0, width: WORLD_WIDTH_PX, height: WORLD_HEIGHT_PX },
       panMargin: CityScene.CAMERA_MARGIN_PX,
       defaultZoomIndex: CityScene.DEFAULT_ZOOM_INDEX,
     });
     this.cameraTeardown = controls.teardown;
+    this.cameras.main.centerOn(16 * TILE_SIZE, 12 * TILE_SIZE);
 
-    // Center the camera on the Stone World plaza (tile ~16, 12).
-    const plazaCenterX = 16 * TILE_SIZE;
-    const plazaCenterY = 12 * TILE_SIZE;
-    this.cameras.main.centerOn(plazaCenterX, plazaCenterY);
+    // Initial building render — anything already in state from a prior session.
+    const state = AppState.getState();
+    if (state) {
+      this.occupancy = buildOccupancy(state.buildings);
+      renderAllBuildings(this, state.buildings);
+    }
 
-    // Static Mecha Senku speech bubble placeholder — bottom-left of canvas
-    // (anchored in SCREEN space, not world space, so it doesn't pan/zoom).
     this.renderSpeechBubblePlaceholder(viewportW, viewportH);
 
-    // Teardown on scene shutdown.
+    // Cross-scene wiring.
+    this.game.events.on('placement:start', this.onPlacementStart, this);
+    this.input.on('pointermove', this.onPointerMove, this);
+    this.input.on('pointerdown', this.onPointerDown, this);
+
+    // Esc cancels placement.
+    this.input.keyboard?.on('keydown-ESC', () => {
+      if (this.placingId) this.cancelPlacement();
+    });
+
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.teardown());
     this.events.once(Phaser.Scenes.Events.DESTROY, () => this.teardown());
   }
 
-  /**
-   * Render all terrain tiles as a single Phaser.Graphics object →
-   * generateTexture → display as an Image. Performant: one game object
-   * for 768 tiles instead of 768 individual rectangles.
-   */
+  // ---------- Terrain + frontier ----------
+
   private renderTerrain(map: TerrainMap): void {
     const g = this.add.graphics();
     for (let y = 0; y < map.height; y++) {
@@ -106,21 +135,14 @@ export class CityScene extends Phaser.Scene {
         g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
       }
     }
-    g.generateTexture('terrain-base', WORLD_WIDTH_PX, WORLD_HEIGHT_PX);
+    // Texture key needs to be unique per scene-create cycle to avoid
+    // "key already in use" warnings on Phaser hot-reload.
+    const key = `terrain-base-${Date.now()}`;
+    g.generateTexture(key, WORLD_WIDTH_PX, WORLD_HEIGHT_PX);
     g.destroy();
-
-    this.add.image(0, 0, 'terrain-base').setOrigin(0, 0).setDepth(0);
+    this.add.image(0, 0, key).setOrigin(0, 0).setDepth(0);
   }
 
-  /**
-   * Render the frontier overlay — desaturated stone tint on tiles OUTSIDE
-   * the current buildable area. Per design/05-map §Expansion: 60% alpha
-   * `#5C6E8E` (inactive grey).
-   *
-   * The buildable area is read from AppState (state.map.buildable_area_unlocks).
-   * For Phase 4 there are no unlocks → just the starting Stone World plaza.
-   * Phase 5+ will re-render this as expansions trigger.
-   */
   private renderFrontier(): void {
     const state = AppState.getState();
     const unlocks = state?.map.buildable_area_unlocks ?? [];
@@ -135,19 +157,213 @@ export class CityScene extends Phaser.Scene {
         }
       }
     }
-    g.generateTexture('terrain-frontier', WORLD_WIDTH_PX, WORLD_HEIGHT_PX);
+    const key = `terrain-frontier-${Date.now()}`;
+    g.generateTexture(key, WORLD_WIDTH_PX, WORLD_HEIGHT_PX);
     g.destroy();
-
-    this.add.image(0, 0, 'terrain-frontier').setOrigin(0, 0).setDepth(1);
+    this.add.image(0, 0, key).setOrigin(0, 0).setDepth(1);
   }
 
-  /**
-   * Static speech-bubble placeholder. Anchored in SCREEN space (setScrollFactor 0)
-   * so it stays in the bottom-left regardless of camera pan/zoom.
-   *
-   * The real Mecha Senku speech bubble lands Phase 9 — full 6s/10s persistence,
-   * factoid mode, click-to-dismiss, captain's log scrollback.
-   */
+  // ---------- Placement mode ----------
+
+  private onPlacementStart(payload: { buildingId: string }): void {
+    this.cancelPlacement(); // safety: clear any previous preview
+    this.placingId = payload.buildingId;
+
+    const entry = getBuilding(this.placingId);
+    if (!entry) {
+      this.placingId = null;
+      return;
+    }
+
+    // Build the preview container — same shape as a real building placeholder
+    // but with a tintable rectangle (green/red) on top instead of the gold fill.
+    const w = entry.footprint.w * TILE_SIZE;
+    const h = entry.footprint.h * TILE_SIZE;
+    this.placementPreview = this.add.container(0, 0);
+    this.placementPreview.setDepth(3);
+    const rect = this.add
+      .rectangle(0, 0, w, h, 0x7cd16a, 0.5)
+      .setOrigin(0, 0)
+      .setStrokeStyle(2, 0x7cd16a);
+    this.placementPreview.add(rect);
+
+    // Floating tooltip — anchored to the cursor.
+    this.placementTooltip = this.add
+      .text(0, 0, '', {
+        fontFamily: '"Press Start 2P", monospace',
+        fontSize: '10px',
+        color: '#F0EBD7',
+        backgroundColor: '#0A1228',
+        padding: { x: 6, y: 4 },
+      })
+      .setDepth(10)
+      .setScrollFactor(0);
+    this.placementTooltip.setVisible(false);
+
+    // Update the speech bubble to announce placement mode.
+    this.bubbleBody?.setText(
+      `Placing ${entry.name}. Click a green tile to build.\nRight-click or Esc to cancel.`,
+    );
+  }
+
+  private onPointerMove(pointer: Phaser.Input.Pointer): void {
+    if (!this.placingId || !this.placementPreview) return;
+
+    const world = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+    const tile = pixelToTile(world.x, world.y);
+
+    this.placementPreview.setPosition(tile.x * TILE_SIZE, tile.y * TILE_SIZE);
+    const validation = this.validateNow(tile.x, tile.y);
+    this.applyPreviewStyle(validation, pointer);
+  }
+
+  private onPointerDown(pointer: Phaser.Input.Pointer): void {
+    if (!this.placingId) return;
+
+    // Right-click cancels.
+    if (pointer.rightButtonDown()) {
+      this.cancelPlacement();
+      pointer.event.preventDefault();
+      return;
+    }
+
+    if (!pointer.leftButtonDown()) return;
+
+    const world = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+    const tile = pixelToTile(world.x, world.y);
+    const validation = this.validateNow(tile.x, tile.y);
+    if (!validation.valid) return; // silent — tooltip already showing reason
+
+    void this.commitPlacement(tile.x, tile.y);
+  }
+
+  private validateNow(x: number, y: number): PlacementValidation {
+    if (!this.placingId || !this.terrainMap) {
+      return { valid: false, reason: 'overlap' };
+    }
+    const state = AppState.getState();
+    if (!state) return { valid: false, reason: 'overlap' };
+    const buildableArea = currentBuildableArea(state.map.buildable_area_unlocks);
+
+    return validatePlacement({
+      buildingId: this.placingId,
+      x,
+      y,
+      state,
+      occupancy: this.occupancy,
+      terrain: this.terrainMap,
+      buildableArea,
+    });
+  }
+
+  private applyPreviewStyle(
+    validation: PlacementValidation,
+    pointer: Phaser.Input.Pointer,
+  ): void {
+    if (!this.placementPreview) return;
+
+    const rect = this.placementPreview.list[0] as Phaser.GameObjects.Rectangle;
+    if (validation.valid) {
+      rect.setFillStyle(0x7cd16a, 0.5); // KoS green
+      rect.setStrokeStyle(2, 0x7cd16a);
+      this.placementTooltip?.setVisible(false);
+    } else {
+      rect.setFillStyle(0xe84b4b, 0.5); // error red
+      rect.setStrokeStyle(2, 0xe84b4b);
+      const reason = explainRejection(validation);
+      if (this.placementTooltip) {
+        this.placementTooltip
+          .setText(reason)
+          .setPosition(pointer.x + 16, pointer.y + 16)
+          .setVisible(true);
+      }
+    }
+  }
+
+  private async commitPlacement(x: number, y: number): Promise<void> {
+    if (!this.placingId) return;
+    const buildingId = this.placingId;
+    const entry = getBuilding(buildingId);
+    const tier1 = getTier(buildingId, 1);
+    if (!entry || !tier1) return;
+
+    const state = AppState.getState();
+    if (!state) return;
+
+    const newBuilding: BuildingInstance = {
+      id: buildingId,
+      tier: 1,
+      x,
+      y,
+      spent: { ...tier1.cost },
+      placed_at: new Date().toISOString(),
+    };
+
+    // Deduct + append + log + stats.
+    const updated: StoneWorldState = {
+      ...state,
+      resources: this.subtractCost(state.resources, tier1.cost),
+      buildings: [...state.buildings, newBuilding],
+      captain_log: this.appendLog(state.captain_log, {
+        ts: new Date().toISOString(),
+        operational: `Profit. ${entry.name} T1 on the deck at (${x}, ${y}).`,
+        trigger: `build:${buildingId}:1`,
+      }),
+      stats: {
+        ...state.stats,
+        total_buildings_placed: state.stats.total_buildings_placed + 1,
+      },
+    };
+
+    // Optimistic UI: render + animate immediately. saveState() persists in
+    // background. If save fails, AppState's next poll snaps the world back
+    // to truth (with a slight visual flicker — acceptable per design/08
+    // §Concurrency last-writer-wins).
+    addToOccupancy(this.occupancy, newBuilding);
+    const containers = renderAllBuildings(this, [newBuilding]);
+    if (containers[0]) animateConstructionDrop(this, containers[0]);
+
+    AppState.setState(updated);
+
+    try {
+      await saveState(updated);
+    } catch (err) {
+      console.error('[CityScene] saveState failed:', err);
+    }
+
+    this.cancelPlacement();
+  }
+
+  private cancelPlacement(): void {
+    this.placingId = null;
+    this.placementPreview?.destroy();
+    this.placementPreview = undefined;
+    this.placementTooltip?.destroy();
+    this.placementTooltip = undefined;
+    this.bubbleBody?.setText(
+      'Stone World — your village awaits.\nBubble system arrives in Phase 9.',
+    );
+  }
+
+  private subtractCost(
+    purse: Record<ResourceKey, number>,
+    cost: Partial<Record<ResourceKey, number>>,
+  ): Record<ResourceKey, number> {
+    const next: Record<ResourceKey, number> = { ...purse };
+    for (const [k, v] of Object.entries(cost) as Array<[ResourceKey, number]>) {
+      next[k] = Math.max(0, (next[k] ?? 0) - v);
+    }
+    return next;
+  }
+
+  private appendLog(log: LogEntry[], entry: LogEntry): LogEntry[] {
+    const next = [...log, entry];
+    while (next.length > CAPTAIN_LOG_MAX) next.shift();
+    return next;
+  }
+
+  // ---------- Speech bubble placeholder ----------
+
   private renderSpeechBubblePlaceholder(viewportW: number, viewportH: number): void {
     void viewportW;
 
@@ -156,7 +372,6 @@ export class CityScene extends Phaser.Scene {
     const bubbleW = 480;
     const bubbleH = 72;
 
-    // Raised navy background + gold border.
     const bg = this.add
       .rectangle(bubbleX, bubbleY, bubbleW, bubbleH, 0x0f1f4d)
       .setOrigin(0, 0)
@@ -172,7 +387,7 @@ export class CityScene extends Phaser.Scene {
       .setOrigin(0, 0);
     label.setScrollFactor(0).setDepth(11);
 
-    const body = this.add
+    this.bubbleBody = this.add
       .text(
         bubbleX + 14,
         bubbleY + 34,
@@ -185,10 +400,9 @@ export class CityScene extends Phaser.Scene {
         },
       )
       .setOrigin(0, 0);
-    body.setScrollFactor(0).setDepth(11);
+    this.bubbleBody.setScrollFactor(0).setDepth(11);
   }
 
-  /** Visible error state if the map JSON fails to load. */
   private renderTerrainLoadFailure(w: number, h: number, err: unknown): void {
     const msg = err instanceof Error ? err.message : String(err);
     this.add
@@ -212,5 +426,6 @@ export class CityScene extends Phaser.Scene {
   private teardown(): void {
     this.cameraTeardown?.();
     this.cameraTeardown = undefined;
+    this.game.events.off('placement:start', this.onPlacementStart, this);
   }
 }

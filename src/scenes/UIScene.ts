@@ -54,6 +54,7 @@ export class UIScene extends Phaser.Scene {
 
     this.buildMechaSenkuPlaceholder(sidebarX, sidebarW);
     this.buildResourcesPanel(sidebarX, sidebarW);
+    this.buildActionButtons(sidebarX, sidebarW);
     this.buildFooter(sidebarX, sidebarW, sidebarH);
 
     // Subscribe to AppState. When state updates (from poll or other source),
@@ -112,6 +113,76 @@ export class UIScene extends Phaser.Scene {
     // Place panel below the Mecha Senku portrait block (~ y = 16 + 96 + 32).
     const panelY = 16 + 96 + 32;
     this.resourcesPanel = new ResourcesPanel(this, sidebarX, panelY, sidebarW);
+  }
+
+  /**
+   * Action buttons block — Phase 5 has just [Build]. Phases 8 / 11 / 13 add
+   * [Research], [Silos], [Overlays], [Captain's Log] per design/06-style §HUD
+   * components §3.
+   */
+  private buildActionButtons(sidebarX: number, sidebarW: number): void {
+    // Position below the resources panel.
+    const panelTop = 16 + 96 + 32; // mirrors buildResourcesPanel offset
+    const buttonsY = panelTop + ResourcesPanel.height + 16;
+    const padX = 16;
+    const buttonW = sidebarW - padX * 2;
+    const buttonH = 36;
+
+    this.makeButton(
+      sidebarX + padX,
+      buttonsY,
+      buttonW,
+      buttonH,
+      '[ Build ]',
+      () => this.openBuildModal(),
+    );
+  }
+
+  private makeButton(
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    label: string,
+    onClick: () => void,
+  ): void {
+    // 4-pixel gold border per design/06-style §Action buttons.
+    const border = this.add.rectangle(x, y, w, h, 0xffc940).setOrigin(0, 0);
+    const fill = this.add
+      .rectangle(x + 2, y + 2, w - 4, h - 4, 0x0a1228)
+      .setOrigin(0, 0)
+      .setInteractive({ useHandCursor: true });
+    const text = this.add
+      .text(x + w / 2, y + h / 2, label, {
+        fontFamily: 'Pixellari, monospace',
+        fontSize: '20px',
+        color: '#F0EBD7',
+      })
+      .setOrigin(0.5);
+
+    fill.on('pointerover', () => {
+      fill.setFillStyle(0x1b2d5c);
+      text.setColor('#FFE680'); // gold-shimmer hover
+    });
+    fill.on('pointerout', () => {
+      fill.setFillStyle(0x0a1228);
+      text.setColor('#F0EBD7');
+    });
+    fill.on('pointerdown', () => {
+      // Brief inset-press cue.
+      fill.setFillStyle(0x0f1f4d);
+      this.time.delayedCall(80, () => fill.setFillStyle(0x1b2d5c));
+      onClick();
+    });
+
+    void border;
+  }
+
+  private openBuildModal(): void {
+    // Don't double-launch — if ModalScene is already up, do nothing.
+    const modal = this.scene.get('ModalScene');
+    if (modal.scene.isActive()) return;
+    this.scene.launch('ModalScene', { mode: 'build' });
   }
 
   private buildFooter(sidebarX: number, sidebarW: number, sidebarH: number): void {
