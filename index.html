@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StoneWrld</title>
 
-    <!-- Press Start 2P from Google Fonts — sanctioned body-text fallback per design/06-style §Typography
-         (m6x11 is the preferred body font but requires manual itch.io download;
-          Press Start 2P is OFL, easy to load, pixel-perfect at integer sizes). -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=block"
-      rel="stylesheet"
-    />
-
     <style>
-      /* Self-host Pixellari from public/fonts/ — OFL, see public/fonts/Pixellari-LICENSE.txt
-         Native size is 16px; renders pixel-perfect at integer multiples (16/32/48). */
+      /* Pixellari — OFL, see public/fonts/Pixellari-LICENSE.txt
+         Native size 16px; pixel-perfect at integer multiples (16/32/48). */
       @font-face {
         font-family: 'Pixellari';
         src: url('/fonts/Pixellari.ttf') format('truetype');
+        font-display: block;
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      /* Press Start 2P — OFL, see public/fonts/PressStart2P-LICENSE.txt
+         Self-hosted to eliminate the Google Fonts CDN race per design/06-style.
+         Native size 8px; pixel-perfect at integer multiples (8/16/24). */
+      @font-face {
+        font-family: 'Press Start 2P';
+        src: url('/fonts/PressStart2P.ttf') format('truetype');
         font-display: block;
         font-weight: normal;
         font-style: normal;
@@ -40,8 +41,8 @@
       #game {
         display: block;
         margin: 0 auto;
-        /* Defeat any browser-side image smoothing — pixel-art canvases must
-           upscale via nearest-neighbour per design/06-style §Pixel-art principles. */
+        /* Defeat browser-side image smoothing — pixel art upscales via
+           nearest-neighbour per design/06-style §Pixel-art principles. */
         image-rendering: pixelated;
         image-rendering: crisp-edges;
       }
