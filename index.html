@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StoneWrld</title>
+    <style>
+      /* Page chrome stays out of the Phaser canvas's way.
+         Background matches the Ryusui deep navy (design/06-style §Master palette)
+         so the canvas blends seamlessly into the page during scale transitions. */
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #0A1228;
+        color: #F0EBD7;
+        font-family: monospace;
+        overflow: hidden;
+      }
+      #game {
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

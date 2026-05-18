@@ -1,0 +1,39 @@
+{
+  "name": "stonewrld",
+  "version": "0.1.0",
+  "description": "A Dr. Stone-themed pixel-art civilization game that grows from your Claude Code work.",
+  "type": "module",
+  "author": "Illia Pastushok",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itillushka/StoneWrld.git"
+  },
+  "homepage": "https://github.com/itillushka/StoneWrld",
+  "bugs": {
+    "url": "https://github.com/itillushka/StoneWrld/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 5101",
+    "test": "vitest run",
+    "test:ui": "vitest --ui --port 5102",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "phaser": "^3.80.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@vitest/ui": "^2.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.0.0",
+    "vitest": "^2.0.0"
+  }
+}

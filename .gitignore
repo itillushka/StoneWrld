@@ -1,17 +1,29 @@
-# --- Node / runtime artifacts (when src/ lands) ---
+# --- Node / runtime artifacts ---
 node_modules/
 dist/
-build/
-.cache/
+.vite/
+*.tsbuildinfo
+
+# --- Logs ---
 *.log
 npm-debug.log*
+hook-errors.log
 
 # --- Game state (the live world is yours; don't commit it) ---
-# (paths will be confirmed in design/07-architecture.md)
 state.json
-city/*.png
-city/layout.json
 *.tmp
+
+# --- Mood-board / reference material (vibe packs, canon screenshots — never bundled) ---
+# See design/07-references §License discipline notes.
+moodboard/
+
+# --- Raw asset source (Aseprite + source PNG before atlas packing) ---
+# Only packed atlases in public/atlases/ get committed.
+assets/source-raw/
+
+# --- Coverage / test artifacts ---
+coverage/
+.nyc_output/
 
 # --- Editor / OS noise ---
 .vscode/
@@ -26,10 +38,6 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-
-# --- Test artifacts ---
-coverage/
-.nyc_output/
 
 # --- Generated docs ---
 docs/_build/
